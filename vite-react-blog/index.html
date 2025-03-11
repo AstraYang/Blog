@@ -1,13 +1,31 @@
 <!doctype html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" id="favicon" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title id="site-title">Vite + React</title>
+  <style>
+    /* 在这里添加其他样式 */
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="module" src="./src/main.jsx"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const settings = JSON.parse(localStorage.getItem('siteSettings')) || {};
+
+    // 设置 Favicon
+    if (settings.favicon) {
+      document.getElementById('favicon').href = settings.favicon;
+    }
+
+    // 设置网站标题
+    if (settings.siteName) {
+      document.getElementById('site-title').textContent = settings.siteName;
+    }
+  });
+</script>
+</body>
 </html>

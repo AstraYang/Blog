@@ -4,7 +4,6 @@ import {
   Button,
   Checkbox,
   CssBaseline,
-  Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
@@ -18,8 +17,8 @@ import { styled } from "@mui/material/styles";
 import ForgotPassword from "../components/sigin-in/ForgotPassword.jsx";
 import AppTheme from "../shared-theme/AppTheme.jsx";
 import ColorModeSelect from "../shared-theme/ColorModeSelect.jsx";
-import { GoogleIcon, FacebookIcon, SitemarkIcon } from "../components/sigin-in/CustomIcons";
-import { login } from "../api/auth";
+import { SitemarkIcon } from "../components/sigin-in/CustomIcons";
+import { login } from "../api/User.js";
 import { useNavigate } from 'react-router-dom';
 
 const Card = styled(MuiCard)(({ theme }) => ({
@@ -117,10 +116,10 @@ export default function SignIn(props) {
     const password = data.get("password");
 
     try {
-      const response = await login(username, password); // 调用从 auth.js 导入的 login 方法
+      const response = await login(username, password);
       console.log("登录成功:", response);
       // alert("Login successful!");
-      navigate("/dashboard");
+      navigate("/admin");
     } catch (error) {
       console.error("登录失败:", error);
       alert("Login failed. Please check your username and password.");
@@ -206,35 +205,6 @@ export default function SignIn(props) {
               >
                 Forgot your password?
               </Link>
-            </Box>
-            <Divider>or</Divider>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-              <Button
-                  fullWidth
-                  variant="outlined"
-                  onClick={() => alert("Sign in with Google")}
-                  startIcon={<GoogleIcon />}
-              >
-                Sign in with Google
-              </Button>
-              <Button
-                  fullWidth
-                  variant="outlined"
-                  onClick={() => alert("Sign in with Facebook")}
-                  startIcon={<FacebookIcon />}
-              >
-                Sign in with Facebook
-              </Button>
-              <Typography sx={{ textAlign: "center" }}>
-                Don&apos;t have an account?{" "}
-                <Link
-                    href="/material-ui/getting-started/templates/sign-in/"
-                    variant="body2"
-                    sx={{ alignSelf: "center" }}
-                >
-                  Sign up
-                </Link>
-              </Typography>
             </Box>
           </Card>
         </SignInContainer>

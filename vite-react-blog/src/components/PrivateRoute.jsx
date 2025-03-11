@@ -1,23 +1,21 @@
 import React from "react";
 import { Route, Navigate } from "react-router-dom";
 import PropTypes from 'prop-types';
+import { getCurrentUser } from '../api/User.js'; // 导入获取用户信息的函数
 
 // 检查用户是否已登录
-const isAuthenticated = async () => {
-    const response = await fetch("http://localhost:8080/admin/user/current", {
-        method: "GET",
-        credentials: "include", // 携带 Session Cookie
-    });
-    const data = await response.json();
-    return data.code === 200; // 如果登录成功，返回 true，否则返回 false
+const isAuthenticated = () => {
+    const userInfo = getCurrentUser(); // 从 Token 中获取用户信息
+    console.log('获取用户信息成功:', userInfo);
+    return !!userInfo; // 如果用户信息存在，则返回 true
 };
 
 const PrivateRoute = ({ children }) => {
     const [isAuth, setIsAuth] = React.useState(null);
 
     React.useEffect(() => {
-        const checkAuth = async () => {
-            const authState = await isAuthenticated();
+        const checkAuth = () => {
+            const authState = isAuthenticated();
             setIsAuth(authState);
         };
         checkAuth();

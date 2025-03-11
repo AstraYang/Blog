@@ -36,4 +36,9 @@ public class ArticlesTagsServiceImpl extends ServiceImpl<ArticlesTagsMapper, Art
         }
     }
 
+    @Override
+    public List<Integer> getArticleTags(Integer articleId) {
+        return articlesTagsMapper.getArticleTags(articleId);
+    }
+
 }

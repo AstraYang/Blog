@@ -39,12 +39,12 @@ public class Result {
      * @param message 自定义消息
      * @return Result
      */
-    public static Result of(ResultCode resultCode, String message) {
-        Result result = new Result();
-        result.setCode(resultCode.getCode());
-        result.setMessage(message);
-        return result;
-    }
+//    public static Result of(ResultCode resultCode, String message) {
+//        Result result = new Result();
+//        result.setCode(resultCode.getCode());
+//        result.setMessage(message);
+//        return result;
+//    }
 
     /**
      * 通用静态方法构建 Result 对象

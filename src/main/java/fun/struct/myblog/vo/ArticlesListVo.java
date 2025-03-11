@@ -1,12 +1,14 @@
 package fun.struct.myblog.vo;
 
-import fun.struct.myblog.entity.Tags;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
+
+/*
+* 文章列表VO
+* */
 public class ArticlesListVo {
     private Integer id;
     private String title;

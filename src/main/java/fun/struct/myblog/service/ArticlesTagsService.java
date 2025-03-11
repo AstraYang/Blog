@@ -6,6 +6,8 @@ import fun.struct.myblog.entity.ArticlesTags;
 import java.util.List;
 
 public interface ArticlesTagsService extends IService<ArticlesTags> {
-    public void addArticleTags(Integer articleId, List<Integer> tags);
-    public void updateArticleTags(Integer articleId, List<Integer> tags);
+    void addArticleTags(Integer articleId, List<Integer> tags);
+    void updateArticleTags(Integer articleId, List<Integer> tags);
+
+    List<Integer> getArticleTags(Integer articleId);
 }

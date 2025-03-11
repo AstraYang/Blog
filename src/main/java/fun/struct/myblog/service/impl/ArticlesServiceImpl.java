@@ -1,18 +1,22 @@
 package fun.struct.myblog.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import fun.struct.myblog.dto.ArticleQueryDTO;
 import fun.struct.myblog.dto.ArticlesDto;
 import fun.struct.myblog.entity.Articles;
 import fun.struct.myblog.mapper.ArticlesMapper;
 import fun.struct.myblog.service.ArticlesService;
+import fun.struct.myblog.vo.ArticleDataVo;
+import fun.struct.myblog.vo.ArticleManagementListVO;
 import fun.struct.myblog.vo.ArticlesListVo;
-import fun.struct.myblog.vo.ArticlesVo;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ArticlesServiceImpl extends ServiceImpl<ArticlesMapper, Articles> implements ArticlesService {
@@ -35,13 +39,39 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesMapper, Articles> i
     }
 
     @Override
-    public void deleteArticle(Integer id) {
-
+    public boolean deleteArticleByIds(List<Integer> articleIds) {
+        int deletedRows = articlesMapper.deleteCategoriesByIds("articles", "articles_id",articleIds);
+        return deletedRows > 0;
     }
 
     @Override
-    public ArticlesVo getArticle(Integer id) {
-        return null;
+    public boolean updateArticleDelByIds(List<Integer> ids, boolean newDel) {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("ID 列表不能为空");
+        }
+
+        UpdateWrapper<Articles> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("articles_id", ids); // 设置批量更新条件
+        return articlesMapper.update(null, updateWrapper.set("is_deleted", newDel)) > 0;
+    }
+
+    @Override
+    public Page<ArticleManagementListVO> getPaginatedArticles(Page<ArticleManagementListVO> page, ArticleQueryDTO queryDTO) {
+
+        List<String> conditions = new ArrayList<>();
+        conditions.add("a.is_deleted = 0");
+        conditions.add("a.is_status = " + queryDTO.isPublishFilter());
+        if (queryDTO.getUserFilter()!= 0) {
+            conditions.add("author = " + queryDTO.getUserFilter());
+        }
+
+        String whereClause = String.join(" AND ", conditions);
+        return articlesMapper.selectArticleManagementPage(page, whereClause);
+    }
+
+    @Override
+    public ArticleDataVo getArticle(Integer id) {
+        return articlesMapper.selectArticleData(id);
     }
 
     @Override
@@ -58,9 +88,10 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesMapper, Articles> i
         articles.setSummary(articlesDto.getSummary());
         articles.setContent(articlesDto.getContent());
         articles.setCoverImage(articlesDto.getCoverImage());
-        articles.set_status(articlesDto.is_status());
-        articles.set_comment(articlesDto.is_comment());
-        articles.set_deleted(articlesDto.is_deleted());
+        articles.setAuthor(articlesDto.getAuthor());
+        articles.set_status(articlesDto.isStatus());
+        articles.set_comment(articlesDto.isComment());
+        articles.set_deleted(articlesDto.isDeleted());
 
         if (isNew) {
             // 新增操作

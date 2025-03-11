@@ -11,7 +11,8 @@ public class ArticlesDto {
     private String summary;
     private String content;
     private String coverImage;
-    private boolean is_status;
-    private boolean is_comment;
-    private boolean is_deleted;
+    private int author;
+    private boolean status;
+    private boolean comment;
+    private boolean deleted;
 }

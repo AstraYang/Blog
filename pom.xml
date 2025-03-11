@@ -77,6 +77,12 @@
             <version>3.5.9</version> <!-- 确保版本和 MyBatis Plus 主包一致 -->
         </dependency>
 
+        <dependency>
+            <groupId>com.auth0</groupId>
+            <artifactId>java-jwt</artifactId>
+            <version>4.5.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>

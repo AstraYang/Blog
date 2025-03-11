@@ -3,16 +3,19 @@ package fun.struct.myblog.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import fun.struct.myblog.common.Result;
 import fun.struct.myblog.common.ResultCode;
+import fun.struct.myblog.dto.ArticleQueryDTO;
+import fun.struct.myblog.dto.ArticlesDelDto;
 import fun.struct.myblog.dto.ArticlesDto;
-import fun.struct.myblog.entity.Articles;
 import fun.struct.myblog.mapper.ArticlesMapper;
 import fun.struct.myblog.service.ArticlesService;
 import fun.struct.myblog.service.ArticlesTagsService;
+import fun.struct.myblog.vo.ArticleDataVo;
+import fun.struct.myblog.vo.ArticleManagementListVO;
+import fun.struct.myblog.vo.ArticleVO;
 import fun.struct.myblog.vo.ArticlesListVo;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,13 +48,28 @@ public class ArticlesController {
         return Result.of(ResultCode.SUCCESS,articlesP);
     }
 
-    @GetMapping("/article/{id}")
-    public Result getArticle(@PathVariable("id") Integer id) {
-        ArticlesVo articlesVo = articlesService.getArticle(id);
-        if (articlesVo == null) {
-            return Result.of(ResultCode.NOT_FOUND, "文章不存在");
-        }
-        return Result.of(ResultCode.SUCCESS,articlesVo);
+
+    @GetMapping("/articleList")
+    public Result getArticleList(
+            @RequestParam int page,
+            @RequestParam int size,
+            ArticleQueryDTO queryDTO) {
+        Page<ArticleManagementListVO> articlesP = articlesService.getPaginatedArticles( new Page<>(page, size),queryDTO);
+        return Result.of(ResultCode.SUCCESS,articlesP);
+    }
+
+    @GetMapping("/article/{articleId}")
+    public Result getArticle(@PathVariable("articleId") Integer articleId) {
+        ArticleVO articleVO = articlesMapper.selectArticleDetail(articleId);
+        System.out.println(articleVO);
+        return Result.of(ResultCode.SUCCESS, articleVO);
+    }
+
+    @GetMapping("/fetch/{articleId}")
+    public Result fetchArticleById(@PathVariable("articleId") Integer articleId){
+        ArticleDataVo articleDataVo = articlesService.getArticle(articleId);
+        articleDataVo.setTags(articlesTagsService.getArticleTags(articleId));
+        return Result.of(ResultCode.SUCCESS,articleDataVo);
     }
 
     @PostMapping("/add")
@@ -62,12 +80,39 @@ public class ArticlesController {
     }
 
 
-    @PostMapping("/upDate/{id}")
-    public Result upDateArticle(@RequestBody ArticlesDto articlesDto,@PathVariable("id") Integer id) {
-
-        articlesTagsService.updateArticleTags(id, articlesDto.getTags());
-        articlesService.updateArticle(id,articlesDto);
+    @PostMapping("/upDate/{articleId}")
+    public Result upDateArticle(@RequestBody ArticlesDto articlesDto,@PathVariable("articleId") Integer articleId) {
+        System.out.println("更新的数据："+articlesDto);
+        articlesTagsService.updateArticleTags(articleId, articlesDto.getTags());
+        articlesService.updateArticle(articleId,articlesDto);
         return Result.of(ResultCode.SUCCESS,"修改文章成功");
+    }
+
+
+    @DeleteMapping("/delete/soft")
+    public Result deleteArticles(@RequestBody ArticlesDelDto articlesDelDto) {
+        boolean success = articlesService.updateArticleDelByIds(articlesDelDto.getIds(), articlesDelDto.isDel());
+        if (success) {
+            System.out.println("删除成功:"+articlesDelDto.getIds());
+            return Result.of(ResultCode.SUCCESS, "删除成功");
+        } else {
+            return Result.of(ResultCode.FAIL, "删除失败");
+        }
+    }
+
+//    删除数据库记录
+    @DeleteMapping("/delete/hard")
+    public Result deleteArticles(@RequestBody List<Integer> articleIds) {
+        if (articleIds == null || articleIds.isEmpty()) {
+            return Result.of(ResultCode.FAIL, "分类 ID 列表不能为空");
+        }
+        boolean success = articlesService.deleteArticleByIds(articleIds);
+        if (success) {
+            System.out.println("删除成功:"+articleIds);
+            return Result.of(ResultCode.SUCCESS, "删除成功");
+        } else {
+            return Result.of(ResultCode.FAIL, "删除失败");
+        }
     }
 
 }
