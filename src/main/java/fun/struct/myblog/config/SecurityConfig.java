@@ -1,10 +1,8 @@
 package fun.struct.myblog.config;
 
-import fun.struct.myblog.common.Result;
 import fun.struct.myblog.security.AuthAccessDeniedHandler;
 import fun.struct.myblog.security.AuthEntryPointHandler;
 import fun.struct.myblog.security.JwtAuthenticationFilter;
-import fun.struct.myblog.security.UserDetailsEntity;
 import fun.struct.myblog.util.SpringContextUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +17,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.AuthenticationFailureHandler;
-import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -81,6 +77,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/tags/public/**").permitAll()
 
                 .requestMatchers(HttpMethod.GET, "/map/public/**").permitAll()
+
+                .requestMatchers(HttpMethod.POST, "/email/**").permitAll()
 
                 .anyRequest().authenticated()
         );

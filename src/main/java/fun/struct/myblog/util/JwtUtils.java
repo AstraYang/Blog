@@ -27,7 +27,7 @@ public class JwtUtils {
     /**
      * @Description: 生成令牌
      */
-    public String getJwt(Map<String, Object> claims) {
+        public String getJwt(Map<String, Object> claims) {
         try {
             System.out.println("claims = " + claims);
             Key signingKey = Keys.hmacShaKeyFor(jwtProperties.getSigningKey().getBytes());
