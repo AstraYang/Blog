@@ -113,7 +113,7 @@ const CommentItem = ({ comment, onReply, expandedReplies, toggleReplies, renderC
                             </Grid>
                             <Grid item xs={12} sm={4}>
                                 <TextField
-                                    label="网址（可选）"
+                                    label="网址（可选）https://..."
                                     variant="outlined"
                                     fullWidth
                                     value={replyWebsite}

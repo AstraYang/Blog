@@ -7,7 +7,11 @@ import axios from 'axios';
 const API_BASE_URL = 'http://localhost:8080/admin/tags';
 export const fetchTags = async () => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/list`);
+        const response = await axios.get(`${API_BASE_URL}/list`,{
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         return response.data.data;
     } catch (error) {
         console.error('Failed to fetch categories:', error);
@@ -23,6 +27,7 @@ export const createTag = async (tagName) => {
         const response = await axios.post(`${API_BASE_URL}/add`, formData, {
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded', // 设置请求头为表单格式
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
         });
         return response.data;
@@ -38,6 +43,7 @@ export const deleteTags = async (categoryIds) => {
             data: categoryIds,
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
         });
         console.log('删除成功:', response.data);

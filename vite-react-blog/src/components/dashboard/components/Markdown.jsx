@@ -19,7 +19,8 @@ import {
 import MDEditor from "@uiw/react-md-editor"; // Markdown 编辑器
 import { useNavigate } from "react-router-dom"; // 路由跳转
 import { fetchCategories } from "../../../api/category.js";
-import { fetchTags, uploadCoverImage, submitArticle } from "../../../api/articles";
+import {uploadCoverImage, submitArticle } from "../../../api/articles";
+import { fetchTags } from "../../../api/tags.js";
 import {createTheme, ThemeProvider} from "@mui/material/styles";
 import {getCurrentUser} from "../../../api/User.js"; // 引入 API
 

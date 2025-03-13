@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin/category")
+@RequestMapping("/category")
 public class CategoryController {
 
     @Resource
@@ -26,7 +26,7 @@ public class CategoryController {
         return Result.of(ResultCode.SUCCESS,category);
     }
 
-    @GetMapping("/list")
+    @GetMapping("/public/list")
     public Result getCategoryList() {
         return Result.of(ResultCode.SUCCESS,categoryService.getCategoryList());
     }

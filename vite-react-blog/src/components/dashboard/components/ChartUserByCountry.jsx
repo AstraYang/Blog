@@ -22,6 +22,7 @@ const data = [
   { label: 'USA', value: 35000 },
   { label: 'Brazil', value: 10000 },
   { label: 'Other', value: 5000 },
+
 ];
 
 const countries = [
@@ -29,13 +30,13 @@ const countries = [
     name: 'India',
     value: 50,
     flag: <IndiaFlag />,
-    color: 'hsl(220, 25%, 65%)',
+    color: 'hsl(218,60%,72%)',
   },
   {
     name: 'USA',
     value: 35,
     flag: <UsaFlag />,
-    color: 'hsl(220, 25%, 45%)',
+    color: 'hsl(343,98%,53%)',
   },
   {
     name: 'Brazil',
@@ -113,7 +114,7 @@ PieCenterLabel.propTypes = {
 
 const colors = [
   'hsl(220, 20%, 65%)',
-  'hsl(220, 20%, 42%)',
+  'hsl(339,85%,48%)',
   'hsl(220, 20%, 35%)',
   'hsl(220, 20%, 25%)',
 ];

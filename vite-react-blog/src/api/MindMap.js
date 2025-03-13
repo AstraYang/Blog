@@ -11,7 +11,7 @@ const API_BASE_URL = 'http://localhost:8080/map';
  */
 export const fetchMindMaps = async (page, size) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/list`, {
+        const response = await axios.get(`${API_BASE_URL}/public/list`, {
             params: {
                 page,
                 size,
@@ -29,7 +29,7 @@ export const fetchMindMaps = async (page, size) => {
 
 export const fetchMindMapById = async (id) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/getMindMapById/${id}`);
+        const response = await axios.get(`${API_BASE_URL}/public/getMindMapById/${id}`);
         console.log("API请求MindMap详情：", response.data);
 
         return response.data;
@@ -42,7 +42,11 @@ export const fetchMindMapById = async (id) => {
 //添加MindMap
 export const createMindMap = async (mindMapData) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/add`, mindMapData);
+        const response = await axios.post(`${API_BASE_URL}/add`, mindMapData,{
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         console.log("API请求添加MindMap：", response.data);
         return response.data;
     } catch (error) {
@@ -58,6 +62,7 @@ export const deleteMindMaps = async (ids) => {
             data: ids,
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
         });
         console.log('删除成功:', response.data);
@@ -71,7 +76,11 @@ export const deleteMindMaps = async (ids) => {
 // 修改MindMap
 export const updateMindMap = async (mindMapData,id) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/update/${id}`, mindMapData);
+        const response = await axios.post(`${API_BASE_URL}/update/${id}`, mindMapData,{
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         console.log("API请求修改MindMap：", response.data);
 
         return response.data;

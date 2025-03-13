@@ -33,7 +33,7 @@ public interface ArticlesMapper extends BaseMapper<Articles> {
 
 
     @Select("""
-    SELECT articles_id AS id, title, category_name, nick_name AS authorName, a.created_at AS createdAta,
+    SELECT articles_id AS id, title, category_name, nick_name AS authorName, a.created_at AS createdAt,
            is_status AS status, a.is_comment AS comment, a.is_deleted AS deleted
     FROM articles a
     INNER JOIN category c ON c.category_id = a.category_id

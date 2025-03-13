@@ -6,12 +6,14 @@ import SignIn from "../pages/SignIn.jsx";
 import Dashboard from "../pages/Dashboard.jsx";
 import TagList from "../components/dashboard/components/TagList.jsx";
 import MindMap from "../components/dashboard/components/MinMap.jsx";
+import SignUp from "../pages/SignUp.jsx";
 
 const AppRoutes = () => {
     return (
         <Routes>
             <Route path="/" element={<Blog />} />
             <Route path="/login" element={<SignIn />} />
+            <Route path="/signup" element={<SignUp />} />
             <Route path="/tags" element={<TagList />} />
             <Route path="/article/:articleId" element={<Blog />} />
             <Route path="/map" element={<MindMap/>} />
@@ -31,6 +33,7 @@ const AppRoutes = () => {
                 <Route path="mindMap/:id" element={<Dashboard />} />
                 <Route path="categories" element={<Dashboard />} />
                 <Route path="tags" element={<Dashboard />} />
+                <Route path="comments" element={<Dashboard />} />
                 <Route path="userList" element={<Dashboard />} />
                 <Route path="Settings" element={<Dashboard />} />
             </Route>

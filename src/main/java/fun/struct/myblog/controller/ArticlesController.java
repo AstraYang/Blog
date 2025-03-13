@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("admin/articles")
+@RequestMapping("articles")
 public class ArticlesController {
 
     @Resource
@@ -30,7 +30,9 @@ public class ArticlesController {
     @Resource
     private ArticlesTagsService articlesTagsService;
 
-    @GetMapping("/articles")
+
+    // 获取公共文章列表
+    @GetMapping("/public/articles")
     public Result getArticles(
             @RequestParam int page,
             @RequestParam int size,
@@ -49,6 +51,7 @@ public class ArticlesController {
     }
 
 
+    // 获取admin文章管理列表
     @GetMapping("/articleList")
     public Result getArticleList(
             @RequestParam int page,
@@ -58,13 +61,15 @@ public class ArticlesController {
         return Result.of(ResultCode.SUCCESS,articlesP);
     }
 
-    @GetMapping("/article/{articleId}")
+    // 获取文章详情页数据
+    @GetMapping("/public/{articleId}")
     public Result getArticle(@PathVariable("articleId") Integer articleId) {
         ArticleVO articleVO = articlesMapper.selectArticleDetail(articleId);
         System.out.println(articleVO);
         return Result.of(ResultCode.SUCCESS, articleVO);
     }
 
+    // 获取文章编辑页数据
     @GetMapping("/fetch/{articleId}")
     public Result fetchArticleById(@PathVariable("articleId") Integer articleId){
         ArticleDataVo articleDataVo = articlesService.getArticle(articleId);
@@ -72,6 +77,7 @@ public class ArticlesController {
         return Result.of(ResultCode.SUCCESS,articleDataVo);
     }
 
+    // 添加文章
     @PostMapping("/add")
     public Result addArticle(@RequestBody ArticlesDto articlesDto) {
         Integer articleId =  articlesService.addArticle(articlesDto);
@@ -80,6 +86,7 @@ public class ArticlesController {
     }
 
 
+    // 修改文章
     @PostMapping("/upDate/{articleId}")
     public Result upDateArticle(@RequestBody ArticlesDto articlesDto,@PathVariable("articleId") Integer articleId) {
         System.out.println("更新的数据："+articlesDto);
@@ -89,6 +96,7 @@ public class ArticlesController {
     }
 
 
+    // 删除文（软删除)
     @DeleteMapping("/delete/soft")
     public Result deleteArticles(@RequestBody ArticlesDelDto articlesDelDto) {
         boolean success = articlesService.updateArticleDelByIds(articlesDelDto.getIds(), articlesDelDto.isDel());

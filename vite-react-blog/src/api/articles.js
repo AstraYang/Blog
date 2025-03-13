@@ -7,16 +7,20 @@ import axios from 'axios';
  * @param {number|null} categoryId 分类 ID，如果为 null 则不筛选分类
  * @returns {Promise} 包含文章列表数据的 Promise 对象
  */
-const API_BASE_URL = 'http://localhost:8080';
+const API_BASE_URL = 'http://localhost:8080/articles';
+const API_Upload_URL = 'http://localhost:8080/uploads';
 
     export const fetchArticles = async (page, size, categoryId = null) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/admin/articles/articles`, {
+        const response = await axios.get(`${API_BASE_URL}/public/articles`, {
             params: {
                 page,
                 size,
                 categoryId,
             },
+            // headers: {
+            //     'Authorization': `Bearer ${localStorage.getItem('token')}`
+            // }
         });
 
         return response.data;
@@ -29,13 +33,16 @@ const API_BASE_URL = 'http://localhost:8080';
 // 管理文章列表
 export const fetchArticleManagementList =async (page, size, userFilter, publishFilter) =>{
     try {
-        const response = await axios.get(`${API_BASE_URL}/admin/articles/articleList`, {
+        const response = await axios.get(`${API_BASE_URL}/articleList`, {
             params: {
                 page,
                 size,
                 userFilter,
                 publishFilter,
             },
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
         });
         console.log("API请求文章列表：", response.data);
         return response.data;
@@ -49,7 +56,7 @@ export const getArticleDetail = async (articleId) => {
     console.log("获取文章详情的函数"+ articleId);
     try {
         // 发送 GET 请求到后端 API
-        const response = await axios.get(`${API_BASE_URL}/admin/articles/article/${articleId}`);
+        const response = await axios.get(`${API_BASE_URL}/public/${articleId}`);
 
         // 检查返回的数据结构
         if (response.data.code === 200) {
@@ -68,7 +75,11 @@ export const getArticleDetail = async (articleId) => {
 //获取文章所有数据
 export const fetchArticleById = async (articleId) => {
     try {
-        const response = await axios.get(`${API_BASE_URL}/admin/articles/fetch/${articleId}`);
+        const response = await axios.get(`${API_BASE_URL}/fetch/${articleId}`,{
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         return response.data.data; // 返回文章数据
     } catch (error) {
         console.error("API获取文章数据失败:", error);
@@ -76,39 +87,8 @@ export const fetchArticleById = async (articleId) => {
     }
 };
 
-export const fetchCategories = async () => {
-    try {
-        console.log("API_BASE_URL:", API_BASE_URL);
-        const response = await axios.get(`${API_BASE_URL}/admin/category/list`);
-        console.log("分类列表：", response.data.data)
-        return response.data.data; // 返回分类数据
-    } catch (error) {
-        console.error("API获取分类列表失败:", error);
-        throw error;
-    }
-};
 
-// 获取标签列表
-export const fetchTags = async () => {
-    try {
-        const response = await axios.get(`${API_BASE_URL}/admin/tags/list`);
-        return response.data.data; // 返回标签数据
-    } catch (error) {
-        console.error("API获取标签列表失败:", error);
-        throw error;
-    }
-};
 
-//获取文章标签
-export const fetchArticleTags = async (articleId) => {
-    try {
-        const response = await axios.get(`${API_BASE_URL}/admin/tags/article/${articleId}`);
-        return response.data.data; // 返回标签数据
-    } catch (error) {
-        console.error("API获取文章标签列表失败:", error);
-        throw error;
-    }
-};
 
 // 上传封面图片
 export const uploadCoverImage = async (coverImage) => {
@@ -116,9 +96,10 @@ export const uploadCoverImage = async (coverImage) => {
         const formData = new FormData();
         formData.append("image", coverImage); // 将图片文件添加到 FormData 中
 
-        const response = await axios.post(`${API_BASE_URL}/admin/uploads/image`, formData, {
+        const response = await axios.post(`${API_Upload_URL}/image`, formData, {
             headers: {
                 "Content-Type": "multipart/form-data",
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
         });
         return response.data.data; // 返回图片路径
@@ -131,7 +112,11 @@ export const uploadCoverImage = async (coverImage) => {
 // 提交文章
 export const submitArticle = async (articleData) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/admin/articles/add`, articleData);
+        const response = await axios.post(`${API_BASE_URL}/add`, articleData,{
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         return response.data; // 返回提交成功的响应
     } catch (error) {
         console.error("文章提交失败:", error.response ? error.response.data : error.message);
@@ -142,7 +127,11 @@ export const submitArticle = async (articleData) => {
 // 修改文章
 export const upDateArticle = async (articleData,articleId) => {
     try {
-        const response = await axios.post(`${API_BASE_URL}/admin/articles/upDate/${articleId}`, articleData);
+        const response = await axios.post(`${API_BASE_URL}/upDate/${articleId}`, articleData,{
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
         return response.data; // 返回提交成功的响应
     } catch (error) {
         console.error("文章提交失败:", error.response ? error.response.data : error.message);
@@ -153,13 +142,15 @@ export const upDateArticle = async (articleData,articleId) => {
 //删除文章（软删除）
 export const deleteArticlesSoft = async (articleIds, del) => {
     try {
-        const response = await axios.delete(`${API_BASE_URL}/admin/articles/delete/soft`, {
+        const response = await axios.delete(`${API_BASE_URL}/delete/soft`, {
             data: {
                 ids:articleIds,
                 del:del
             },
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+
             },
         });
         console.log('删除成功:', response.data);

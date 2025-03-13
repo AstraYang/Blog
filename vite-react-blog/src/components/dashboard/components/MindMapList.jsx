@@ -4,24 +4,19 @@ import {
     Button,
     TextField,
     Typography,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Checkbox,
-    Divider,
+    Card,
+    CardContent,
+    CardActions,
     CircularProgress,
+    Divider,
     Pagination,
     Dialog,
     DialogActions,
     DialogContent,
     DialogContentText,
-    DialogTitle,
+    DialogTitle, Checkbox,
 } from '@mui/material';
-import { Link, useNavigate } from 'react-router-dom'; // 引入 useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 import { fetchMindMaps, createMindMap, deleteMindMaps } from '../../../api/MindMap';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
@@ -51,14 +46,14 @@ export default function MindMapList() {
 
     // 控制弹窗的状态
     const [openCreateDialog, setOpenCreateDialog] = useState(false);
-    const [newMindMapId, setNewMindMapId] = useState(null); // 储存新创建的思维导图ID
+    const [newMindMapId, setNewMindMapId] = useState(null);
 
     // 控制删除弹窗的状态
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-    const [confirmDeleteIds, setConfirmDeleteIds] = useState([]); // 储存将要删除的ID
+    const [confirmDeleteIds, setConfirmDeleteIds] = useState([]);
 
     const pageSize = 4;
-    const navigate = useNavigate(); // 创建 navigate 函数
+    const navigate = useNavigate();
 
     useEffect(() => {
         fetchMindMapsData();
@@ -87,26 +82,26 @@ export default function MindMapList() {
         try {
             const response = await createMindMap({ title: newMindMapTitle });
             setNewMindMapTitle('');
-            setNewMindMapId(response.data); // 获取新创建的MindMap ID
-            setOpenCreateDialog(true); // 打开创建成功弹窗
+            setNewMindMapId(response.data);
+            setOpenCreateDialog(true);
         } catch (error) {
             console.error('Failed to create mind map:', error);
         }
     };
 
     const handleDialogClose = (confirm) => {
-        setOpenCreateDialog(false); // 关闭创建成功弹窗
+        setOpenCreateDialog(false);
         if (confirm) {
-            navigate(`/admin/mindMap/${newMindMapId}`); // 跳转到新创建的思维导图编辑页面
+            navigate(`/admin/mindMap/${newMindMapId}`);
         }
-        fetchMindMapsData(); // 重新加载思维导图列表
+        fetchMindMapsData();
     };
 
     const handleDeleteMindMaps = () => {
         if (selectedIds.length === 0) return;
 
         setConfirmDeleteIds(selectedIds);
-        setOpenDeleteDialog(true); // 打开删除确认弹窗
+        setOpenDeleteDialog(true);
     };
 
     const handleConfirmDelete = async () => {
@@ -118,7 +113,7 @@ export default function MindMapList() {
             alert('删除失败');
             console.error('Failed to delete mind maps:', error);
         } finally {
-            setOpenDeleteDialog(false); // 关闭删除确认弹窗
+            setOpenDeleteDialog(false);
         }
     };
 
@@ -174,55 +169,29 @@ export default function MindMapList() {
                 ) : mindMaps.length === 0 ? (
                     <Typography variant="body1">暂无数据</Typography>
                 ) : (
-                    <TableContainer component={Paper} sx={{ mb: 2 }}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell padding="checkbox" align="center">
-                                        <Checkbox
-                                            indeterminate={
-                                                selectedIds.length > 0 && selectedIds.length < mindMaps.length
-                                            }
-                                            checked={mindMaps.length > 0 && selectedIds.length === mindMaps.length}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setSelectedIds(mindMaps.map((item) => item.id));
-                                                } else {
-                                                    setSelectedIds([]);
-                                                }
-                                            }}
-                                        />
-                                    </TableCell>
-                                    <TableCell align="center">标题</TableCell>
-                                    <TableCell align="center">简介</TableCell>
-                                    <TableCell align="center">更新时间</TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {mindMaps.map((mindMap) => (
-                                    <TableRow
-                                        key={mindMap.id}
-                                        selected={isSelected(mindMap.id)}
-                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                    >
-                                        <TableCell padding="checkbox" align="center">
-                                            <Checkbox
-                                                checked={isSelected(mindMap.id)}
-                                                onChange={() => handleSelect(mindMap.id)}
-                                            />
-                                        </TableCell>
-                                        <TableCell align="center">
-                                            <Link to={`/admin/mindMap/${mindMap.id}`} style={{ textDecoration: 'none', color: '#027cb5' }}>
-                                                {mindMap.title}
-                                            </Link>
-                                        </TableCell>
-                                        <TableCell align="center">{mindMap.summary}</TableCell>
-                                        <TableCell align="center">{new Date(mindMap.updatedAt).toLocaleString()}</TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
+                    <Box sx={{ display: { xs: 'block', md: 'grid' }, gridTemplateColumns: { md: 'repeat(2, 1fr)' }, gap: 2 }}>
+                        {mindMaps.map((mindMap) => (
+                            <Card key={mindMap.id} sx={{ border: isSelected(mindMap.id) ? '2px solid #3f51b5' : '1px solid #ccc', borderRadius: 2 }}>
+                                <CardContent>
+                                    <Typography variant="h6">
+                                        <Link to={`/admin/mindMap/${mindMap.id}`} style={{ textDecoration: 'none', color: '#027cb5' }}>
+                                            {mindMap.title}
+                                        </Link>
+                                    </Typography>
+                                    <Typography variant="body2">{mindMap.summary}</Typography>
+                                    <Typography variant="caption" color="textSecondary">
+                                        更新时间: {new Date(mindMap.updatedAt).toLocaleString()}
+                                    </Typography>
+                                </CardContent>
+                                <CardActions>
+                                    <Checkbox
+                                        checked={isSelected(mindMap.id)}
+                                        onChange={() => handleSelect(mindMap.id)}
+                                    />
+                                </CardActions>
+                            </Card>
+                        ))}
+                    </Box>
                 )}
 
                 <Box sx={{ marginTop: 2, textAlign: 'center' }}>
@@ -232,7 +201,7 @@ export default function MindMapList() {
                         onChange={handlePageChange}
                         variant="outlined"
                         shape="rounded"
-                        sx={{ display: 'flex', justifyContent: 'right', mb: 2 }}
+                        sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}
                     />
                 </Box>
 

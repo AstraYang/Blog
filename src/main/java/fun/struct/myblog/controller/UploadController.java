@@ -13,7 +13,7 @@ import org.springframework.util.MultiValueMap;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/admin/uploads")
+@RequestMapping("/uploads")
 public class UploadController {
     @Value("${app.remote.upload.url}")
     private String remoteUploadUrl; // 远程 API 地址

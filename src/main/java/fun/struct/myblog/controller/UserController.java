@@ -6,7 +6,7 @@ import fun.struct.myblog.dto.LoginDto;
 import fun.struct.myblog.service.UserService;
 import fun.struct.myblog.entity.User;
 import fun.struct.myblog.common.Result;
-import fun.struct.myblog.util.JWTUtil;
+import fun.struct.myblog.util.JwtUtils; // 使用JwtUtils
 import fun.struct.myblog.vo.UserListVO;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
@@ -22,19 +22,30 @@ public class UserController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private JwtUtils jwtUtils; // 注入JwtUtils
+
     @PostMapping("/login")
     public Result login(@RequestBody LoginDto loginDto) {
+        System.out.println("登录信息:" + loginDto);
         User user = userService.login(loginDto);
+        System.out.println("user = " + user);
         Assert.notNull(user, "用户名或密码错误，请重试！");
 
-        HashMap<String, String> claims = new HashMap<>();
-        claims.put("id", user.getId().toString());
+        // 创建claims，包含用户信息及权限
+        HashMap<String, Object> claims = new HashMap<>();
+        claims.put("id", user.getId());
         claims.put("username", user.getUserName());
         claims.put("nickName", user.getNickName());
         claims.put("email", user.getEmail());
         claims.put("avatar", user.getAvatar());
+        claims.put("authorityString", user.getAuthority()); // 添加权限信息
 
-        String token = JWTUtil.getToken(claims, 7); // 7天过期
+        // 使用JwtUtils生成token
+        System.out.println("token");
+
+        String token = jwtUtils.getJwt(claims);
+        System.out.println("token = " + token);
 
         return Result.of(ResultCode.SUCCESS, token);
     }
@@ -50,14 +61,13 @@ public class UserController {
                     vo.setNickName(user.getNickName());
                     vo.setEmail(user.getEmail());
                     vo.setAvatar(user.getAvatar());
-                    vo.setPermissions(user.getPermissions());
+                    vo.setPermissions(user.getAuthority());
                     return vo;
                 })
                 .collect(Collectors.toList());
         return Result.of(ResultCode.SUCCESS, userListVO);
     }
 
-//   添加用户
     @PostMapping("/add")
     public Result addUser(@RequestBody LoginDto loginDto) {
         User user = new User();
@@ -70,6 +80,6 @@ public class UserController {
         // 校验添加是否成功
         Assert.isTrue(success, "添加用户失败，请重试！");
 
-        return Result.of(ResultCode.SUCCESS,"添加用户成功！");
+        return Result.of(ResultCode.SUCCESS, "添加用户成功！");
     }
 }

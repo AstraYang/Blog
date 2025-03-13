@@ -14,7 +14,7 @@ public class ArticleManagementListVO {
     private String title;
     private String authorName;
     private String categoryName;
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
     private boolean status;
     private boolean comment;
     private boolean deleted;

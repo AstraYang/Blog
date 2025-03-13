@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   Button,
@@ -7,7 +7,7 @@ import {
   FormControl,
   FormControlLabel,
   FormLabel,
-  Link,
+  Link as MuiLink,
   TextField,
   Typography,
   Stack,
@@ -18,20 +18,39 @@ import ForgotPassword from "../components/sigin-in/ForgotPassword.jsx";
 import AppTheme from "../shared-theme/AppTheme.jsx";
 import ColorModeSelect from "../shared-theme/ColorModeSelect.jsx";
 import { SitemarkIcon } from "../components/sigin-in/CustomIcons";
-import { login } from "../api/User.js";
+import { login, register } from "../api/User.js";
 import { useNavigate } from 'react-router-dom';
 
-const Card = styled(MuiCard)(({ theme }) => ({
+// 翻转容器样式
+const FlipContainer = styled(Box)({
+  perspective: '1000px',
+  width: '100%',
+  maxWidth: '450px',
+  margin: 'auto',
+  position: 'relative',
+  height: '600px' // 根据实际内容高度调整
+});
+
+// 翻转动画容器
+const Flipper = styled(Box)(({ isflipped }) => ({
+  transition: 'transform 0.6s ease-out',
+  transformStyle: 'preserve-3d',
+  position: 'relative',
+  width: '100%',
+  height: '100%',
+  transform: isflipped ? 'rotateY(180deg)' : 'rotateY(0)',
+}));
+
+// 基础卡片样式
+const BaseCard = styled(MuiCard)(({ theme }) => ({
+  position: 'absolute',
+  width: '100%',
+  height: '100%',
+  backfaceVisibility: 'hidden',
   display: "flex",
   flexDirection: "column",
-  alignSelf: "center",
-  width: "100%",
   padding: theme.spacing(4),
   gap: theme.spacing(2),
-  margin: "auto",
-  [theme.breakpoints.up("sm")]: {
-    maxWidth: "450px",
-  },
   boxShadow:
       "hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px",
   ...theme.applyStyles("dark", {
@@ -40,6 +59,19 @@ const Card = styled(MuiCard)(({ theme }) => ({
   }),
 }));
 
+// 正面卡片（登录）
+const FrontCard = styled(BaseCard)({
+  zIndex: 2,
+  transform: 'rotateY(0deg)',
+});
+
+// 背面卡片（注册）
+const BackCard = styled(BaseCard)({
+  transform: 'rotateY(180deg)',
+  backgroundColor: theme => theme.palette.background.paper,
+});
+
+// 页面容器
 const SignInContainer = styled(Stack)(({ theme }) => ({
   height: "calc((1 - var(--template-frame-height, 0)) * 100dvh)",
   minHeight: "100%",
@@ -64,65 +96,97 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignIn(props) {
-  const [usernameError, setUsernameError] = useState(false);
-  const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
-  const [passwordError, setPasswordError] = useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [formErrors, setFormErrors] = useState({
+    username: { error: false, message: "" },
+    password: { error: false, message: "" },
+    email: { error: false, message: "" },
+    confirmPassword: { error: false, message: "" }
+  });
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  // 字段验证函数
+  const validateField = (name, value) => {
+    const newErrors = { ...formErrors };
+    switch (name) {
+      case 'username':
+        newErrors.username.error = !value || value.trim() === "";
+        newErrors.username.message = newErrors.username.error
+            ? "Please enter a valid username."
+            : "";
+        break;
+      case 'password':
+        newErrors.password.error = !value || value.length < 6;
+        newErrors.password.message = newErrors.password.error
+            ? "Password must be at least 6 characters."
+            : "";
+        break;
+      case 'email': {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        newErrors.email.error = !value || !emailRegex.test(value);
+        newErrors.email.message = newErrors.email.error
+            ? "Please enter a valid email address."
+            : "";
+        break;
+      }
+      case 'confirmPassword': {
+        const password = document.getElementById('reg-password')?.value;
+        newErrors.confirmPassword.error = value !== password;
+        newErrors.confirmPassword.message = newErrors.confirmPassword.error
+            ? "Passwords do not match."
+            : "";
+        break;
+      }
+      default:
+        break;
+    }
+    setFormErrors(newErrors);
+    return !newErrors[name].error;
   };
 
-  const handleClose = () => {
-    setOpen(false);
-  };
+  // 处理弹窗开关
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
 
-  const validateInputs = () => {
-    const username = document.getElementById("username");
-    const password = document.getElementById("password");
-
+  // 表单提交处理
+  const handleSubmit = async (event, isLogin) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
     let isValid = true;
 
-    if (!username.value || username.value.trim() === "") {
-      setUsernameError(true);
-      setUsernameErrorMessage("Please enter a valid username.");
-      isValid = false;
+    // 验证逻辑
+    if (isLogin) {
+      isValid = ['username', 'password'].every(field => {
+        const value = formData.get(field);
+        return validateField(field, value);
+      });
     } else {
-      setUsernameError(false);
-      setUsernameErrorMessage("");
+      isValid = ['username', 'password', 'email', 'confirmPassword'].every(field => {
+        const value = formData.get(field);
+        return validateField(field, value);
+      });
     }
 
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage("Password must be at least 6 characters long.");
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage("");
-    }
-
-    return isValid;
-  };
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-
-    if (!validateInputs()) return;
-
-    const data = new FormData(event.currentTarget);
-    const username = data.get("username");
-    const password = data.get("password");
+    if (!isValid) return;
 
     try {
-      const response = await login(username, password);
-      console.log("登录成功:", response);
-      // alert("Login successful!");
-      navigate("/admin");
+      if (isLogin) {
+        // 登录逻辑
+        await login(formData.get('username'), formData.get('password'));
+        navigate("/admin");
+      } else {
+        // 注册逻辑
+        await register({
+          username: formData.get('username'),
+          email: formData.get('email'),
+          password: formData.get('password')
+        });
+        setIsFlipped(false);
+        alert('Registration successful! Please login.');
+      }
     } catch (error) {
-      console.error("登录失败:", error);
-      alert("Login failed. Please check your username and password.");
+      alert(`Error: ${error.message}`);
     }
   };
 
@@ -131,82 +195,183 @@ export default function SignIn(props) {
         <CssBaseline enableColorScheme />
         <SignInContainer direction="column" justifyContent="space-between">
           <ColorModeSelect sx={{ position: "fixed", top: "1rem", right: "1rem" }} />
-          <Card variant="outlined">
-            <SitemarkIcon />
-            <Typography
-                component="h1"
-                variant="h4"
-                sx={{ width: "100%", fontSize: "clamp(2rem, 10vw, 2.15rem)" }}
-            >
-              Sign in
-            </Typography>
-            <Box
-                component="form"
-                onSubmit={handleSubmit}
-                noValidate
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  width: "100%",
-                  gap: 2,
-                }}
-            >
-              <FormControl>
-                <FormLabel htmlFor="username">Username</FormLabel>
-                <TextField
-                    error={usernameError}
-                    helperText={usernameErrorMessage}
-                    id="username"
-                    type="text"
-                    name="username"
-                    placeholder="Enter your username"
-                    autoComplete="username"
-                    autoFocus
-                    required
-                    fullWidth
-                    variant="outlined"
-                    color={usernameError ? "error" : "primary"}
-                />
-              </FormControl>
-              <FormControl>
-                <FormLabel htmlFor="password">Password</FormLabel>
-                <TextField
-                    error={passwordError}
-                    helperText={passwordErrorMessage}
-                    name="password"
-                    placeholder="••••••"
-                    type="password"
-                    id="password"
-                    autoComplete="current-password"
-                    required
-                    fullWidth
-                    variant="outlined"
-                    color={passwordError ? "error" : "primary"}
-                />
-              </FormControl>
-              <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="Remember me"
-              />
-              <ForgotPassword open={open} handleClose={handleClose} />
-              <Button
-                  type="submit"
-                  fullWidth
-                  variant="contained"
-              >
-                Sign in
-              </Button>
-              <Link
-                  component="button"
-                  type="button"
-                  onClick={handleClickOpen}
-                  variant="body2"
-                  sx={{ alignSelf: "center" }}
-              >
-                Forgot your password?
-              </Link>
-            </Box>
-          </Card>
+          <FlipContainer>
+            <Flipper isflipped={isFlipped}>
+              {/* 登录表单 - 正面 */}
+              <FrontCard>
+                <SitemarkIcon />
+                <Typography component="h1" variant="h4" sx={{ fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}>
+                  Sign in
+                </Typography>
+
+                <Box
+                    component="form"
+                    onSubmit={(e) => handleSubmit(e, true)}
+                    sx={{ gap: 2, mt: 2 }}
+                >
+                  <FormControl fullWidth>
+                    <FormLabel htmlFor="login-username">Username</FormLabel>
+                    <TextField
+                        id="login-username"
+                        name="username"
+                        error={formErrors.username.error}
+                        helperText={formErrors.username.message}
+                        onBlur={(e) => validateField('username', e.target.value)}
+                        placeholder="Enter your username"
+                        autoComplete="username"
+                        autoFocus
+                    />
+                  </FormControl>
+
+                  <FormControl fullWidth>
+                    <FormLabel htmlFor="login-password">Password</FormLabel>
+                    <TextField
+                        id="login-password"
+                        name="password"
+                        type="password"
+                        error={formErrors.password.error}
+                        helperText={formErrors.password.message}
+                        onBlur={(e) => validateField('password', e.target.value)}
+                        placeholder="••••••"
+                        autoComplete="current-password"
+                    />
+                  </FormControl>
+
+                  <FormControlLabel
+                      control={<Checkbox value="remember" color="primary" />}
+                      label="Remember me"
+                      sx={{ mt: 1 }}
+                  />
+
+                  <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      size="large"
+                      sx={{ mt: 2 }}
+                  >
+                    Sign in
+                  </Button>
+
+                  <Box sx={{ textAlign: 'center', mt: 2 }}>
+                    <MuiLink
+                        component="button"
+                        type="button"
+                        onClick={handleClickOpen}
+                        variant="body2"
+                    >
+                      Forgot password?
+                    </MuiLink>
+                    <ForgotPassword open={open} handleClose={handleClose} />
+                  </Box>
+
+                  <Typography variant="body2" sx={{ textAlign: 'center', mt: 3 }}>
+                    Don&#39;t have an account?{' '}
+                    <MuiLink
+                        component="button"
+                        type="button"
+                        onClick={() => setIsFlipped(true)}
+                        sx={{ fontWeight: 600 }}
+                    >
+                      Sign up
+                    </MuiLink>
+                  </Typography>
+                </Box>
+              </FrontCard>
+
+              {/* 注册表单 - 背面 */}
+              <BackCard>
+                <SitemarkIcon />
+                <Typography component="h1" variant="h4" sx={{ fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}>
+                  Sign up
+                </Typography>
+
+                <Box
+                    component="form"
+                    onSubmit={(e) => handleSubmit(e, false)}
+                    sx={{ gap: 2, mt: 2 }}
+                >
+                  <FormControl fullWidth>
+                    <FormLabel htmlFor="reg-username">Username</FormLabel>
+                    <TextField
+                        id="reg-username"
+                        name="username"
+                        error={formErrors.username.error}
+                        helperText={formErrors.username.message}
+                        onBlur={(e) => validateField('username', e.target.value)}
+                        placeholder="Choose a username"
+                        autoComplete="username"
+                        autoFocus
+                    />
+                  </FormControl>
+
+                  <FormControl fullWidth>
+                    <FormLabel htmlFor="reg-email">Email</FormLabel>
+                    <TextField
+                        id="reg-email"
+                        name="email"
+                        type="email"
+                        error={formErrors.email.error}
+                        helperText={formErrors.email.message}
+                        onBlur={(e) => validateField('email', e.target.value)}
+                        placeholder="your@email.com"
+                        autoComplete="email"
+                    />
+                  </FormControl>
+
+                  <FormControl fullWidth>
+                    <FormLabel htmlFor="reg-password">Password</FormLabel>
+                    <TextField
+                        id="reg-password"
+                        name="password"
+                        type="password"
+                        error={formErrors.password.error}
+                        helperText={formErrors.password.message}
+                        onBlur={(e) => validateField('password', e.target.value)}
+                        placeholder="••••••"
+                        autoComplete="new-password"
+                    />
+                  </FormControl>
+
+                  <FormControl fullWidth>
+                    <FormLabel htmlFor="reg-confirm-password">Confirm Password</FormLabel>
+                    <TextField
+                        id="reg-confirm-password"
+                        name="confirmPassword"
+                        type="password"
+                        error={formErrors.confirmPassword.error}
+                        helperText={formErrors.confirmPassword.message}
+                        onBlur={(e) => validateField('confirmPassword', e.target.value)}
+                        placeholder="••••••"
+                        autoComplete="new-password"
+                    />
+                  </FormControl>
+
+                  <Button
+                      type="submit"
+                      fullWidth
+                      variant="contained"
+                      size="large"
+                      sx={{ mt: 2 }}
+                  >
+                    Register
+                  </Button>
+
+                  <Typography variant="body2" sx={{ textAlign: 'center', mt: 3 }}>
+                    已有账号?{' '}
+                    <MuiLink
+                        component="button"
+                        type="button"
+                        onClick={() => setIsFlipped(false)}
+                        sx={{ fontWeight: 600 }}
+                    >
+                      Sign in
+                    </MuiLink>
+                  </Typography>
+                </Box>
+              </BackCard>
+            </Flipper>
+          </FlipContainer>
         </SignInContainer>
       </AppTheme>
   );

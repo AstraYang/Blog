@@ -13,6 +13,9 @@ import {
     Paper,
     Checkbox,
     Divider,
+    Card,
+    CardContent,
+    CardActions,
 } from '@mui/material';
 import { fetchTags, createTag, deleteTags } from '../../../api/tags.js'; // 假设你有相关的 API 函数
 import { createTheme, ThemeProvider } from "@mui/material/styles";
@@ -39,8 +42,8 @@ export default function TagList() {
     const [selectedIds, setSelectedIds] = useState([]); // 选中项
     const [newItemName, setNewItemName] = useState(''); // 新增项名称
     const [showInput, setShowInput] = useState(false); // 控制新增输入框是否显示
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 600); // 控制是否为手机端
 
-    // 从后端获取标签列表
     const loadTags = async () => {
         try {
             const tags = await fetchTags();
@@ -50,22 +53,21 @@ export default function TagList() {
         }
     };
 
-    // 初始化加载
     useEffect(() => {
         loadTags();
+        const handleResize = () => setIsMobile(window.innerWidth < 600); // 根据窗口宽度判断是否为手机端
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize); // 清理事件监听器
     }, []);
 
-    // 处理选中事件
     const handleSelect = (id) => {
         setSelectedIds((prev) =>
             prev.includes(id) ? prev.filter((selectedId) => selectedId !== id) : [...prev, id]
         );
     };
 
-    // 检查是否选中
     const isSelected = (id) => selectedIds.includes(id);
 
-    // 添加新标签
     const handleAdd = async () => {
         if (!newItemName.trim()) {
             alert('标签名称不能为空');
@@ -81,7 +83,6 @@ export default function TagList() {
         }
     };
 
-    // 删除选中的标签
     const handleDelete = async () => {
         try {
             await deleteTags(selectedIds); // 调用后端 API 删除标签
@@ -109,7 +110,6 @@ export default function TagList() {
 
                 {/* 操作按钮容器 */}
                 <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
-                    {/* 删除按钮 */}
                     <Button
                         variant="contained"
                         color="error"
@@ -119,7 +119,6 @@ export default function TagList() {
                         删除选中
                     </Button>
 
-                    {/* 添加按钮 */}
                     <Button
                         variant="contained"
                         color="primary"
@@ -128,7 +127,6 @@ export default function TagList() {
                         {showInput ? '收起新增' : '添加'}
                     </Button>
 
-                    {/* 新增输入框（动态显示） */}
                     {showInput && (
                         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
                             <TextField
@@ -144,59 +142,75 @@ export default function TagList() {
                     )}
                 </Box>
 
-                {/* 表格 */}
-                <TableContainer
-                    component={Paper}
-                    sx={{
-                        mb: 2,
-                        borderRadius: '8px',
-                        boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
-                        overflow: 'hidden',
-                    }}
-                >
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell padding="checkbox" align="center">
+                {/* 列表展示 */}
+                {isMobile ? (
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        {data.map((row) => (
+                            <Card key={row.id} variant="outlined">
+                                <CardContent>
+                                    <Typography variant="h6">{row.tagName}</Typography>
+                                    <Typography color="textSecondary">{new Date(row.createdAt).toLocaleString()}</Typography>
+                                </CardContent>
+                                <CardActions>
                                     <Checkbox
-                                        indeterminate={
-                                            selectedIds.length > 0 && selectedIds.length < data.length
-                                        }
-                                        checked={data.length > 0 && selectedIds.length === data.length}
-                                        onChange={(e) => {
-                                            // 全选或取消全选
-                                            if (e.target.checked) {
-                                                setSelectedIds(data.map((item) => item.id));
-                                            } else {
-                                                setSelectedIds([]);
-                                            }
-                                        }}
+                                        checked={isSelected(row.id)}
+                                        onChange={() => handleSelect(row.id)}
                                     />
-                                </TableCell>
-                                <TableCell align="center">名称</TableCell>
-                                <TableCell align="center">创建时间</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {data.map((row) => (
-                                <TableRow
-                                    key={row.id}
-                                    selected={isSelected(row.id)}
-                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                                >
+                                </CardActions>
+                            </Card>
+                        ))}
+                    </Box>
+                ) : (
+                    <TableContainer
+                        component={Paper}
+                        sx={{
+                            mb: 2,
+                            borderRadius: '8px',
+                            boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)',
+                            overflow: 'hidden',
+                        }}
+                    >
+                        <Table>
+                            <TableHead>
+                                <TableRow>
                                     <TableCell padding="checkbox" align="center">
                                         <Checkbox
-                                            checked={isSelected(row.id)}
-                                            onChange={() => handleSelect(row.id)}
+                                            indeterminate={selectedIds.length > 0 && selectedIds.length < data.length}
+                                            checked={data.length > 0 && selectedIds.length === data.length}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedIds(data.map((item) => item.id));
+                                                } else {
+                                                    setSelectedIds([]);
+                                                }
+                                            }}
                                         />
                                     </TableCell>
-                                    <TableCell align="center">{row.tagName}</TableCell>
-                                    <TableCell align="center">{row.createdAt}</TableCell>
+                                    <TableCell align="center">名称</TableCell>
+                                    <TableCell align="center">创建时间</TableCell>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
+                            </TableHead>
+                            <TableBody>
+                                {data.map((row) => (
+                                    <TableRow
+                                        key={row.id}
+                                        selected={isSelected(row.id)}
+                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                    >
+                                        <TableCell padding="checkbox" align="center">
+                                            <Checkbox
+                                                checked={isSelected(row.id)}
+                                                onChange={() => handleSelect(row.id)}
+                                            />
+                                        </TableCell>
+                                        <TableCell align="center">{row.tagName}</TableCell>
+                                        <TableCell align="center">{new Date(row.createdAt).toLocaleString()}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                )}
             </Box>
         </ThemeProvider>
     );

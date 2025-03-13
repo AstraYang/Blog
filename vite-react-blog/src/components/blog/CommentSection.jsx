@@ -6,7 +6,7 @@ import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 import { useParams } from "react-router-dom";
-import { fetchComments, fetchReplies, submitComment } from "../../api/comments.js";
+import { fetchCommentsById, fetchReplies, submitComment } from "../../api/comments.js";
 import CommentItem from "./CommentItem";
 
 const theme = createTheme({
@@ -39,7 +39,7 @@ const CommentSection = () => {
     useEffect(() => {
         const loadComments = async () => {
             try {
-                const response = await fetchComments(articleId, 1, 10);
+                const response = await fetchCommentsById(articleId, 1, 10);
                 setComments(response.data.records);
             } catch (error) {
                 console.error('评论加载错误:', error);
@@ -160,7 +160,7 @@ const CommentSection = () => {
                         </Grid>
                         <Grid item xs={12} sm={4}>
                             <TextField
-                                label="网址（可选）"
+                                label="网址（可选）https://..."
                                 variant="outlined"
                                 fullWidth
                                 value={website}

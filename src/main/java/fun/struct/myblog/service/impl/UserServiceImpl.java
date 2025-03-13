@@ -13,12 +13,17 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
     @Override
     public User login(LoginDto loginDto) {
-        // 将密码加密（采用 MD5 加密，实际项目中可以改为更强的加密算法）
-//        String encryptedPassword = DigestUtils.md5DigestAsHex(password.getBytes());
-
-        // 构造查询条件
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_name", loginDto.getUsername()).eq("password", loginDto.getPassword());
+
+        // 查找用户
+        return this.getOne(queryWrapper);
+    }
+
+    @Override
+    public User getByUserName(String username) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_name", username);
 
         // 查找用户
         return this.getOne(queryWrapper);

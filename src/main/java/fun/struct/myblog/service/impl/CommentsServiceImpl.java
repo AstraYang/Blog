@@ -6,6 +6,7 @@ import fun.struct.myblog.dto.CommentDTO;
 import fun.struct.myblog.entity.Comments;
 import fun.struct.myblog.mapper.CommentsMapper;
 import fun.struct.myblog.service.CommentsService;
+import fun.struct.myblog.vo.CommentManagementListVO;
 import fun.struct.myblog.vo.CommentsVO;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Service
@@ -42,6 +44,11 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
         return save(comments);
     }
 
+    @Override
+    public Page<CommentManagementListVO> getCommentListPage(int page, int size) {
+        Page<CommentManagementListVO> commentManagementListVOPage = new Page<>(page, size);
+        return commentsMapper.selectCommentManagementListPage(commentManagementListVOPage);
+    }
 
 
     @Override
@@ -58,6 +65,13 @@ public class CommentsServiceImpl extends ServiceImpl<CommentsMapper, Comments> i
         Page<CommentsVO> commentsPage = new Page<>(page, size);
 
         return  commentsMapper.selectReplyPage(commentsPage, id);
+    }
+
+    @Override
+    public boolean deleteCommentByIds(List<Integer> commentIds) {
+        commentsMapper.deleteCommentByIds("comments", "parent_id",commentIds);
+        int deletedRows = commentsMapper.deleteCommentByIds("comments", "comment_id",commentIds);
+        return deletedRows > 0;
     }
 
     /**

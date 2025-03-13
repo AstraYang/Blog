@@ -22,10 +22,8 @@ public class MindMapController {
 
     @Resource
     private MindMapService mindMapService;
-    @Autowired
-    private MindMapMapper mindMapMapper;
 
-    @GetMapping("/list")
+    @GetMapping("/public/list")
     public Result getMindMapList(@RequestParam int page,
                                  @RequestParam int size){
         Page<MindMap> mindMapPage =mindMapService.getPaginatedMindMaps(page,size);
@@ -33,7 +31,7 @@ public class MindMapController {
         return Result.of(ResultCode.SUCCESS,mindMapPage);
     }
 
-    @GetMapping("/getMindMapById/{id}")
+    @GetMapping("/public/getMindMapById/{id}")
     public Result getMindMapById(@PathVariable("id") Integer id){
         MindMap mindMap = mindMapService.getById(id);
         return Result.of(ResultCode.SUCCESS,mindMap);

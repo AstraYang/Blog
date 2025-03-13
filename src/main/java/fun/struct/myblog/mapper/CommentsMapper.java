@@ -3,8 +3,11 @@ package fun.struct.myblog.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import fun.struct.myblog.entity.Comments;
+import fun.struct.myblog.sql.GenericSqlProvider;
 import fun.struct.myblog.vo.ArticleManagementListVO;
+import fun.struct.myblog.vo.CommentManagementListVO;
 import fun.struct.myblog.vo.CommentsVO;
+import org.apache.ibatis.annotations.DeleteProvider;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -14,7 +17,12 @@ import java.util.List;
 @Mapper
 public interface CommentsMapper extends BaseMapper<Comments> {
 
-
+    @Select("""
+    SELECT comment_id AS id, c.articles_id, title AS articlesTitle, username, email, avatar_url,  c.content, c.created_at
+    FROM comments c, articles
+    WHERE c.articles_id = articles.articles_id
+""")
+    Page<CommentManagementListVO> selectCommentManagementListPage(Page<CommentManagementListVO> page);
 
     @Select("""
     SELECT
@@ -42,6 +50,12 @@ public interface CommentsMapper extends BaseMapper<Comments> {
     WHERE parent_id = #{parentId}
 """)
     Page<CommentsVO> selectReplyPage(Page<CommentsVO> page, @Param("parentId") Integer parentId);
+
+
+    @DeleteProvider(type = GenericSqlProvider.class, method = "deleteByIds")
+    int deleteCommentByIds(@Param("tableName") String tableName,
+                       @Param("idColumn") String idColumn,
+                       @Param("ids") List<Integer> ids);
 
 
 

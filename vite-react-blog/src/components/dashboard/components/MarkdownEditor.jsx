@@ -18,7 +18,8 @@ import {
 import MDEditor from "@uiw/react-md-editor"; // Markdown 编辑器
 import { useNavigate, useParams } from "react-router-dom"; // 路由跳转
 import { fetchCategories } from "../../../api/category.js"; // 分类 API
-import {fetchTags, uploadCoverImage, submitArticle, fetchArticleById, upDateArticle} from "../../../api/articles.js"; // 文章 API
+import {uploadCoverImage, submitArticle, fetchArticleById, upDateArticle} from "../../../api/articles.js"; // 文章 API
+import { fetchTags } from "../../../api/tags.js";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { getCurrentUser } from "../../../api/User.js"; // 用户 API
 

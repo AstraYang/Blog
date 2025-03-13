@@ -19,5 +19,5 @@ public class User {
     private String nickName;
     private String email;
     private String avatar;
-    private String permissions;
+    private String authority;
 }

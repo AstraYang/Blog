@@ -9,7 +9,7 @@ import SideMenu from '../components/dashboard/components/SideMenu.jsx';
 import AppTheme from '../shared-theme/AppTheme.jsx';
 import CategoryList from "../components/dashboard/components/CategoryList.jsx";
 import MainGrid from "../components/dashboard/components/MainGrid.jsx";
-import ArticleManagementPage from "./ArticleManagementPage.jsx";
+import ArticleManagementPage from "../components/dashboard/components/ArticleManagementPage.jsx";
 import MarkdownEditor from "../components/dashboard/components/MarkdownEditor.jsx";
 import TagList from "../components/dashboard/components/TagList.jsx";
 import BlogCreatPage from "./BlogCreatPage.jsx";
@@ -17,6 +17,7 @@ import SettingsPage from "../components/dashboard/components/SettingsPage.jsx";
 import UserList from "../components/dashboard/components/UserList.jsx";
 import MindMap from "../components/dashboard/components/MinMap.jsx";
 import MindMapList from "../components/dashboard/components/MindMapList.jsx";
+import CommentList from "../components/dashboard/components/CommentList.jsx";
 
 const Dashboard = (props) => {
     const location = useLocation();
@@ -49,6 +50,8 @@ const Dashboard = (props) => {
                 return 'page';
             case 'map':
                 return 'map';
+            case 'comments':
+                return 'comments';
             case 'userList':
                 return 'userList';
             case 'Settings':
@@ -84,6 +87,8 @@ const Dashboard = (props) => {
                 return <CategoryList />;
             case 'tags':
                 return <TagList />;
+            case 'comments':
+                return <CommentList/>;
             case 'page':
                 return <BlogCreatPage/>;
             case 'map':
