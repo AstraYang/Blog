@@ -43,6 +43,12 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
                 filterChain.doFilter(request, response);
                 return;
             }
+            if (request.getRequestURI().equals("/admin/user/signup")) {
+                // 如果是登录请求，直接放行，不进行 token 验证
+                filterChain.doFilter(request, response);
+                return;
+            }
+
 
             // 其他请求处理 token 验证逻辑
             if (!StringUtils.hasLength(jwtToken)) {

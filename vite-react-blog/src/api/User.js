@@ -1,8 +1,5 @@
 import axios from "axios";
 
-export function register() {
-}
-
 
 const API_BASE_URL = 'http://localhost:8080/admin/user';
 
@@ -23,6 +20,24 @@ export const login = async (username, password) => {
         throw error; // 抛出错误，由调用方处理
     }
 };
+
+export const register = async (signUpData) =>{
+    console.log('注册数据:', signUpData);
+    try {
+        const response = await axios.post(`${API_BASE_URL}/signup`, signUpData, {
+            withCredentials: true, // 允许携带 Cookie
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }
+        );
+        console.log('注册成功API:', response.data);
+        return response.data;
+    } catch (error) {
+        console.error('注册失败:', error.response ? error.response.data : error.message);
+        throw error; // 抛出错误，由调用方处理
+    }
+}
 
 export const getUserList = async () => {
     try {

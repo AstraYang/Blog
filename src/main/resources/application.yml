@@ -5,6 +5,7 @@ spring:
     username: root
     password: 121109
     driver-class-name: com.mysql.cj.jdbc.Driver
+  # 设置文件上传大小
   servlet:
     multipart:
           max-file-size: 10MB
@@ -27,10 +28,6 @@ spring:
           starttls:
             enable: false
             required: true
-
-
-
-
   data:
     redis:
       host: localhost
@@ -42,7 +39,7 @@ mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: fun.struct.myblog.entity
 
-# 设置文件上传大小
+
 
 # 图片保存路径
 app:
@@ -54,6 +51,6 @@ app:
 # JWT 配置
 jwt:
   signingKey: U29tZVZlcnlMb25nU2VjcmV0S2V5MTIzNDU2Nzg5MDEyMw==
-  expire: 3600000  # 令牌过期时间，单位为毫秒（例如：1小时）
+  expire: 3600000  # 令牌过期时间，单位为毫秒（1小时）
 
 

@@ -1,14 +1,20 @@
 package fun.struct.myblog.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Assert;
 import fun.struct.myblog.common.ResultCode;
+import fun.struct.myblog.dto.EmailCodeDTO;
 import fun.struct.myblog.dto.LoginDto;
+import fun.struct.myblog.dto.SignUpDTO;
+import fun.struct.myblog.mapper.UserMapper;
 import fun.struct.myblog.service.UserService;
 import fun.struct.myblog.entity.User;
 import fun.struct.myblog.common.Result;
+import fun.struct.myblog.service.VerificationCodeService;
 import fun.struct.myblog.util.JwtUtils; // 使用JwtUtils
 import fun.struct.myblog.vo.UserListVO;
 import jakarta.annotation.Resource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -24,6 +30,10 @@ public class UserController {
 
     @Resource
     private JwtUtils jwtUtils; // 注入JwtUtils
+    @Autowired
+    private UserMapper userMapper;
+    @Autowired
+    private VerificationCodeService verificationCodeService;
 
     @PostMapping("/login")
     public Result login(@RequestBody LoginDto loginDto) {
@@ -68,13 +78,40 @@ public class UserController {
         return Result.of(ResultCode.SUCCESS, userListVO);
     }
 
-    @PostMapping("/add")
-    public Result addUser(@RequestBody LoginDto loginDto) {
+    @PostMapping("/signup")
+    public Result addUser(@RequestBody SignUpDTO signUpDTO) {
+        System.out.println("注册信息:" + signUpDTO);
         User user = new User();
-        user.setUserName(loginDto.getUsername());
-        user.setPassword(loginDto.getPassword());
+        User username = userMapper.selectOne(
+                new QueryWrapper<User>().select("user_id AS id").eq("user_name", signUpDTO.getUsername())
+        );
+        User email = userMapper.selectOne(
+                new QueryWrapper<User>().select("user_id AS id").eq("email", signUpDTO.getEmail())
+        );
+        System.out.println("username = " + username);
+        System.out.println("email = " + email);
+       if (username != null) {
+            return Result.of(ResultCode.FAIL, "用户名已存在，请重试！");
+        }else if(email != null){
+            return Result.of(ResultCode.FAIL, "邮箱已存在，请重试！");
+       }
+        EmailCodeDTO emailCodeDTO = new EmailCodeDTO();
+        emailCodeDTO.setEmail(signUpDTO.getEmail());
+        emailCodeDTO.setCode(signUpDTO.getCode());
+        emailCodeDTO.setType("signup");
+        boolean isValid = verificationCodeService.verifyCode(emailCodeDTO);
+        if (!isValid) {
+            return Result.of(ResultCode.FAIL, "验证码错误，请重试！");
+        }
+        user.setUserName(signUpDTO.getUsername());
+        user.setPassword(signUpDTO.getPassword());
+        user.setNickName(signUpDTO.getUsername());
+        user.setEmail(signUpDTO.getEmail());
+        user.setAvatar("https://image.struct.fun/i/2025/03/15/172939.jpeg");
+        user.setAuthority("USER");
 
         // 调用 Service 层的添加用户方法
+        System.out.println("user = " + user);
         boolean success = userService.save(user);
 
         // 校验添加是否成功

@@ -20,6 +20,7 @@ import ColorModeSelect from "../shared-theme/ColorModeSelect.jsx";
 import { SitemarkIcon } from "../components/sigin-in/CustomIcons";
 import { login, register } from "../api/User.js";
 import { useNavigate } from 'react-router-dom';
+import {sendEmail} from "../api/email.js";
 
 // 翻转容器样式
 const FlipContainer = styled(Box)({
@@ -96,6 +97,8 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 }));
 
 export default function SignIn(props) {
+  const [verificationCode, setVerificationCode] = useState("");
+  const [isCodeSent, setIsCodeSent] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [formErrors, setFormErrors] = useState({
     username: { error: false, message: "" },
@@ -176,19 +179,44 @@ export default function SignIn(props) {
         await login(formData.get('username'), formData.get('password'));
         navigate("/admin");
       } else {
-        // 注册逻辑
-        await register({
+
+       const response = await register({
           username: formData.get('username'),
           email: formData.get('email'),
-          password: formData.get('password')
+          password: formData.get('password'),
+          code: verificationCode
+
         });
-        setIsFlipped(false);
-        alert('Registration successful! Please login.');
-      }
+       if (response.code === 200) {
+         setIsFlipped(false);
+         alert('注册成功! 前往登陆');
+       }else {
+         alert('注册失败! 注册信息已存在');
+       }      }
     } catch (error) {
       alert(`Error: ${error.message}`);
     }
   };
+
+  // 发送验证码的函数
+  const handleSendCode = async () => {
+    const email = document.getElementById('reg-email').value;
+    console.log('Email:', email)
+
+    if (!email) {
+      alert("Please enter your email address.");
+      return;
+    }
+
+    try {
+      await sendEmail(email); // 这里调用你的发送验证码的API
+      setIsCodeSent(true);
+      alert("Verification code has been sent to your email.");
+    } catch (error) {
+      alert(`Error: ${error.message}`);
+    }
+  };
+
 
   return (
       <AppTheme {...props}>
@@ -200,7 +228,7 @@ export default function SignIn(props) {
               {/* 登录表单 - 正面 */}
               <FrontCard>
                 <SitemarkIcon />
-                <Typography component="h1" variant="h4" sx={{ fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}>
+                <Typography component="h1" variant="h4" sx={{ fontSize: 'clamp(1rem, 2vw, 1.15rem)' }}>
                   Sign in
                 </Typography>
 
@@ -280,6 +308,7 @@ export default function SignIn(props) {
               </FrontCard>
 
               {/* 注册表单 - 背面 */}
+              {/* 注册表单 - 背面 */}
               <BackCard>
                 <SitemarkIcon />
                 <Typography component="h1" variant="h4" sx={{ fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}>
@@ -291,6 +320,7 @@ export default function SignIn(props) {
                     onSubmit={(e) => handleSubmit(e, false)}
                     sx={{ gap: 2, mt: 2 }}
                 >
+                  {/* 用户名输入框 */}
                   <FormControl fullWidth>
                     <FormLabel htmlFor="reg-username">Username</FormLabel>
                     <TextField
@@ -305,6 +335,7 @@ export default function SignIn(props) {
                     />
                   </FormControl>
 
+                  {/* 邮箱输入框 */}
                   <FormControl fullWidth>
                     <FormLabel htmlFor="reg-email">Email</FormLabel>
                     <TextField
@@ -319,6 +350,29 @@ export default function SignIn(props) {
                     />
                   </FormControl>
 
+                  {/* 验证码输入框和发送按钮 */}
+                  <FormControl fullWidth>
+                    <FormLabel htmlFor="reg-verification-code">Verification Code</FormLabel>
+                    <Stack direction="row" spacing={1}>
+                      <TextField
+                          id="reg-verification-code"
+                          name="verificationCode"
+                          value={verificationCode}
+                          onChange={(e) => setVerificationCode(e.target.value)}
+                          placeholder="Enter verification code"
+                          autoComplete="off"
+                      />
+                      <Button
+                          variant="outlined"
+                          onClick={handleSendCode}
+                          disabled={isCodeSent} // 发送验证码后禁用按钮
+                      >
+                        {isCodeSent ? "Code Sent" : "Send Code"}
+                      </Button>
+                    </Stack>
+                  </FormControl>
+
+                  {/* 密码输入框 */}
                   <FormControl fullWidth>
                     <FormLabel htmlFor="reg-password">Password</FormLabel>
                     <TextField
@@ -333,6 +387,7 @@ export default function SignIn(props) {
                     />
                   </FormControl>
 
+                  {/* 确认密码输入框 */}
                   <FormControl fullWidth>
                     <FormLabel htmlFor="reg-confirm-password">Confirm Password</FormLabel>
                     <TextField
@@ -370,6 +425,7 @@ export default function SignIn(props) {
                   </Typography>
                 </Box>
               </BackCard>
+
             </Flipper>
           </FlipContainer>
         </SignInContainer>

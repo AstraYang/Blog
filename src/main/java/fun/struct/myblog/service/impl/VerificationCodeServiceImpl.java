@@ -1,13 +1,15 @@
 package fun.struct.myblog.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import fun.struct.myblog.dto.EmailCodeDTO;
+import fun.struct.myblog.entity.User;
+import fun.struct.myblog.mapper.UserMapper;
 import fun.struct.myblog.service.VerificationCodeService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -22,43 +24,23 @@ public  class VerificationCodeServiceImpl implements VerificationCodeService {
     private RedisTemplate<String, String> redisTemplate;
 
     @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
     private JavaMailSender mailSender;
 
     @Value("${spring.mail.username}")
     private String from;
 
     private final Random random = new Random();
-//    @Override
-//    public boolean sendVerificationCode(String email) {
-//       if(email == null || email.isEmpty()){
-//           return false;
-//       }
-//        String code = String.valueOf(100000 + random.nextInt(900000)); // 生成六位随机验证码
-//        redisTemplate.opsForValue().set(email, code, 5, TimeUnit.MINUTES); // 设置有效期为5分钟
-//
-//        // 发送邮件
-//        SimpleMailMessage message = new SimpleMailMessage();
-//        message.setFrom(from);
-//        message.setTo(email);
-//        message.setSubject("验证码");
-//        message.setText("您的验证码是: " + code);
-//        try{
-//            mailSender.send(message);
-//        } catch (MailException e){
-//            e.getMessage();
-//            return false;
-//        }
-//
-//        return true;
-//
-//    }
+
     /**
      * 发送邮箱验证码
      *
      * @param to 收件人邮箱
      */
     public boolean sendVerificationEmail(String to) throws MessagingException {
-        return sendEmail(to,"邮箱验证码", "您正在进行注册账号操作，请在验证码中输入以下验证码完成操作：");
+        return sendEmail(to,"账号注册请求", "注册账号");
 
     }
 
@@ -68,13 +50,24 @@ public  class VerificationCodeServiceImpl implements VerificationCodeService {
      * @param to 收件人邮箱
      */
     public boolean sendPasswordResetEmail(String to) throws MessagingException {
-        return sendEmail(to,"密码重置请求", "您正在请求重置密码，请在验证码中输入以下验证码完成操作：");
+        return sendEmail(to,"密码重置请求", "重置密码");
     }
 
     @Override
-    public boolean verifyCode(String email, String code) {
-        String storedCode = redisTemplate.opsForValue().get(email);
-        return storedCode != null && storedCode.equals(code);
+    public boolean verifyCode(EmailCodeDTO emailCodeDTO) {
+        String storedCode = redisTemplate.opsForValue().get(emailCodeDTO.getEmail());
+        if(storedCode != null && storedCode.equals(emailCodeDTO.getCode())){
+            if (emailCodeDTO.getType().equals("reset")){
+                UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("email", emailCodeDTO.getEmail()); // 更新条件
+                updateWrapper.set("password", "111111"); // 更新字段
+                userMapper.update(null, updateWrapper); // 第一个参数可以为 null
+
+            }
+            return true;
+
+        }
+        return false;
     }
 
 
@@ -110,24 +103,19 @@ public  class VerificationCodeServiceImpl implements VerificationCodeService {
                 "<head>" +
                 "<meta charset=\"UTF-8\">" +
                 "<title>" + subject + "</title>" +
-                "<style>" +
-                "table{width:700px;margin:0 auto}#top{width:700px;border-bottom:1px solid#ccc;" +
-                "margin:0 auto 30px}#top table{font:12px Tahoma,Arial,宋体;height:40px}#content" +
-                "{width:680px;padding:0 10px;margin:0 auto}#content_top{line-height:1.5;font-s" +
-                "ize:14px;margin-bottom:25px;color:#4d4d4d}#content_top strong{display:block;ma" +
-                "rgin-bottom:15px}#content_top strong span{color:#f60;font-size:16px}#verificati" +
-                "onCode{color:#f60;font-size:24px}#content_bottom{margin-bottom:30px}#content_bo" +
-                "ttom small{display:block;margin-bottom:20px;font-size:12px;color:#747474}#bottom" +
-                "{width:700px;margin:0 auto}#bottom div{padding:10px 10px 0;border-top:1px solid#c" +
-                "cc;color:#747474;margin-bottom:20px;line-height:1.3em;font-size:12px}#content_top" +
-                " strong span{font-size:18px;color:#FE4F70}#sign{text-align:right;font-size:18px;col" +
-                "or:#FE4F70;font-weight:bold}#verificationCode{height:100px;width:680px;text-align:ce" +
-                "nter;margin:30px 0}#verificationCode div{height:100px;width:680px}.button{color:#FE4F" +
-                "70;margin-left:10px;height:80px;width:80px;resize:none;font-size:42px;border:none;" +
-                "outline:none;padding:10px 15px;background:#ededed;text-align:center;border-radius:17px;" +
-                "box-shadow:6px 6px 12px#cccccc,-6px-6px 12px#ffffff}.button:hover{box-shadow:inset 6px 6px " +
-                "4px#d1d1d1,inset-6px-6px 4px#ffffff}"+
-                "</style>" +
+                "<style>table{width:700px;margin:0 auto}#top{width:700px;" +
+                "border-bottom:1px solid #ccc;margin:0 auto 30px}#top table{font:12px Tahoma,Arial,宋体;" +
+                "height:40px}#content{width:680px;padding:0 10px;margin:0 auto}" +
+                "#content_top{line-height:1.5;font-size:14px;margin-bottom:25px;color:#4d4d4d}" +
+                "#content_top strong{display:block;margin-bottom:15px}#content_bottom{margin-bottom:30px}" +
+                "#content_bottom small{display:block;margin-bottom:20px;font-size:12px;color:" +
+                "#747474}#bottom{width:700px;margin:0 auto}#bottom div{padding:10px 10px 0;" +
+                "border-top:1px solid #ccc;color:#747474;margin-bottom:20px;line-height:1.3em;" +
+                "font-size:12px}#content_top strong span{font-size:18px;color:#ee002c}" +
+                "#sign{text-align:right;font-size:18px;color:#17a7ac;font-weight:bold}" +
+                "#verificationCode{height:100px;width:680px;text-align:center;margin:30px 0}" +
+                ".button{color:#ffffff;width:92%;font-size:70px;border:none;padding:10px 30px;" +
+                "background:#1f1f1f;text-align:center}</style>"+
                 "</head>" +
                 "<body>" +
                 "<table>" +
@@ -136,7 +124,7 @@ public  class VerificationCodeServiceImpl implements VerificationCodeService {
                 "<div id=\"top\"><table><tbody><tr><td></td></tr></tbody></table></div>" +
                 "<div id=\"content\"><div id=\"content_top\">" +
                 "<strong>尊敬的用户，您好！</strong>" +
-                "<strong>" + actionDescription + "</strong>" +
+                "<strong>您正在进行<span>" + actionDescription + "</span>操作，请在验证码中输入以下验证码完成操作：</strong>" +
                 "<div id=\"verificationCode\">" +
                 "<button class=\"button\">" + code + "</button>" +
                 "</div></div>" +
