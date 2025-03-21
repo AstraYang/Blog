@@ -21,7 +21,7 @@ import { fetchCategories } from "../../../api/category.js"; // 分类 API
 import {uploadCoverImage, submitArticle, fetchArticleById, upDateArticle} from "../../../api/articles.js"; // 文章 API
 import { fetchTags } from "../../../api/tags.js";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getCurrentUser } from "../../../api/User.js"; // 用户 API
+//import { getCurrentUser } from "../../../api/User.js"; // 用户 API
 
 const theme = createTheme({
     components: {
@@ -100,7 +100,8 @@ export default function MarkdownEditor() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const author = await getCurrentUser().id;
+            const userInfo = localStorage.getItem('userInfo');
+            const author = JSON.parse(userInfo).id;
 
             // 上传封面图片：仅在用户选择了新图片时才进行上传
             let coverImagePath = "";

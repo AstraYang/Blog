@@ -11,7 +11,7 @@ import MenuButton from './MenuButton.jsx';
 import MenuContent from './MenuContent.jsx';
 import CardAlert from './CardAlert.jsx';
 import { useEffect, useState } from "react";
-import {getCurrentUser, logout} from "../../../api/User.js";
+import { logout} from "../../../api/User.js";
 import {useNavigate} from "react-router-dom";
 
 function SideMenuMobile({ open, toggleDrawer, onMenuSelect }) {
@@ -25,10 +25,9 @@ function SideMenuMobile({ open, toggleDrawer, onMenuSelect }) {
     const fetchUserInfo = async () => {
       try {
         setLoading(true); // 开始加载
-        const userInfo = await getCurrentUser(); // 调用 API 获取用户信息
-        setUser(userInfo); // 保存用户信息到状态
+        const userInfo = localStorage.getItem('userInfo'); // 调用 API 获取用户信息
+        setUser(JSON.parse(userInfo)); // 保存用户信息到状态
         setLoading(false); // 加载完成
-        console.log('获取用户信息成功:', userInfo);
       } catch (err) {
         console.error('获取用户信息失败:', err);
         setError('Failed to load user info');
@@ -41,9 +40,7 @@ function SideMenuMobile({ open, toggleDrawer, onMenuSelect }) {
 
   const handleLogout = async () => {
     try {
-      await logout(); // 调用 API 清除后端登录状态
-
-      // 重定向到登录页面
+      await logout();
       navigate('/');
     } catch (error) {
       console.error('退出登录失败:', error);

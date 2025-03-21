@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -21,7 +21,7 @@ const mainListItems = [
     {
         text: '内容管理', icon: <AutoAwesomeMosaicIcon />,
         children: [
-            {text: '独立页面', value: 'page'},
+            { text: '独立页面', value: 'page' },
             { text: '知识地图', value: 'map' },
             { text: '文章', value: 'articles' },
             { text: '分类', value: 'categories' },
@@ -36,6 +36,15 @@ const mainListItems = [
 export default function MenuContent({ onMenuSelect }) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [openIndexes, setOpenIndexes] = useState({});
+    const [userRole, setUserRole] = useState('');
+
+    // 从 localStorage 获取用户信息并获取权限
+    useEffect(() => {
+        const userInfo = JSON.parse(localStorage.getItem('userInfo'));
+        if (userInfo && userInfo.authorityString) {
+            setUserRole(userInfo.authorityString);
+        }
+    }, []);
 
     const handleClick = (item, index) => {
         if (item.children) {
@@ -49,10 +58,19 @@ export default function MenuContent({ onMenuSelect }) {
         }
     };
 
+    // 根据用户角色过滤菜单项
+    const filteredMenuItems = mainListItems.filter(item => {
+        // 如果是 User 角色，屏蔽某些菜单项
+        if (userRole === 'USER') {
+            return item.value !== 'userList' && item.value !== 'Settings';
+        }
+        return true; // 其他角色不做过滤
+    });
+
     return (
         <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
             <List dense>
-                {mainListItems.map((item, index) => (
+                {filteredMenuItems.map((item, index) => (
                     <React.Fragment key={index}>
                         <ListItem disablePadding sx={{ display: 'block' }}>
                             <ListItemButton

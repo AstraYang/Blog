@@ -3,7 +3,6 @@ import axios from "axios";
 
 const API_BASE_URL = 'http://localhost:8080/admin/user';
 
-// 登录函数
 export const login = async (username, password) => {
     try {
         const response = await axios.post(
@@ -11,15 +10,43 @@ export const login = async (username, password) => {
             { username, password },
             { withCredentials: true } // 允许携带 Cookie
         );
-        const token = response.data.data; // 直接返回 Token
+
+        const token = response.data.data; // 获取 Token
         console.log('保存token', token);
         localStorage.setItem('token', token); // 存储 Token
+
+
+        // 解析 Token 并存储用户信息
+        const userInfo = parseJwt(token);
+        console.log('__保存用户信息', userInfo);
+        localStorage.setItem('userInfo', JSON.stringify(userInfo)); // 存储用户信息
+        console.log('保存用户信息', localStorage.getItem('userInfo'));
+
         return token; // 返回 Token
     } catch (error) {
         console.error('登录失败:', error.response ? error.response.data : error.message);
         throw error; // 抛出错误，由调用方处理
     }
 };
+
+// 解析 JWT 的函数
+const parseJwt = (token) => {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload); // 返回解析后的 JSON 对象
+};
+
+
+
+// export const getCurrentUser = () => {
+//     const userInfo = localStorage.getItem('userInfo');
+//     return userInfo ? JSON.parse(userInfo) : null; // 如果有用户信息，返回解析后的用户对象
+// };
+
 
 export const register = async (signUpData) =>{
     console.log('注册数据:', signUpData);
@@ -93,22 +120,23 @@ export const deleteUsers = async (userIds) => {
 export const logout = () => {
     // 清除本地存储中的 Token
     localStorage.removeItem('token');
+    localStorage.removeItem('userInfo');
 };
 
 // 获取当前用户信息的函数（可选）
-export const getCurrentUser = () => {
-    const token = localStorage.getItem('token');
-    if (!token) return null; // 如果没有 Token，返回 null
-
-    const parseJwt = (token) => {
-        const base64Url = token.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        }).join(''));
-        return JSON.parse(jsonPayload); // 返回解析后的 JSON 对象
-    };
-    return parseJwt(token); // 返回解析后的用户信息
-
-
-};
+// export const getCurrentUser = () => {
+//     const token = localStorage.getItem('token');
+//     if (!token) return null; // 如果没有 Token，返回 null
+//
+//     const parseJwt = (token) => {
+//         const base64Url = token.split('.')[1];
+//         const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+//         const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+//             return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+//         }).join(''));
+//         return JSON.parse(jsonPayload); // 返回解析后的 JSON 对象
+//     };
+//     return parseJwt(token); // 返回解析后的用户信息
+//
+//
+// };

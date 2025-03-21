@@ -1,4 +1,3 @@
-// src/MenuManagement.js
 import React, { useState, useEffect } from 'react';
 import {
     Box,
@@ -47,7 +46,7 @@ export default function BlogCreatPage() {
         const existingItems = getMenuItems();
         return { ...defaultMenuItems, ...existingItems }; // 合并默认项和存储项
     });
-    const [availableOptions, setAvailableOptions] = useState(['导航', '图片', '工具', '关于']);
+    const [availableOptions, setAvailableOptions] = useState(['导航', '图片', '资料', '关于']);
     const [selectedOption, setSelectedOption] = useState('');
     const [selectedItems, setSelectedItems] = useState([]); // 用于保存选中的菜单项
 

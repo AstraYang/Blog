@@ -10,6 +10,7 @@ import fun.struct.myblog.mapper.ArticlesMapper;
 import fun.struct.myblog.service.ArticlesService;
 import fun.struct.myblog.vo.ArticleDataVo;
 import fun.struct.myblog.vo.ArticleManagementListVO;
+import fun.struct.myblog.vo.ArticleVO;
 import fun.struct.myblog.vo.ArticlesListVo;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,17 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesMapper, Articles> i
         UpdateWrapper<Articles> updateWrapper = new UpdateWrapper<>();
         updateWrapper.in("articles_id", ids); // 设置批量更新条件
         return articlesMapper.update(null, updateWrapper.set("is_deleted", newDel)) > 0;
+    }
+
+    @Override
+    public ArticleVO selectArticleDetail(Integer articleId) {
+        UpdateWrapper<Articles> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("articles_id", articleId) // 这里假设文章的 ID 字段为 id
+                .setSql("views = views + 1"); // 使用 setSql 来执行自增操作
+
+        // 执行更新操作
+        articlesMapper.update(null, updateWrapper);
+        return articlesMapper.selectArticleDetail(articleId);
     }
 
     @Override

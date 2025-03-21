@@ -15,9 +15,9 @@ import TagList from "../components/dashboard/components/TagList.jsx";
 import BlogCreatPage from "./BlogCreatPage.jsx";
 import SettingsPage from "../components/dashboard/components/SettingsPage.jsx";
 import UserList from "../components/dashboard/components/UserList.jsx";
-import MindMap from "../components/dashboard/components/MinMap.jsx";
 import MindMapList from "../components/dashboard/components/MindMapList.jsx";
 import CommentList from "../components/dashboard/components/CommentList.jsx";
+import FlowEditor from "../components/Flow/FlowEditor.jsx";
 
 const Dashboard = (props) => {
     const location = useLocation();
@@ -36,30 +36,7 @@ const Dashboard = (props) => {
         if (pathParts.length > 2 && pathParts[pathParts.length - 2] === 'mindMap') {
             return 'mindMap'; // 如果是文章路径，返回 'article'
         }
-
-        switch (lastPart) {
-            case 'markdown':
-                return 'markdown';
-            case 'categories':
-                return 'categories';
-            case 'tags':
-                return 'tags';
-            case 'articles':
-                return 'articles';
-            case 'page':
-                return 'page';
-            case 'map':
-                return 'map';
-            case 'comments':
-                return 'comments';
-            case 'userList':
-                return 'userList';
-            case 'Settings':
-                return 'Settings';
-           case 'controlPanel':
-            default:
-                return 'controlPanel';
-        }
+       return lastPart;
     };
 
     const [selectedMenu, setSelectedMenu] = React.useState(getSelectedMenu());
@@ -76,6 +53,8 @@ const Dashboard = (props) => {
     const renderContent = () => {
         switch (selectedMenu) {
             case 'controlPanel':
+                return <MainGrid />;
+            case 'admin':
                 return <MainGrid />;
             case 'markdown':
                 return <MarkdownEditor />;
@@ -94,7 +73,7 @@ const Dashboard = (props) => {
             case 'map':
                 return <MindMapList />;
             case 'mindMap':
-                return <MindMap id={id} />;
+                return <FlowEditor id={id} />;
             case 'userList':
                 return <UserList/>;
             case 'Settings':

@@ -64,8 +64,8 @@ public class ArticlesController {
     // 获取文章详情页数据
     @GetMapping("/public/{articleId}")
     public Result getArticle(@PathVariable("articleId") Integer articleId) {
-        ArticleVO articleVO = articlesMapper.selectArticleDetail(articleId);
-        System.out.println(articleVO);
+        ArticleVO articleVO = articlesService.selectArticleDetail(articleId);
+        System.out.println("执行一次");
         return Result.of(ResultCode.SUCCESS, articleVO);
     }
 

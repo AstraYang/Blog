@@ -8,7 +8,7 @@ import Avatar from '@mui/material/Avatar';
 import MenuContent from './MenuContent.jsx';
 import { useEffect, useState } from "react";
 import OptionsMenu from "./OptionsMenu.jsx";
-import {getCurrentUser} from "../../../api/User.js";
+//import {getCurrentUser} from "../../../api/User.js";
 
 const drawerWidth = 240;
 
@@ -26,13 +26,13 @@ export default function SideMenu({ onMenuSelect }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-undefined
+
     useEffect(() => {
         const fetchUserInfo = async () => {
             try {
                 setLoading(true);
-                const userInfo = await getCurrentUser();
-                setUser(userInfo);
+                const userInfo = localStorage.getItem('userInfo');
+                setUser(JSON.parse(userInfo));
                 setLoading(false);
             } catch (err) {
                 console.error('获取用户信息失败:', err);

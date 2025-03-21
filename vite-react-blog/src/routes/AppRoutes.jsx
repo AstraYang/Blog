@@ -1,23 +1,24 @@
-import React from "react";
 import { Routes, Route } from "react-router-dom";
 import PrivateRoute from "../components/PrivateRoute";
 import Blog from "../pages/Blog.jsx";
 import SignIn from "../pages/SignIn.jsx";
 import Dashboard from "../pages/Dashboard.jsx";
-import TagList from "../components/dashboard/components/TagList.jsx";
-import MindMap from "../components/dashboard/components/MinMap.jsx";
-import SignUp from "../pages/SignUp.jsx";
+import FlowEditor from "../components/Flow/FlowEditor.jsx";
+
 
 const AppRoutes = () => {
     return (
         <Routes>
             <Route path="/" element={<Blog />} />
-            <Route path="/login" element={<SignIn />} />
-            <Route path="/signup" element={<SignUp />} />
-            <Route path="/tags" element={<TagList />} />
             <Route path="/article/:articleId" element={<Blog />} />
-            <Route path="/map" element={<MindMap/>} />
+            <Route path="/map" element={<Blog/>} />
             <Route path="/mindMap/:id" element={<Blog />} />
+            <Route path="/books" element={<Blog />} />
+
+            <Route path="/login" element={<SignIn />} />
+
+            <Route path="/flowEditor" element={<FlowEditor />} />
+
             <Route path="/admin" element={
                 <PrivateRoute>
                     <Dashboard />

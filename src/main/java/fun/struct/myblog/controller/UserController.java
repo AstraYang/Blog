@@ -80,7 +80,6 @@ public class UserController {
 
     @PostMapping("/signup")
     public Result addUser(@RequestBody SignUpDTO signUpDTO) {
-        System.out.println("注册信息:" + signUpDTO);
         User user = new User();
         User username = userMapper.selectOne(
                 new QueryWrapper<User>().select("user_id AS id").eq("user_name", signUpDTO.getUsername())
@@ -88,8 +87,6 @@ public class UserController {
         User email = userMapper.selectOne(
                 new QueryWrapper<User>().select("user_id AS id").eq("email", signUpDTO.getEmail())
         );
-        System.out.println("username = " + username);
-        System.out.println("email = " + email);
        if (username != null) {
             return Result.of(ResultCode.FAIL, "用户名已存在，请重试！");
         }else if(email != null){

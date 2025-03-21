@@ -20,7 +20,7 @@ import {
 } from '@mui/material';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { deleteArticlesSoft, fetchArticleManagementList } from "../../../api/articles.js";
-import { getCurrentUser } from "../../../api/User.js";
+//import { getCurrentUser } from "../../../api/User.js";
 
 const theme = createTheme({
     components: {
@@ -65,8 +65,8 @@ export default function ArticleList() {
     };
 
     const fetchUser = async () => {
-        const currentUser = await getCurrentUser();
-        setUser(currentUser.id);
+        const currentUser = localStorage.getItem('userInfo');
+        setUser(JSON.parse(currentUser).id);
     };
 
     useEffect(() => {

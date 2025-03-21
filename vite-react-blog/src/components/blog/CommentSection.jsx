@@ -46,7 +46,7 @@ const CommentSection = () => {
             }
         };
         loadComments();
-    }, [articleId]);
+    }, []);
 
     const handleCommentSubmit = async () => {
         if (newComment.trim() && username.trim() && email.trim()) {

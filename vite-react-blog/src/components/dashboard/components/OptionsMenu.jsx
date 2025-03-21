@@ -32,8 +32,6 @@ export default function OptionsMenu() {
     const handleLogout = async () => {
         try {
             await logout(); // 调用 API 清除后端登录状态
-
-            // 重定向到登录页面
             navigate('/');
         } catch (error) {
             console.error('退出登录失败:', error);

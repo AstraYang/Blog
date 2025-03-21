@@ -53,14 +53,12 @@ export const fetchArticleManagementList =async (page, size, userFilter, publishF
 };
 // 获取文章详情的函数
 export const getArticleDetail = async (articleId) => {
-    console.log("获取文章详情的函数"+ articleId);
     try {
         // 发送 GET 请求到后端 API
         const response = await axios.get(`${API_BASE_URL}/public/${articleId}`);
 
         // 检查返回的数据结构
         if (response.data.code === 200) {
-            console.log("文章详情：", response.data.data);
             return response.data.data; // 返回文章详情
         } else {
             console.error("请求失败：", response.data.message);

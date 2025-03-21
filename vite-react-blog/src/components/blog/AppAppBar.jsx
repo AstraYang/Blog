@@ -14,7 +14,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ColorModeIconDropdown from '../../shared-theme/ColorModeIconDropdown.jsx';
 import { useNavigate } from "react-router-dom";
-import { getCurrentUser, logout } from '../../api/User.js';
+import {  logout } from '../../api/User.js';
 import Drawer from "@mui/material/Drawer";
 import { getMenuItems, getSiteSettings } from '../../menuStorage'; // 确保从存储中获取网站设置
 
@@ -88,9 +88,8 @@ export default function AppAppBar({ onSelectMenu }) {
   React.useEffect(() => {
     async function fetchUserInfo() {
       try {
-        const userInfo = await getCurrentUser();
-        setUser(userInfo);
-        console.log('获取用户信息成功:', userInfo.nickName);
+        const userInfo = localStorage.getItem('userInfo');
+        setUser(JSON.parse(userInfo));
       } catch (error) {
         console.error('未登录或获取用户信息失败', error);
       }

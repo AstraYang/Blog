@@ -38,8 +38,7 @@ public class MindMapController {
     }
     @PostMapping("/add")
     public Result addMindMap(@RequestBody MindMapDTO mindMapDTO){
-        final String mindMapJson = "{\"nodes\":[{\"id\":\"1\",\"data\":{\"url\":\"http://localhost:5173/article/49\",\"color\":\"#ffd700\",\"label\":\"根节点\"},\"type\":\"circle\",\"width\":100,\"height\":100,\"dragging\":false,\"position\":{\"x\":282.38298794860924,\"y\":178.1711630481342},\"selected\":true,\"positionAbsolute\":{\"x\":282.38298794860924,\"y\":178.1711630481342}}],\"edges\":[]}";
-
+        final String mindMapJson = "{\"nodes\":[{\"id\":\"1\",\"type\":\"base\",\"position\":{\"x\":250,\"y\":100},\"data\":{\"iconType\":\"l1\",\"text\":\"应用层\",\"id\":\"node1\",\"type\":\"primary\"},\"measured\":{\"width\":95,\"height\":32}},{\"id\":\"2\",\"type\":\"base\",\"position\":{\"x\":250,\"y\":200},\"data\":{\"iconType\":\"l2\",\"text\":\"服务层\",\"id\":\"node2\"},\"measured\":{\"width\":95,\"height\":32}},{\"id\":\"3\",\"type\":\"base\",\"position\":{\"x\":250,\"y\":300},\"data\":{\"iconType\":\"l3\",\"text\":\"数据层\",\"id\":\"node3\",\"link\":\"https://example.com\"},\"measured\":{\"width\":95,\"height\":32}}],\"edges\":[{\"id\":\"e1-2\",\"source\":\"1\",\"target\":\"2\",\"type\":\"custom\",\"data\":{\"label\":\"连接\",\"showLabel\":true}},{\"id\":\"e2-3\",\"source\":\"2\",\"target\":\"3\",\"type\":\"custom\",\"data\":{\"label\":\"持续升级\",\"showLabel\":true}}]}";
         MindMap mindMap = new MindMap();
         mindMap.setTitle(mindMapDTO.getTitle());
         mindMap.setSummary(mindMapDTO.getSummary());

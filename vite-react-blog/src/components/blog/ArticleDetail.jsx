@@ -32,7 +32,6 @@ marked.setOptions({
             setLoading(true);
             try {
                 const fetchedArticle = await getArticleDetail(articleId);
-                console.log("获取到的文章数据：", fetchedArticle);
                 if (fetchedArticle) {
                     setArticle({
                         id: fetchedArticle.id,
@@ -53,7 +52,8 @@ marked.setOptions({
         };
 
         fetchArticle();
-    }, [articleId]);
+        console.log("文章ID：", articleId);
+    }, []);
 
     // 为每个代码块增加一键复制逻辑
     useEffect(() => {
@@ -128,7 +128,7 @@ marked.setOptions({
                     <Card>
                     <CardHeader
                         title={article.title}
-                        subheader={`${article.updatedTime} / ${article.views} 阅读`}
+                        subheader={`${new Date(article.updatedTime).toLocaleString()} / ${article.views} 阅读`}
                         sx={{
                             "& .MuiCardHeader-title": {
                                 textAlign: "center",
