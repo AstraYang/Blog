@@ -13,7 +13,7 @@ import {
 import '@xyflow/react/dist/style.css';
 import { Card, Button, Space, Modal, Form, Input, Select, Checkbox, Divider, message } from 'antd';
 import { PlusOutlined, DeleteOutlined, SaveOutlined, UploadOutlined } from '@ant-design/icons';
-
+import { v4 as uuidv4 } from 'uuid'; // 引入 UUID 库
 // 导入自定义节点和边
 import { TextUpdaterNode, LogoNode, BaseNode, ImgNode } from './components/Nodes';
 import { CustomEdge } from './components/Edges';
@@ -121,14 +121,18 @@ const FlowEditor = () => {
         const newEdge = {
             ...params,
             type: 'custom',
-            data: { label: '连接' }
+            data: {
+                label: '连接',
+                lineType: 'solid',
+                lineColor: '#555',
+                flowing: false,
+                tagColor: 'volcano',
+            }
         };
         setEdges((eds) => addEdge(newEdge, eds));
     }, [setEdges]);
-
     const addNode = (values) => {
-        const newId = `${nodeIdCounter.current}`;
-        nodeIdCounter.current += 1;
+        const newId = uuidv4(); // 使用 UUID 生成唯一 ID
 
         const newNode = {
             id: newId,
@@ -142,6 +146,10 @@ const FlowEditor = () => {
                 src: values.src,
                 value: values.text,
                 noHandle: values.noHandle,
+                buttonType: values.buttonType, // 添加 buttonType
+                cardTitle: values.cardTitle,
+                linkText: values.linkText,
+                linkUrl: values.linkUrl,
             },
         };
 
@@ -153,7 +161,7 @@ const FlowEditor = () => {
 
     const updateNode = (values) => {
         if (!selectedNode) return;
-
+        console.log('Updating Node:', values.buttonType);
         setNodes((nds) => nds.map((node) => {
             if (node.id === selectedNode.id) {
                 return {
@@ -167,12 +175,17 @@ const FlowEditor = () => {
                         src: values.src,
                         value: values.text,
                         noHandle: values.noHandle,
+                        buttonType: values.buttonType, // 更新 buttonType
+                        cardTitle: values.cardTitle,
+                        linkText: values.linkText,
+                        linkUrl: values.linkUrl,
                     },
                 };
             }
             return node;
         }));
 
+        console.log('Updated Node:', values);
         setNodeModalVisible(false);
         setSelectedNode(null);
         message.success('节点已更新');
@@ -186,9 +199,13 @@ const FlowEditor = () => {
             (edge) => edge.source !== selectedNode.id && edge.target !== selectedNode.id
         ));
 
+        // 更新计数器（可选）
+        nodeIdCounter.current = Math.max(...nodes.map(node => parseInt(node.id))) + 1;
+
         setSelectedNode(null);
         message.success('节点已删除');
     };
+
 
     const updateEdge = (values) => {
         if (!selectedEdge) return;
@@ -201,6 +218,10 @@ const FlowEditor = () => {
                         ...edge.data,
                         label: values.label,
                         showLabel: values.showLabel,
+                        lineType: values.lineType,
+                        lineColor: values.lineColor,
+                        flowing: values.flowing,
+                        tagColor: values.tagColor,
                     },
                 };
             }
@@ -234,6 +255,10 @@ const FlowEditor = () => {
         edgeForm.setFieldsValue({
             label: edge.data?.label || '',
             showLabel: edge.data?.showLabel || false,
+            lineType: edge.data?.lineType || 'solid',
+            lineColor: edge.data?.lineColor || '#555',
+            flowing: edge.data?.flowing || false,
+            tagColor: edge.data?.tagColor || 'volcano',
         });
 
         setEdgeModalVisible(true);
@@ -247,10 +272,14 @@ const FlowEditor = () => {
             nodeType: node.type,
             text: node.data.text || node.data.value || '',
             iconType: node.data.iconType || 'l1',
-            buttonType: node.data.type || 'default',
+            //buttonType: node.data.type || 'default',
+            buttonType: node.data.buttonType || 'default', // 确保这里正确设置 buttonType
             link: node.data.link || '',
             src: node.data.src || '',
             noHandle: node.data.noHandle || false,
+            cardTitle: node.data.cardTitle || '',
+            linkText: node.data.linkText || '',
+            linkUrl: node.data.linkUrl || '',
         });
 
         setNodeModalVisible(true);
@@ -428,7 +457,7 @@ const FlowEditor = () => {
                                                     <Select.Option value="default">默认</Select.Option>
                                                     <Select.Option value="primary">主要</Select.Option>
                                                     <Select.Option value="dashed">虚线</Select.Option>
-                                                    <Select.Option value="danger">危险</Select.Option>
+                                                    <Select.Option value="danger">无框</Select.Option>
                                                 </Select>
                                             </Form.Item>
 
@@ -442,7 +471,7 @@ const FlowEditor = () => {
                                         </>
                                     )}
 
-                                    {(nodeType === 'logo' || nodeType === 'image') && (
+                                    {nodeType === 'logo'  && (
                                         <Form.Item
                                             name="src"
                                             label="图片地址"
@@ -450,6 +479,39 @@ const FlowEditor = () => {
                                         >
                                             <Input placeholder="例如：https://example.com/logo.png" />
                                         </Form.Item>
+                                    )}
+
+                                    {nodeType === 'image' && (
+                                        <>
+                                            <Form.Item
+                                                name="src"
+                                                label="图片地址"
+                                                rules={[{ required: true, message: '请输入图片地址' }]}
+                                            >
+                                                <Input placeholder="例如：https://example.com/logo.png" />
+                                            </Form.Item>
+
+                                            <Form.Item
+                                                name="cardTitle"
+                                                label="卡片标题"
+                                            >
+                                                <Input placeholder="例如：技术架构图" />
+                                            </Form.Item>
+
+                                            <Form.Item
+                                                name="linkText"
+                                                label="链接文本"
+                                            >
+                                                <Input placeholder="例如：文档" />
+                                            </Form.Item>
+
+                                            <Form.Item
+                                                name="linkUrl"
+                                                label="链接地址"
+                                            >
+                                                <Input placeholder="例如：https://example.com/doc" />
+                                            </Form.Item>
+                                        </>
                                     )}
                                 </>
                             );
@@ -481,10 +543,7 @@ const FlowEditor = () => {
                     layout="vertical"
                     onFinish={updateEdge}
                 >
-                    <Form.Item
-                        name="showLabel"
-                        valuePropName="checked"
-                    >
+                    <Form.Item name="showLabel" valuePropName="checked">
                         <Checkbox>显示标签</Checkbox>
                     </Form.Item>
 
@@ -495,8 +554,40 @@ const FlowEditor = () => {
                     >
                         <Input placeholder="连接线标签文本，例如：持续升级" />
                     </Form.Item>
+
+                    <Form.Item name="lineType" label="线条类型">
+                        <Select defaultValue="solid">
+                            <Select.Option value="solid">实线</Select.Option>
+                            <Select.Option value="dashed">虚线</Select.Option>
+                        </Select>
+                    </Form.Item>
+
+                    <Form.Item name="lineColor" label="线条颜色">
+                        <Select defaultValue="#555">
+                            <Select.Option value="#555">雅灰</Select.Option>
+                            <Select.Option value="#1890ff">天蓝</Select.Option>
+                            <Select.Option value="#52c41a">浅草绿</Select.Option>
+                            <Select.Option value="#f5222d">火山红</Select.Option>
+                            <Select.Option value="#722ed1">紫霞</Select.Option>
+                        </Select>
+                    </Form.Item>
+
+                    <Form.Item name="flowing" valuePropName="checked">
+                        <Checkbox>流动效果</Checkbox>
+                    </Form.Item>
+
+                    <Form.Item name="tagColor" label="标签颜色">
+                        <Select defaultValue="volcano">
+                            <Select.Option value="volcano">火山红</Select.Option>
+                            <Select.Option value="blue">蓝色</Select.Option>
+                            <Select.Option value="green">绿色</Select.Option>
+                            <Select.Option value="purple">紫色</Select.Option>
+                            <Select.Option value="cyan">青色</Select.Option>
+                        </Select>
+                    </Form.Item>
                 </Form>
             </Modal>
+
         </div>
     );
 };

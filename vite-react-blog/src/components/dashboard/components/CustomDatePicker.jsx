@@ -1,4 +1,4 @@
-import * as React from 'react';
+  import * as React from 'react';
 import PropTypes from 'prop-types';
 import dayjs from 'dayjs';
 import Button from '@mui/material/Button';
@@ -54,7 +54,7 @@ ButtonField.propTypes = {
 };
 
 export default function CustomDatePicker() {
-  const [value, setValue] = React.useState(dayjs('2023-04-17'));
+  const [value, setValue] = React.useState(dayjs(new Date()));
   const [open, setOpen] = React.useState(false);
 
   return (

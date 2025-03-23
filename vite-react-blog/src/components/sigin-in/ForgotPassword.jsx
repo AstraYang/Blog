@@ -93,13 +93,12 @@ function ForgotPassword({ open, handleClose }) {
             sx: { backgroundImage: 'none' },
           }}
       >
-        <DialogTitle>Reset Password</DialogTitle>
+        <DialogTitle>重置密码</DialogTitle>
         <DialogContent
             sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: '100%' }}
         >
           <DialogContentText>
-            Enter your account&apos;s email address, and we&apos;ll send you a link to
-            reset your password.
+            输入您账户的电子邮箱地址，我们将向您发送一个重置密码的邮件,填写验证码后完成重置。
           </DialogContentText>
 
           {/* 使用 Box 组件来放置输入框和按钮 */}
@@ -111,7 +110,7 @@ function ForgotPassword({ open, handleClose }) {
                 id="email"
                 name="email"
                 label="Email address"
-                placeholder="Email address"
+                placeholder="输入电子邮箱..."
                 type="email"
                 fullWidth
                 value={email}
@@ -123,11 +122,11 @@ function ForgotPassword({ open, handleClose }) {
                 disabled={sending || countdown > 0} // 在发送或倒计时期间禁用按钮
             >
               {sending ? (
-                  <CircularProgress size={24} sx={{ color: 'white' }} />
+                  <CircularProgress size={20} sx={{ color: 'white' }} />
               ) : countdown > 0 ? (
                   `发送中...(${countdown})`
               ) : (
-                  'SendCode'
+                  '发送'
               )}
             </Button>
           </Box>
@@ -138,7 +137,7 @@ function ForgotPassword({ open, handleClose }) {
                   id="code"
                   name="code"
                   label="Verification Code"
-                  placeholder="Enter verification code"
+                  placeholder="输入验证码"
                   fullWidth
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
@@ -148,9 +147,9 @@ function ForgotPassword({ open, handleClose }) {
           {message && <DialogContentText color="error">{message}</DialogContentText>}
         </DialogContent>
         <DialogActions sx={{ pb: 3, px: 3 }}>
-          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleClose}>返回</Button>
           <Button variant="contained" type="submit" >
-            Continue
+            提交
           </Button>
         </DialogActions>
       </Dialog>

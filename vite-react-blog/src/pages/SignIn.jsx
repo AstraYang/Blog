@@ -116,20 +116,20 @@ export default function SignIn(props) {
       case 'username':
         newErrors.username.error = !value || value.trim() === "";
         newErrors.username.message = newErrors.username.error
-            ? "Please enter a valid username."
+            ? "请输入一个有效的用户名."
             : "";
         break;
       case 'password':
         newErrors.password.error = !value || value.length < 6;
         newErrors.password.message = newErrors.password.error
-            ? "Password must be at least 6 characters."
+            ? "密码必须至少为6个字符."
             : "";
         break;
       case 'email': {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         newErrors.email.error = !value || !emailRegex.test(value);
         newErrors.email.message = newErrors.email.error
-            ? "Please enter a valid email address."
+            ? "请输入一个有效的电子邮件地址."
             : "";
         break;
       }
@@ -137,7 +137,7 @@ export default function SignIn(props) {
         const password = document.getElementById('reg-password')?.value;
         newErrors.confirmPassword.error = value !== password;
         newErrors.confirmPassword.message = newErrors.confirmPassword.error
-            ? "Passwords do not match."
+            ? "密码不一致."
             : "";
         break;
       }
@@ -204,14 +204,14 @@ export default function SignIn(props) {
     console.log('Email:', email)
 
     if (!email) {
-      alert("Please enter your email address.");
+      alert("请输入您的电子邮件地址.");
       return;
     }
 
     try {
       await sendEmail(email); // 这里调用你的发送验证码的API
       setIsCodeSent(true);
-      alert("Verification code has been sent to your email.");
+      alert("验证码已发送到您的电子邮件中");
     } catch (error) {
       alert(`Error: ${error.message}`);
     }
@@ -227,8 +227,8 @@ export default function SignIn(props) {
             <Flipper isflipped={isFlipped}>
               {/* 登录表单 - 正面 */}
               <FrontCard>
-                <SitemarkIcon />
-                <Typography component="h1" variant="h4" sx={{ fontSize: 'clamp(1rem, 2vw, 1.15rem)' }}>
+                {/*<SitemarkIcon />*/}
+                <Typography component="h1" variant="h4" sx={{ fontSize: 'clamp(2rem, 1vw, 1.15rem)' }}>
                   Sign in
                 </Typography>
 
@@ -267,7 +267,7 @@ export default function SignIn(props) {
 
                   <FormControlLabel
                       control={<Checkbox value="remember" color="primary" />}
-                      label="Remember me"
+                      label="记住我"
                       sx={{ mt: 1 }}
                   />
 
@@ -278,7 +278,7 @@ export default function SignIn(props) {
                       size="large"
                       sx={{ mt: 2 }}
                   >
-                    Sign in
+                    登录
                   </Button>
 
                   <Box sx={{ textAlign: 'center', mt: 2 }}>
@@ -288,20 +288,20 @@ export default function SignIn(props) {
                         onClick={handleClickOpen}
                         variant="body2"
                     >
-                      Forgot password?
+                      忘记密码?
                     </MuiLink>
                     <ForgotPassword open={open} handleClose={handleClose} />
                   </Box>
 
                   <Typography variant="body2" sx={{ textAlign: 'center', mt: 3 }}>
-                    Don&#39;t have an account?{' '}
+                    您还没有账号?{' '}
                     <MuiLink
                         component="button"
                         type="button"
                         onClick={() => setIsFlipped(true)}
                         sx={{ fontWeight: 600 }}
                     >
-                      Sign up
+                      注册账号
                     </MuiLink>
                   </Typography>
                 </Box>
@@ -310,15 +310,16 @@ export default function SignIn(props) {
               {/* 注册表单 - 背面 */}
               {/* 注册表单 - 背面 */}
               <BackCard>
-                <SitemarkIcon />
-                <Typography component="h1" variant="h4" sx={{ fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}>
+                {/*<SitemarkIcon />*/}
+                <Typography component="h1" variant="h4" sx={{ fontSize: 'clamp(2rem, 1vw, 1.15rem)' }}>
                   Sign up
                 </Typography>
+
 
                 <Box
                     component="form"
                     onSubmit={(e) => handleSubmit(e, false)}
-                    sx={{ gap: 2, mt: 2 }}
+                    sx={{ gap: 2, mt: -2.5 }}
                 >
                   {/* 用户名输入框 */}
                   <FormControl fullWidth>
@@ -367,7 +368,7 @@ export default function SignIn(props) {
                           onClick={handleSendCode}
                           disabled={isCodeSent} // 发送验证码后禁用按钮
                       >
-                        {isCodeSent ? "Code Sent" : "Send Code"}
+                        {isCodeSent ? "已发送验证码" : "发送验证码"}
                       </Button>
                     </Stack>
                   </FormControl>
@@ -409,7 +410,7 @@ export default function SignIn(props) {
                       size="large"
                       sx={{ mt: 2 }}
                   >
-                    Register
+                    注册
                   </Button>
 
                   <Typography variant="body2" sx={{ textAlign: 'center', mt: 3 }}>
@@ -420,7 +421,7 @@ export default function SignIn(props) {
                         onClick={() => setIsFlipped(false)}
                         sx={{ fontWeight: 600 }}
                     >
-                      Sign in
+                      登录账号
                     </MuiLink>
                   </Typography>
                 </Box>

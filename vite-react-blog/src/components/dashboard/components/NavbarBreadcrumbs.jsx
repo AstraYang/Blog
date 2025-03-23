@@ -17,11 +17,17 @@ const StyledBreadcrumbs = styled(Breadcrumbs)(({ theme }) => ({
 
 // 定义面包屑导航的映射
 const breadcrumbMap = {
+  admin: "主控制台",
   controlPanel: "主控制台",
   markdown: "撰写文章",
-  clients: "客户管理",
-  tasks: "任务列表",
-  edit: "编辑页面",
+  page: "独立页面",
+  map: "知识地图",
+  articles: "文章",
+  categories: "分类",
+  tags: "标签",
+  comments: "评论",
+  userList: "用户管理",
+  Settings: "网站设置",
 };
 
 export default function NavbarBreadcrumbs({ selectedMenu, onMenuSelect }) {

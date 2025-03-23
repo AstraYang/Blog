@@ -7,7 +7,7 @@ import StatCard from './StatCard.jsx';
 
 const data = [
   {
-    title: 'Users',
+    title: '访问量',
     value: '14k',
     interval: 'Last 30 days',
     trend: 'up',
@@ -17,7 +17,7 @@ const data = [
     ],
   },
   {
-    title: 'Conversions',
+    title: '下载量',
     value: '325',
     interval: 'Last 30 days',
     trend: 'down',
@@ -27,8 +27,8 @@ const data = [
     ],
   },
   {
-    title: 'Event count',
-    value: '200k',
+    title: '评论数',
+    value: '20k',
     interval: 'Last 30 days',
     trend: 'neutral',
     data: [

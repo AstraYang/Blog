@@ -1,0 +1,41 @@
+/* CustomEdge.css */
+.custom-edge {
+    stroke-width: 2;
+}
+
+.custom-edge.solid {
+    stroke-dasharray: none;
+}
+
+.custom-edge.dashed {
+    stroke-dasharray: 5;
+}
+
+.custom-edge.flowing.solid {
+    animation: flowing-solid 1.5s linear infinite;
+}
+
+.custom-edge.flowing.dashed {
+    animation: flowing-dashed 1.5s linear infinite;
+}
+
+@keyframes flowing-dashed {
+    0% {
+        stroke-dashoffset: 20;
+    }
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes flowing-solid {
+    0% {
+        stroke-opacity: 0.5;
+    }
+    50% {
+        stroke-opacity: 1;
+    }
+    100% {
+        stroke-opacity: 0.5;
+    }
+}

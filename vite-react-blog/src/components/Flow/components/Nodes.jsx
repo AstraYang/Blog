@@ -2,7 +2,7 @@ import { useCallback, useState } from 'react';
 import { Handle, Position } from '@xyflow/react';
 import { Button, Card } from 'antd';
 import { GroupOutlined, GlobalOutlined, HddOutlined } from '@ant-design/icons';
-import './nodes.css';
+import './Nodes.less';
 
 const handleStyle = { left: 10 };
 
@@ -21,8 +21,8 @@ function TextUpdaterNode({ data, isConnectable }) {
                 isConnectable={isConnectable}
             />
             <div>
-                <label htmlFor="text">文本:</label>
-                {/*<Button>123</Button>*/}
+                {/*<label htmlFor="text"></label>*/}
+                <Button>TEXT</Button>
                 <input
                     id="text"
                     name="text"
@@ -80,8 +80,7 @@ const iconMap = {
 };
 
 function BaseNode({ data, isConnectable }) {
-    const { iconType, text, id, type, noHandle, link } = data;
-
+    const { iconType, text, id, buttonType, noHandle, link } = data;
     return (
         <div className="flow-base-node">
             {!noHandle && (
@@ -106,7 +105,7 @@ function BaseNode({ data, isConnectable }) {
                     />
                 </>
             )}
-            <Button type={type || 'default'} onClick={() => link && window.open(link)}>
+            <Button type={buttonType || 'default'} onClick={() => link && window.open(link)}>
                 {iconMap[iconType]}
                 <div className="flow-logo-text">{text}</div>
             </Button>
@@ -115,7 +114,7 @@ function BaseNode({ data, isConnectable }) {
 }
 
 function ImgNode({ data, isConnectable }) {
-    const { src, id } = data;
+    const { src, id, cardTitle, linkText, linkUrl } = data;
 
     return (
         <div className="flow-base-node">
@@ -132,8 +131,8 @@ function ImgNode({ data, isConnectable }) {
                 isConnectable={isConnectable}
             />
             <Card
-                title="技术架构图"
-                extra={<a href="https://dooring.vip/doc" target="_blank" rel="noopener noreferrer">文档</a>}
+                title={cardTitle || "技术架构图"}
+                extra={linkUrl && <a href={linkUrl} target="_blank" rel="noopener noreferrer">{linkText || "文档"}</a>}
                 style={{ width: 500 }}
             >
                 <img src={src} alt="" style={{ width: '100%' }} />

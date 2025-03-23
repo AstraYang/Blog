@@ -74,7 +74,7 @@ const MindMapDetail = () => {
         textUpdater: TextUpdaterNode,
         logo: LogoNode,
         base: BaseNode,
-        img: ImgNode,
+        image: ImgNode,
     };
 
     // 定义自定义边的类型

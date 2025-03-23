@@ -219,35 +219,35 @@ export default function ChartUserByCountry() {
           {/*      </Stack>*/}
           {/*    </Stack>*/}
           {/*))}*/}
-          <Divider sx={{ my: 1, backgroundColor: '#4a4f4f', height: 1}} />
+          {/*<Divider sx={{ my: 1, backgroundColor: '#4a4f4f', height: 1}} />*/}
 
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <PieChart
-                colors={colors}
-                margin={{
-                  left: 80,
-                  right: 80,
-                  top: 80,
-                  bottom: 80,
-                }}
-                series={[
-                  {
-                    data,
-                    innerRadius: 75,
-                    outerRadius: 100,
-                    paddingAngle: 0,
-                    highlightScope: { faded: 'global', highlighted: 'item' },
-                  },
-                ]}
-                height={260}
-                width={260}
-                slotProps={{
-                  legend: { hidden: true },
-                }}
-            >
-              <PieCenterLabel primaryData={totalValue} secondaryText="总计" />
-            </PieChart>
-          </Box>
+          {/*<Box sx={{ display: 'flex', alignItems: 'center' }}>*/}
+          {/*  <PieChart*/}
+          {/*      colors={colors}*/}
+          {/*      margin={{*/}
+          {/*        left: 80,*/}
+          {/*        right: 80,*/}
+          {/*        top: 80,*/}
+          {/*        bottom: 80,*/}
+          {/*      }}*/}
+          {/*      series={[*/}
+          {/*        {*/}
+          {/*          data,*/}
+          {/*          innerRadius: 75,*/}
+          {/*          outerRadius: 100,*/}
+          {/*          paddingAngle: 0,*/}
+          {/*          highlightScope: { faded: 'global', highlighted: 'item' },*/}
+          {/*        },*/}
+          {/*      ]}*/}
+          {/*      height={260}*/}
+          {/*      width={260}*/}
+          {/*      slotProps={{*/}
+          {/*        legend: { hidden: true },*/}
+          {/*      }}*/}
+          {/*  >*/}
+          {/*    <PieCenterLabel primaryData={totalValue} secondaryText="总计" />*/}
+          {/*  </PieChart>*/}
+          {/*</Box>*/}
 
         </CardContent>
       </Card>

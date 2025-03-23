@@ -7,6 +7,7 @@ import {
 } from '@xyflow/react';
 import { Tag } from 'antd';
 import PropTypes from "prop-types";
+import './CustomEdge.css'; // 引入样式文件
 
 function CustomEdge({ id, sourceX, sourceY, targetX, targetY, data }) {
     const { setEdges } = useReactFlow();
@@ -17,11 +18,24 @@ function CustomEdge({ id, sourceX, sourceY, targetX, targetY, data }) {
         targetY,
     });
 
+    // 根据data中的属性设置样式
+    const lineType = data.lineType || 'solid'; // 默认为实线
+    const lineColor = data.lineColor || '#555'; // 默认颜色
+    const isFlowing = data.flowing || false; // 是否流动效果
+
+    // 构建className
+    const edgeClassName = `custom-edge ${lineType} ${isFlowing ? 'flowing' : ''}`;
+
     return (
         <>
-            <BaseEdge id={id} path={edgePath} />
+            <BaseEdge
+                id={id}
+                path={edgePath}
+                className={edgeClassName}
+                style={{ stroke: lineColor }} // 直接设置颜色
+            />
             <EdgeLabelRenderer>
-                {data.showLabel && ( // 根据数据决定是否显示标签
+                {data.showLabel && (
                     <div
                         style={{
                             position: 'absolute',
@@ -29,29 +43,32 @@ function CustomEdge({ id, sourceX, sourceY, targetX, targetY, data }) {
                             pointerEvents: 'all',
                         }}
                         className="nodrag nopan"
-                        onClick={() => {
-                            // You can define any action on label click
-                        }}
                     >
-                        <Tag color="volcano">{data.label}</Tag>
+                        <Tag color={data.tagColor || "volcano"}>{data.label}</Tag>
                     </div>
                 )}
             </EdgeLabelRenderer>
         </>
     );
 }
+
 // 添加 PropTypes 验证
 CustomEdge.propTypes = {
-    id: PropTypes.string.isRequired, // 必填，字符串类型
-    sourceX: PropTypes.number.isRequired, // 必填，数字类型
-    sourceY: PropTypes.number.isRequired, // 必填，数字类型
-    targetX: PropTypes.number.isRequired, // 必填，数字类型
-    targetY: PropTypes.number.isRequired, // 必填，数字类型
-    data: PropTypes.shape({ // 定义 data 的结构
-        showLabel: PropTypes.bool, // 可选，布尔类型
-        label: PropTypes.string, // 可选，字符串类型
+    id: PropTypes.string.isRequired,
+    sourceX: PropTypes.number.isRequired,
+    sourceY: PropTypes.number.isRequired,
+    targetX: PropTypes.number.isRequired,
+    targetY: PropTypes.number.isRequired,
+    data: PropTypes.shape({
+        showLabel: PropTypes.bool,
+        label: PropTypes.string,
+        lineType: PropTypes.string, // 线条类型：solid, dashed
+        lineColor: PropTypes.string, // 线条颜色
+        flowing: PropTypes.bool, // 是否流动
+        tagColor: PropTypes.string, // 标签颜色
     }).isRequired,
 };
+
 export {
     CustomEdge,
 }

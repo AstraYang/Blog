@@ -1,5 +1,6 @@
 package fun.struct.myblog.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import fun.struct.myblog.dto.MindMapDTO;
@@ -24,8 +25,13 @@ public class MindMapServiceImpl extends ServiceImpl<MindMapMapper, MindMap> impl
         // 创建 Page 对象，指定当前页和每页大小
         Page<MindMap> mindMapPage = new Page<>(page, size);
 
+        // 创建 QueryWrapper 对象，用于添加排序条件
+        QueryWrapper<MindMap> queryWrapper = new QueryWrapper<>();
+        // 根据需要排序的字段（例如 id 或创建时间）进行降序排序
+        queryWrapper.orderByDesc("updated_at"); // 假设根据创建时间降序排序
+
         // 执行分页查询
-        return mindMapMapper.selectPage(mindMapPage, null); // 第二个参数为查询条件，可以为 null
+        return mindMapMapper.selectPage(mindMapPage, queryWrapper);
     }
 
     @Override
