@@ -1,4 +1,4 @@
-# 基于spring boot react的博客分享平台
+# 基于spring boot + react的博客分享平台
 
 毕设项目--持续更新中...
 
