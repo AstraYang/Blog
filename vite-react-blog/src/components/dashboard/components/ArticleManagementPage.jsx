@@ -19,7 +19,7 @@ import {
     useMediaQuery,
 } from '@mui/material';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { deleteArticlesSoft, fetchArticleManagementList } from "../../../api/articles.js";
+import {deleteArticlesSoft, fetchArticleManagementList, setArticlePublishStatus} from "../../../api/articles.js";
 //import { getCurrentUser } from "../../../api/User.js";
 
 const theme = createTheme({
@@ -105,10 +105,22 @@ export default function ArticleList() {
         }
     };
 
-    const togglePublishStatus = (id) => {
+    const togglePublishStatus = async (id, status) => {
+        console.log('togglePublishStatus', id, !status)
+        const articleStatus = {
+            articleId:id,
+            status: !status,
+        }
+        const setStatus = await setArticlePublishStatus(articleStatus);
+        console.log('setArticlePublishStatus', setStatus)
+        if (setStatus.code !== 200) {
+            console.error('设置文章发布状态失败', setStatus.message);
+        }
+
         const updatedData = data.map(article =>
             article.id === id ? { ...article, status: !article.status } : article
         );
+
         setData(updatedData);
     };
 
@@ -198,7 +210,7 @@ export default function ArticleList() {
                                 <Button
                                     variant={row.status ? 'contained' : 'outlined'}
                                     color={row.status ? 'success' : 'error'}
-                                    onClick={() => togglePublishStatus(row.id)}
+                                    onClick={() => togglePublishStatus(row.id, row.status)}
                                     sx={{ mt: 1 }}
                                 >
                                     {row.status ? '已发布' : '未发布'}
@@ -266,7 +278,7 @@ export default function ArticleList() {
                                             <Button
                                                 variant={row.status ? 'contained' : 'outlined'}
                                                 color={row.status ? 'success' : 'error'}
-                                                onClick={() => togglePublishStatus(row.id)}
+                                                onClick={() => togglePublishStatus(row.id, row.status)}
                                             >
                                                 {row.status ? '已发布' : '未发布'}
                                             </Button>

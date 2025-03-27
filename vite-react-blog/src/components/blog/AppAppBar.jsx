@@ -202,29 +202,53 @@ export default function AppAppBar({ onSelectMenu }) {
                   <Box
                       sx={{
                         display: 'flex',
-                        justifyContent: 'flex-end',
+                        justifyContent: 'space-between', // 使子元素分别对齐到左右
+                        alignItems: 'center', // 垂直居中
+                        width: '100%', // 确保父容器占满宽度
                       }}
                   >
-                    <IconButton onClick={toggleDrawer(false)}>
-                      <CloseRoundedIcon />
-                    </IconButton>
+                    {/* 左侧用户信息 */}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      {user ? (
+                          <>
+                            <Avatar alt={user.nickName} src={user.avatar} />
+                            <MenuItem disabled>{user.nickName}</MenuItem>
+                          </>
+                      ) : (
+                          <MenuItem disabled>未登录</MenuItem> // 提示用户未登录
+                      )}
+                    </Box>
+
+                    {/* 右侧关闭按钮 */}
+                    <Box>
+                      <IconButton onClick={toggleDrawer(false)}>
+                        <CloseRoundedIcon />
+                      </IconButton>
+                    </Box>
                   </Box>
+
+
                   {Object.keys(menuItems).map((menu) => (
                       <MenuItem key={menu} onClick={() => handleMenuClick(menu)}>
                         {menu}
                       </MenuItem>
                   ))}
                   <Divider sx={{ my: 3 }} />
-                  <MenuItem>
-                    <Button color="primary" variant="contained" fullWidth>
-                      Sign up
-                    </Button>
-                  </MenuItem>
-                  <MenuItem>
-                    <Button color="primary" variant="outlined" fullWidth onClick={handleSigin}>
-                      Sign in
-                    </Button>
-                  </MenuItem>
+
+
+                  {user ? (
+                          <MenuItem>
+                            <Button color="primary" variant="outlined" fullWidth onClick={handleLogout}>
+                            Logout
+                            </Button>
+                          </MenuItem>
+                  ):(
+                      <MenuItem>
+                        <Button color="primary" variant="contained" fullWidth onClick={handleSigin}>
+                          Sign in
+                        </Button>
+                      </MenuItem>
+                  )}
                 </Box>
               </Drawer>
             </Box>

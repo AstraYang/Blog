@@ -14,7 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { fetchArticles } from '../../api/articles';
 import { fetchCategories } from '../../api/category';
 import { getSiteSettings } from '../../menuStorage'; // 导入获取设置的函数
-import { Search } from './MainContent.jsx';
+import { Search } from "./Search.jsx"
 
 // 使得文本在超过两行时会显示省略号
 const StyledTypography = styled(Typography)({
@@ -148,15 +148,14 @@ export default function Latest() {
                     display: { xs: 'flex', sm: 'none' },
                     flexDirection: 'row',
                     gap: 1,
-                    width: { xs: '100%', md: 'fit-content' },
+                    width: '100%', // 确保在小屏幕下占满宽度
                     overflow: 'auto',
+                    mb: 1,
                 }}
             >
                 <Search />
-                <IconButton size="small" aria-label="RSS feed">
-                    <RssFeedRoundedIcon />
-                </IconButton>
             </Box>
+
             <Box
                 sx={{
                     display: 'flex',
@@ -208,12 +207,12 @@ export default function Latest() {
                     }}
                 >
                     <Search />
-                    <IconButton size="small" aria-label="RSS feed">
-                        <RssFeedRoundedIcon />
-                    </IconButton>
+                    {/*<IconButton size="small" aria-label="RSS feed">*/}
+                    {/*    <RssFeedRoundedIcon />*/}
+                    {/*</IconButton>*/}
                 </Box>
             </Box>
-            <Grid container spacing={8} columns={12} sx={{ my: 4 }}>
+            <Grid container spacing={8} columns={12} sx={{ my: 0 }}>
                 {articles.map((article, index) => (
                     <Grid key={index} item xs={12} sm={6}>
                         <Box
@@ -275,7 +274,7 @@ export default function Latest() {
                     </Grid>
                 ))}
             </Grid>
-            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 4 }}>
+            <Box sx={{ display: 'flex', flexDirection: 'row', pt: 1 }}>
                 <Pagination
                     page={page}
                     onChange={handlePageChange}

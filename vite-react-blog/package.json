@@ -49,6 +49,7 @@
     "react-force-graph-2d": "^1.27.0",
     "react-mindmap": "^2.1.6",
     "react-router-dom": "^7.1.5",
+    "react-slick": "^0.30.3",
     "react-syntax-highlighter": "^15.6.1",
     "react-tree-graph": "^8.0.3",
     "reactflow": "^11.11.4"

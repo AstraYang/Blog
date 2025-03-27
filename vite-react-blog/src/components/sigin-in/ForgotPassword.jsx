@@ -6,18 +6,23 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import OutlinedInput from '@mui/material/OutlinedInput';
-import Box from '@mui/material/Box'; // 导入 Box 组件
+import Box from '@mui/material/Box';
 import { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import { sendResetEmail, verifyCode } from '../../api/email.js';  // 根据实际路径引入API
+import { sendResetEmail} from '../../api/email.js';
+import {resetPassword} from "../../api/User.js";
+import {message} from "antd";
 
 function ForgotPassword({ open, handleClose }) {
   const [email, setEmail] = useState('');
   const [code, setCode] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [sending, setSending] = useState(false);
   const [codeSent, setCodeSent] = useState(false);
   const [countdown, setCountdown] = useState(0);
   const [message, setMessage] = useState('');
+  const [passwordsMatch, setPasswordsMatch] = useState(true); // 新增状态判断密码是否匹配
 
   // 处理倒计时
   useEffect(() => {
@@ -57,22 +62,27 @@ function ForgotPassword({ open, handleClose }) {
 
   // 验证验证码并继续
   const handleContinue = async (event) => {
-    console.log('验证验证码:', email, code)
     event.preventDefault();
     setMessage('');
 
-  const emailCode = {
-    email,
-    code,
-    type: 'reset',
-  };
+    // 检查新密码和确认密码是否一致
+    if (newPassword !== confirmPassword) {
+      setMessage('新密码和确认密码不一致。');
+      return;
+    }
+
+    const emailCode = {
+      email,
+      code,
+      password:newPassword,
+    };
 
     try {
       console.log('验证验证码:', emailCode);
-      const response = await verifyCode(emailCode);
+      const response = await resetPassword(emailCode);
       console.log('验证验证码结果:', response);
       if (response.code === 200) {
-        alert('重置成功！'); // 提示用户重置成功
+        message.success('重置成功！'); // 提示用户重置成功
         handleClose(); // 关闭对话框
       } else {
         setMessage('重置失败，请检查验证码。');
@@ -82,6 +92,9 @@ function ForgotPassword({ open, handleClose }) {
       setMessage('重置失败，请检查验证码。');
     }
   };
+  useEffect(() => {
+    setPasswordsMatch(newPassword === confirmPassword);
+  }, [newPassword, confirmPassword]);
 
   return (
       <Dialog
@@ -101,7 +114,6 @@ function ForgotPassword({ open, handleClose }) {
             输入您账户的电子邮箱地址，我们将向您发送一个重置密码的邮件,填写验证码后完成重置。
           </DialogContentText>
 
-          {/* 使用 Box 组件来放置输入框和按钮 */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <OutlinedInput
                 autoFocus
@@ -119,7 +131,7 @@ function ForgotPassword({ open, handleClose }) {
             <Button
                 variant="contained"
                 onClick={handleSendCode}
-                disabled={sending || countdown > 0} // 在发送或倒计时期间禁用按钮
+                disabled={sending || countdown > 0}
             >
               {sending ? (
                   <CircularProgress size={20} sx={{ color: 'white' }} />
@@ -132,23 +144,53 @@ function ForgotPassword({ open, handleClose }) {
           </Box>
 
           {codeSent && (
-              <OutlinedInput
-                  margin="dense"
-                  id="code"
-                  name="code"
-                  label="Verification Code"
-                  placeholder="输入验证码"
-                  fullWidth
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  sx={{ mt: 2 }} // 适当的间距
-              />
+              <>
+                <OutlinedInput
+                    margin="dense"
+                    id="code"
+                    name="code"
+                    label="Verification Code"
+                    placeholder="输入验证码"
+                    fullWidth
+                    value={code}
+                    onChange={(e) => setCode(e.target.value)}
+                    sx={{ mt: 2 }}
+                />
+                <OutlinedInput
+                    margin="dense"
+                    id="newPassword"
+                    name="newPassword"
+                    label="新密码"
+                    placeholder="输入新密码"
+                    type="password"
+                    fullWidth
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    sx={{ mt: 2 }}
+                />
+                <OutlinedInput
+                    margin="dense"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    label="确认新密码"
+                    placeholder="确认新密码"
+                    type="password"
+                    fullWidth
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    sx={{ mt: 2 }}
+                />
+                {/* 提示用户新密码和确认密码是否一致 */}
+                {!passwordsMatch && (
+                    <DialogContentText color="error">新密码和确认密码不一致。</DialogContentText>
+                )}
+              </>
           )}
           {message && <DialogContentText color="error">{message}</DialogContentText>}
         </DialogContent>
         <DialogActions sx={{ pb: 3, px: 3 }}>
           <Button onClick={handleClose}>返回</Button>
-          <Button variant="contained" type="submit" >
+          <Button variant="contained" type="submit" disabled={!passwordsMatch}>
             提交
           </Button>
         </DialogActions>

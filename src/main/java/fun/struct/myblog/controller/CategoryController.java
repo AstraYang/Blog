@@ -30,6 +30,13 @@ public class CategoryController {
     public Result getCategoryList() {
         return Result.of(ResultCode.SUCCESS,categoryService.getCategoryList());
     }
+
+    /*
+    * 添加分类
+    * @param categoryName 分类名称
+    * @return Result
+    *
+    * */
     @PostMapping("/add")
     public Result addCategory(@RequestParam("categoryName") String categoryName) {
         Category category = new Category();

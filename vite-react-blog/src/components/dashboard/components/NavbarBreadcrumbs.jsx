@@ -23,11 +23,13 @@ const breadcrumbMap = {
   page: "独立页面",
   map: "知识地图",
   articles: "文章",
+  article: "编辑文章",
   categories: "分类",
   tags: "标签",
   comments: "评论",
   userList: "用户管理",
   Settings: "网站设置",
+  mindMap: "编辑导图",
 };
 
 export default function NavbarBreadcrumbs({ selectedMenu, onMenuSelect }) {

@@ -35,6 +35,7 @@ export default function SettingsPage() {
     const [allowRegistration, setAllowRegistration] = useState(false); // 改为布尔值
     const [favicon, setFavicon] = useState(''); // 新增状态用于存储 Favicon URL
     const [logo, setLogo] = useState(''); // 新增状态用于存储 LOGO URL
+    const [siteStartDate, setSiteStartDate] = useState(''); // 新增状态用于存储站点运行时间
 
     // 从 localStorage 加载数据
     useEffect(() => {
@@ -46,6 +47,7 @@ export default function SettingsPage() {
         setAllowRegistration(settings.allowRegistration || false); // 加载注册设置
         setFavicon(settings.favicon || ''); // 加载 Favicon URL
         setLogo(settings.logo || ''); // 加载 LOGO URL
+        setSiteStartDate(settings.siteStartDate || ''); // 加载站点运行时间
     }, []);
 
     // 保存数据到 localStorage
@@ -56,6 +58,7 @@ export default function SettingsPage() {
             allowRegistration, // 保存是否允许注册的状态
             favicon, // 保存 Favicon URL
             logo, // 保存 LOGO URL
+            siteStartDate, // 保存站点运行时间
         };
         setSiteSettings(settings); // 保存网站设置
 
@@ -136,6 +139,21 @@ export default function SettingsPage() {
                         />
                         <Typography variant="caption" color="textSecondary">
                             请提供网站 LOGO 的有效 URL.
+                        </Typography>
+                    </Box>
+
+                    {/* 站点运行时间设置 */}
+                    <Box sx={{ mb: 5 }}>
+                        <TextField
+                            label="站点运行时间 (YYYY-MM-DD)"
+                            variant="outlined"
+                            fullWidth
+                            value={siteStartDate}
+                            onChange={(e) => setSiteStartDate(e.target.value)} // 更新状态
+                            placeholder="例如: 2023-10-01"
+                        />
+                        <Typography variant="caption" color="textSecondary">
+                            请提供站点运行的开始日期，格式为 YYYY-MM-DD.
                         </Typography>
                     </Box>
 

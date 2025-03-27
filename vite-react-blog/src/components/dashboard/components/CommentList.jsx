@@ -261,7 +261,7 @@ export default function CommentList() {
                     onChange={handlePageChange}
                     variant="outlined"
                     shape="rounded"
-                    sx={{ display: 'flex', justifyContent: 'right', mb: 2 }}
+                    sx={{ display: 'flex', justifyContent: 'right', mb: 2 , mt: 2}}
                 />
             </Box>
         </ThemeProvider>

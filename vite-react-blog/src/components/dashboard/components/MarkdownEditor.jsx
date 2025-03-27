@@ -21,6 +21,7 @@ import { fetchCategories } from "../../../api/category.js"; // 分类 API
 import {uploadCoverImage, submitArticle, fetchArticleById, upDateArticle} from "../../../api/articles.js"; // 文章 API
 import { fetchTags } from "../../../api/tags.js";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {message} from "antd";
 //import { getCurrentUser } from "../../../api/User.js"; // 用户 API
 
 const theme = createTheme({
@@ -82,14 +83,11 @@ export default function MarkdownEditor() {
                         const coverImageUrl = articleData.coverImage; // 确保这个 URL 是有效的
                         setCoverImage(coverImageUrl);
                         setPreviewImage(coverImageUrl);
-                        console.log("coverImageUrl:", coverImageUrl)
-                        console.log("staus:", isStatus)
-                        console.log("comment:", isComment)
                     }
                 }
             } catch (error) {
                 console.error("初始化数据失败:", error);
-                alert("加载数据失败，请重试！"); // 用户友好的错误消息
+                message.success('加载数据失败，请重试！');
             }
         };
         fetchData();
@@ -129,22 +127,23 @@ export default function MarkdownEditor() {
             // 根据 articleId 的存在决定是创建还是更新
             if (articleId) {
                 // 更新文章
-                console.log("更新的articleData:", articleData);
-                console.log("更新的articleID:", articleId);
                 await upDateArticle(articleData, articleId); // 假设 upDateArticle 支持更新
-                alert("文章更新成功！");
+                message.success('文章更新成功');
+
                 navigate("/admin/articles"); // 跳转到文章列表页
 
             } else {
                 // 创建新文章
                 await submitArticle(articleData);
-                alert("文章添加成功！");
+                message.success('文章添加成功');
+
                 navigate("/admin"); // 跳转到文章列表页
             }
 
         } catch (error) {
             console.error("提交文章失败:", error); // 记录错误日志
-            alert("文章添加/更新失败，请重试！");
+            message.error('提交文章失败', error);
+
         }
     };
 
@@ -154,9 +153,11 @@ export default function MarkdownEditor() {
         const file = e.target.files[0];
         if (file) {
             setCoverImage(file); // 保存图片文件
+            console.log('图片:',  setCoverImage)
             const reader = new FileReader();
             reader.onloadend = () => {
                 setPreviewImage(reader.result); // 设置预览图片
+                console.log('图片文件::',  setPreviewImage)
             };
             reader.readAsDataURL(file);
         }

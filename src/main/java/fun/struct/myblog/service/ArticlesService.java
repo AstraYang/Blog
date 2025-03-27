@@ -13,12 +13,14 @@ import fun.struct.myblog.vo.ArticlesListVo;
 import java.util.List;
 
 public interface ArticlesService extends IService<Articles> {
+    Page<Articles> searchArticlesWithPage(String keyword, int current, int size);
     int addArticle(ArticlesDto articlesDto);
-    int updateArticle(Integer id,ArticlesDto articlesDto);
+    boolean updateArticle(Integer id,ArticlesDto articlesDto);
     boolean deleteArticleByIds(List<Integer> articleIds);
     boolean updateArticleDelByIds(List<Integer> ids, boolean newDel);
     ArticleVO selectArticleDetail(Integer articleId);
     Page<ArticleManagementListVO> getPaginatedArticles(Page<ArticleManagementListVO> page, ArticleQueryDTO queryDTO);
     ArticleDataVo getArticle(Integer id);
+    boolean updateArticleStatus(Integer articleId, boolean Status);
     Page<ArticlesListVo> getArticlesPage(int page, int size, Integer categoryId);
 }

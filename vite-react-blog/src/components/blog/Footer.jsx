@@ -1,228 +1,127 @@
 import * as React from 'react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
-import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import FacebookIcon from '@mui/icons-material/GitHub';
-import LinkedInIcon from '@mui/icons-material/LinkedIn';
-import TwitterIcon from '@mui/icons-material/X';
-import SitemarkIcon from './SitemarkIcon.jsx';
+import {getSiteSettings} from "../../menuStorage.js";
 
 function Copyright() {
-  return (
-    <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
-      {'Copyright © '}
-      <Link color="text.secondary" href="https://blog.struct.fun/">
-        AstraYang
-      </Link>
-      &nbsp;
-      {new Date().getFullYear()}
-    </Typography>
-  );
+    return (
+        <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
+            {'Copyright © '}
+            <Link color="text.secondary" href="https://blog.struct.fun/">
+                AstraYang
+            </Link>
+            &nbsp;
+            {new Date().getFullYear()}
+        </Typography>
+    );
+}
+
+// 添加站点运行时长组件
+function SiteRuntime() {
+    const [runtime, setRuntime] = React.useState('');
+    const { siteStartDate } = getSiteSettings();
+
+    React.useEffect(() => {
+        // 设置网站创建日期，根据您的实际创建日期进行修改
+        const startDate = new Date(siteStartDate); // 示例日期，请替换为您的网站实际创建日期
+
+        // 计算并显示运行时间的函数
+        const calculateRuntime = () => {
+            const currentDate = new Date();
+            const timeDiff = currentDate - startDate;
+
+            // 计算天数、小时、分钟和秒数
+            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+            setRuntime(`${days} 天 ${hours} 时 ${minutes} 分 ${seconds} 秒`);
+        };
+
+        // 初始运行和每秒更新
+        calculateRuntime();
+        const timer = setInterval(calculateRuntime, 1000);
+
+        // 组件卸载时清除计时器
+        return () => clearInterval(timer);
+    }, []);
+
+    return (
+        <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
+            站点已运行 {runtime}
+        </Typography>
+    );
 }
 
 export default function Footer() {
-  return (
-    <React.Fragment>
-      {/*<Divider />*/}
-      <Container
-        sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: { xs: 4, sm: 8 },
-          py: { xs: 8, sm: 10 },
-          textAlign: { sm: 'center', md: 'left' },
-        }}
-      >
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
-            width: '100%',
-            justifyContent: 'space-between',
-          }}
-        >
-          {/*<Box*/}
-          {/*  sx={{*/}
-          {/*    display: 'flex',*/}
-          {/*    flexDirection: 'column',*/}
-          {/*    gap: 4,*/}
-          {/*    minWidth: { xs: '100%', sm: '60%' },*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Box sx={{ width: { xs: '100%', sm: '60%' } }}>*/}
-          {/*    <SitemarkIcon />*/}
-          {/*    <Typography*/}
-          {/*      variant="body2"*/}
-          {/*      gutterBottom*/}
-          {/*      sx={{ fontWeight: 600, mt: 2 }}*/}
-          {/*    >*/}
-          {/*      Join the newsletter*/}
-          {/*    </Typography>*/}
-          {/*    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>*/}
-          {/*      Subscribe for weekly updates. No spams ever!*/}
-          {/*    </Typography>*/}
-          {/*    <InputLabel htmlFor="email-newsletter">Email</InputLabel>*/}
-          {/*    <Stack direction="row" spacing={1} useFlexGap>*/}
-          {/*      <TextField*/}
-          {/*        id="email-newsletter"*/}
-          {/*        hiddenLabel*/}
-          {/*        size="small"*/}
-          {/*        variant="outlined"*/}
-          {/*        fullWidth*/}
-          {/*        aria-label="Enter your email address"*/}
-          {/*        placeholder="Your email address"*/}
-          {/*        slotProps={{*/}
-          {/*          htmlInput: {*/}
-          {/*            autoComplete: 'off',*/}
-          {/*            'aria-label': 'Enter your email address',*/}
-          {/*          },*/}
-          {/*        }}*/}
-          {/*        sx={{ width: '250px' }}*/}
-          {/*      />*/}
-          {/*      <Button*/}
-          {/*        variant="contained"*/}
-          {/*        color="primary"*/}
-          {/*        size="small"*/}
-          {/*        sx={{ flexShrink: 0 }}*/}
-          {/*      >*/}
-          {/*        Subscribe*/}
-          {/*      </Button>*/}
-          {/*    </Stack>*/}
-          {/*  </Box>*/}
-          {/*</Box>*/}
-          {/*<Box*/}
-          {/*  sx={{*/}
-          {/*    display: { xs: 'none', sm: 'flex' },*/}
-          {/*    flexDirection: 'column',*/}
-          {/*    gap: 1,*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Typography variant="body2" sx={{ fontWeight: 'medium' }}>*/}
-          {/*    Product*/}
-          {/*  </Typography>*/}
-          {/*  <Link color="text.secondary" variant="body2" href="#">*/}
-          {/*    Features*/}
-          {/*  </Link>*/}
-          {/*  <Link color="text.secondary" variant="body2" href="#">*/}
-          {/*    Testimonials*/}
-          {/*  </Link>*/}
-          {/*  <Link color="text.secondary" variant="body2" href="#">*/}
-          {/*    Highlights*/}
-          {/*  </Link>*/}
-          {/*  <Link color="text.secondary" variant="body2" href="#">*/}
-          {/*    Pricing*/}
-          {/*  </Link>*/}
-          {/*  <Link color="text.secondary" variant="body2" href="#">*/}
-          {/*    FAQs*/}
-          {/*  </Link>*/}
-          {/*</Box>*/}
-          {/*<Box*/}
-          {/*  sx={{*/}
-          {/*    display: { xs: 'none', sm: 'flex' },*/}
-          {/*    flexDirection: 'column',*/}
-          {/*    gap: 1,*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Typography variant="body2" sx={{ fontWeight: 'medium' }}>*/}
-          {/*    Company*/}
-          {/*  </Typography>*/}
-          {/*  <Link color="text.secondary" variant="body2" href="#">*/}
-          {/*    About us*/}
-          {/*  </Link>*/}
-          {/*  <Link color="text.secondary" variant="body2" href="#">*/}
-          {/*    Careers*/}
-          {/*  </Link>*/}
-          {/*  <Link color="text.secondary" variant="body2" href="#">*/}
-          {/*    Press*/}
-          {/*  </Link>*/}
-          {/*</Box>*/}
-          {/*<Box*/}
-          {/*  sx={{*/}
-          {/*    display: { xs: 'none', sm: 'flex' },*/}
-          {/*    flexDirection: 'column',*/}
-          {/*    gap: 1,*/}
-          {/*  }}*/}
-          {/*>*/}
-          {/*  <Typography variant="body2" sx={{ fontWeight: 'medium' }}>*/}
-          {/*    Legal*/}
-          {/*  </Typography>*/}
-          {/*  <Link color="text.secondary" variant="body2" href="#">*/}
-          {/*    Terms*/}
-          {/*  </Link>*/}
-          {/*  <Link color="text.secondary" variant="body2" href="#">*/}
-          {/*    Privacy*/}
-          {/*  </Link>*/}
-          {/*  <Link color="text.secondary" variant="body2" href="#">*/}
-          {/*    Contact*/}
-          {/*  </Link>*/}
-          {/*</Box>*/}
-        </Box>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            pt: { xs: 4, sm: 8 },
-            width: '100%',
-            borderTop: '1px solid',
-            borderColor: 'divider',
-          }}
-        >
-          <div>
-            {/*<Link color="text.secondary" variant="body2" href="#">*/}
-            {/*  Privacy Policy*/}
-            {/*</Link>*/}
-            {/*<Typography sx={{ display: 'inline', mx: 0.5, opacity: 0.5 }}>*/}
-            {/*  &nbsp;•&nbsp;*/}
-            {/*</Typography>*/}
-            {/*<Link color="text.secondary" variant="body2" href="#">*/}
-            {/*  Terms of Service*/}
-            {/*</Link>*/}
-            <Copyright />
-          </div>
-          <Stack
-            direction="row"
-            spacing={1}
-            useFlexGap
-            sx={{ justifyContent: 'left', color: 'text.secondary' }}
-          >
-            <IconButton
-              color="inherit"
-              size="small"
-              href="https://github.com/AstraYang/Blog"
-              aria-label="GitHub"
-              sx={{ alignSelf: 'center' }}
+    return (
+        <React.Fragment>
+            {/*<Divider />*/}
+            <Container
+                sx={{
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    gap: { xs: 4, sm: 1 },
+                    py: { xs: 8, sm: 10 },
+                    textAlign: { sm: 'center', md: 'left' },
+                }}
             >
-              <FacebookIcon />
-            </IconButton>
-            {/*<IconButton*/}
-            {/*  color="inherit"*/}
-            {/*  size="small"*/}
-            {/*  href="https://x.com/MaterialUI"*/}
-            {/*  aria-label="X"*/}
-            {/*  sx={{ alignSelf: 'center' }}*/}
-            {/*>*/}
-            {/*  <TwitterIcon />*/}
-            {/*</IconButton>*/}
-            {/*<IconButton*/}
-            {/*  color="inherit"*/}
-            {/*  size="small"*/}
-            {/*  href="https://www.linkedin.com/company/mui/"*/}
-            {/*  aria-label="LinkedIn"*/}
-            {/*  sx={{ alignSelf: 'center' }}*/}
-            {/*>*/}
-            {/*  <LinkedInIcon />*/}
-            {/*</IconButton>*/}
-          </Stack>
-        </Box>
-      </Container>
-    </React.Fragment>
-  );
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        width: '100%',
+                        justifyContent: 'space-between',
+                    }}
+                >
+
+                </Box>
+                <Box
+                    sx={{
+                        display: 'flex',
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        justifyContent: 'space-between',
+                        alignItems: { xs: 'center', sm: 'flex-start' },
+                        pt: { xs: 4, sm: 2 },
+                        width: '100%',
+                        borderTop: '1px solid',
+                        borderColor: 'divider',
+                    }}
+                >
+                    <Box sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
+                        <Copyright />
+                        <Box sx={{ mx: 2 }} /> {/* 使用 Box 添加一些水平间距 */}
+                        <SiteRuntime />
+                    </Box>
+                    <Stack
+                        direction="row"
+                        spacing={1}
+                        useFlexGap
+                        sx={{
+                            justifyContent: 'left',
+                            color: 'text.secondary',
+                            mt: { xs: 2, sm: 0 }
+                        }}
+                    >
+                        <IconButton
+                            color="inherit"
+                            size="small"
+                            href="https://github.com/AstraYang/Blog"
+                            aria-label="GitHub"
+                            sx={{ alignSelf: 'center' }}
+                        >
+                            <FacebookIcon />
+                        </IconButton>
+                    </Stack>
+                </Box>
+            </Container>
+        </React.Fragment>
+    );
 }

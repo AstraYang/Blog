@@ -11,7 +11,6 @@ import {useLocation, useNavigate, useParams} from 'react-router-dom';
 import ArticleDetail from "../components/blog/ArticleDetail.jsx";
 import Bookshelf from "../components/blog/Bookshelf.jsx";
 import MindMapDetail from "../components/blog/MindMapDetail.jsx";
-
 export default function Blog(props) {
    // const location = useLocation(); // 获取当前 URL
     const navigate = useNavigate();
@@ -42,8 +41,9 @@ export default function Blog(props) {
             <Container
                 maxWidth="lg"
                 component="main"
-                sx={{ display: 'flex', flexDirection: 'column', my: 16, gap: 4 }}
+                sx={{ display: 'flex',minHeight: '81vh' ,flexDirection: 'column', mt: 12, mb: -10,gap: 4}}
             >
+                {/*<MainContent />*/}
                 {selectedMenu === '首页' && !articleId && <Latest />}
                 {selectedMenu === '首页' && articleId && < ArticleDetail articleId={articleId} />}
                 {selectedMenu === '知识地图' && !id && <MindMapList />}

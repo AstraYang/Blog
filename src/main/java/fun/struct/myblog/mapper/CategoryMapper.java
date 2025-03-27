@@ -15,7 +15,7 @@ public interface CategoryMapper extends BaseMapper<Category> {
     SELECT
         c.category_id AS id, c.category_name, c.created_at, COUNT(a.articles_id) AS count
     FROM
-        category AS c LEFT JOIN articles AS a ON a.category_id = c.category_id
+        category AS c LEFT JOIN articles AS a ON a.category_id = c.category_id AND a.is_deleted = 0
     GROUP BY
         c.category_id, c.category_name, c.created_at;
     """)

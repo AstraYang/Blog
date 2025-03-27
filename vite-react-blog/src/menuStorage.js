@@ -16,9 +16,10 @@ export const getSiteSettings = () => {
     return savedSettings ? JSON.parse(savedSettings) : {
         siteName: '',
         siteDescription: '',
-        allowRegistration: false, // 默认值
+        allowRegistration: false, // 默认注册不允许
         favicon: '', // 默认 Favicon URL
         logo: '', // 默认 LOGO URL
+        siteStartDate: '', // 默认站点运行时间
     };
 };
 

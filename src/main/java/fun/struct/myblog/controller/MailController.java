@@ -32,8 +32,6 @@ public class MailController {
         if (email == null){
             return Result.of(ResultCode.FAIL, "邮箱不能为空");
         }
-        System.out.println("发送重置密码验证码");
-        System.out.println(email);
         boolean isSent = verificationCodeService.sendPasswordResetEmail(email);
         if (isSent){
             return Result.of(ResultCode.SUCCESS, "验证码已发送到 " + email);

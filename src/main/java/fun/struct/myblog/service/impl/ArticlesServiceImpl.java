@@ -1,5 +1,6 @@
 package fun.struct.myblog.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -14,6 +15,7 @@ import fun.struct.myblog.vo.ArticleVO;
 import fun.struct.myblog.vo.ArticlesListVo;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,6 +27,33 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesMapper, Articles> i
     @Resource
     private  ArticlesMapper articlesMapper;
     @Override
+    public Page<Articles> searchArticlesWithPage(String keyword, int current, int size) {
+        // 方法2：使用分页
+        Page<Articles> page = new Page<>(current, size);
+
+//        // 如果想使用自定义SQL
+//        if (StringUtils.hasText(keyword)) {
+//            return baseMapper.searchArticles(page, keyword);
+//        }
+
+        // 或者使用条件构造器
+        LambdaQueryWrapper<Articles> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Articles::isStatus, 1)
+                .and(wrapper -> wrapper
+                        .like(StringUtils.hasText(keyword), Articles::getTitle, keyword)
+//                        .or()
+//                        .like(StringUtils.hasText(keyword), Articles::getContent, keyword)
+                        .or()
+                        .like(StringUtils.hasText(keyword), Articles::getSummary, keyword)
+                        .or()
+                        .like(StringUtils.hasText(keyword), Articles::getAuthor, keyword)
+
+                )
+                .orderByDesc(Articles::getCreatedAt); // 按创建时间降序排序
+
+        return page(page, queryWrapper);
+    }
+    @Override
     public int addArticle(ArticlesDto articlesDto) {
         Articles articles = convertToEntity(articlesDto, true);
         articlesMapper.insert(articles);
@@ -32,11 +61,12 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesMapper, Articles> i
     }
 
     @Override
-    public int updateArticle(Integer id, ArticlesDto articlesDto) {
+    public boolean updateArticle(Integer id, ArticlesDto articlesDto) {
        Articles articles = convertToEntity(articlesDto, false);
        articles.setId(id);
-       articlesMapper.updateById(articles);
-       return id;
+        articles.setViews(articlesMapper.selectById(id).getViews());
+        articlesMapper.updateById(articles);
+       return true;
     }
 
     @Override
@@ -87,6 +117,14 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesMapper, Articles> i
     }
 
     @Override
+    public boolean updateArticleStatus(Integer articleId, boolean Status) {
+        UpdateWrapper<Articles> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("articles_id", articleId) // 设置更新条件
+                .set("is_status", Status);
+        return articlesMapper.update(null, updateWrapper) > 0;
+    }
+
+    @Override
     public Page<ArticlesListVo> getArticlesPage(int page, int size, Integer categoryId) {
         return null;
     }
@@ -101,10 +139,9 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesMapper, Articles> i
         articles.setContent(articlesDto.getContent());
         articles.setCoverImage(articlesDto.getCoverImage());
         articles.setAuthor(articlesDto.getAuthor());
-        articles.set_status(articlesDto.isStatus());
-        articles.set_comment(articlesDto.isComment());
-        articles.set_deleted(articlesDto.isDeleted());
-
+        articles.setStatus(articlesDto.isStatus());
+        articles.setComment(articlesDto.isComment());
+        articles.setDeleted(articlesDto.isDeleted());
         if (isNew) {
             // 新增操作
             articles.setViews(0); // 初始化阅读量为 0
@@ -112,6 +149,7 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesMapper, Articles> i
             articles.setUpdateAt(LocalDateTime.now());
         } else {
             // 更新操作
+            // 获取数据库数据view
             articles.setUpdateAt(LocalDateTime.now()); // 设置更新时间
         }
 

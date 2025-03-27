@@ -34,17 +34,18 @@ export const sendResetEmail = async (email) => {
     }
 };
 
-export const verifyCode = async (emailCode) => {
-    console.log("api验证码："+emailCode);
-    try {
-        const response = await axios.post(`${API_BASE_URL}/verify-code`, emailCode,{
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        return response.data;
-    } catch (error) {
-        console.error('Failed to verify code:', error);
-        throw error;
-    }
-};
+
+// export const verifyCode = async (emailCode) => {
+//     console.log("api验证码："+emailCode);
+//     try {
+//         const response = await axios.post(`${API_BASE_URL}/verify-code`, emailCode,{
+//             headers: {
+//                 'Content-Type': 'application/json'
+//             }
+//         });
+//         return response.data;
+//     } catch (error) {
+//         console.error('Failed to verify code:', error);
+//         throw error;
+//     }
+// };

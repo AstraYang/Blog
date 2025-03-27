@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -21,6 +21,8 @@ import { SitemarkIcon } from "../components/sigin-in/CustomIcons";
 import { login, register } from "../api/User.js";
 import { useNavigate } from 'react-router-dom';
 import {sendEmail} from "../api/email.js";
+import {getSiteSettings} from "../menuStorage.js";
+import {message} from "antd";
 
 // 翻转容器样式
 const FlipContainer = styled(Box)({
@@ -98,6 +100,7 @@ const SignInContainer = styled(Stack)(({ theme }) => ({
 
 export default function SignIn(props) {
   const [verificationCode, setVerificationCode] = useState("");
+  const [isRegistration, setIsRegistration] = useState("");
   const [isCodeSent, setIsCodeSent] = useState(false);
   const [isFlipped, setIsFlipped] = useState(false);
   const [formErrors, setFormErrors] = useState({
@@ -108,6 +111,12 @@ export default function SignIn(props) {
   });
   const [open, setOpen] = useState(false);
   const navigate = useNavigate();
+
+
+  useEffect(() => {
+    const { allowRegistration } = getSiteSettings();
+    setIsRegistration(allowRegistration);
+  }, []);
 
   // 字段验证函数
   const validateField = (name, value) => {
@@ -176,8 +185,14 @@ export default function SignIn(props) {
     try {
       if (isLogin) {
         // 登录逻辑
-        await login(formData.get('username'), formData.get('password'));
-        navigate("/admin");
+        const response = await login(formData.get('username'), formData.get('password'));
+        console.log("code:",response);
+       if (response.code === 200) {
+          message.success("登录成功");
+          navigate("/admin");
+       }else{
+         message.error("账号/密码错误");
+       }
       } else {
 
        const response = await register({
@@ -189,12 +204,13 @@ export default function SignIn(props) {
         });
        if (response.code === 200) {
          setIsFlipped(false);
-         alert('注册成功! 前往登陆');
+         message.success("注册成功! 前往登陆");
+
        }else {
-         alert('注册失败! 注册信息已存在');
+         message.error('注册失败! 注册信息已存在');
        }      }
     } catch (error) {
-      alert(`Error: ${error.message}`);
+      message.error(`Error: 账号/密码错误!`,error);
     }
   };
 
@@ -204,16 +220,16 @@ export default function SignIn(props) {
     console.log('Email:', email)
 
     if (!email) {
-      alert("请输入您的电子邮件地址.");
+      message.error("请输入您的电子邮件地址.");
       return;
     }
 
     try {
       await sendEmail(email); // 这里调用你的发送验证码的API
       setIsCodeSent(true);
-      alert("验证码已发送到您的电子邮件中");
+      message.error("验证码已发送到您的电子邮件中");
     } catch (error) {
-      alert(`Error: ${error.message}`);
+      message.error(`Error: ${error.message}`);
     }
   };
 
@@ -293,21 +309,25 @@ export default function SignIn(props) {
                     <ForgotPassword open={open} handleClose={handleClose} />
                   </Box>
 
-                  <Typography variant="body2" sx={{ textAlign: 'center', mt: 3 }}>
-                    您还没有账号?{' '}
-                    <MuiLink
-                        component="button"
-                        type="button"
-                        onClick={() => setIsFlipped(true)}
-                        sx={{ fontWeight: 600 }}
-                    >
-                      注册账号
-                    </MuiLink>
-                  </Typography>
+                  {isRegistration ? (
+                      <Typography variant="body2" sx={{ textAlign: 'center', mt: 3 }}>
+                        您还没有账号?{' '}
+                        <MuiLink
+                            component="button"
+                            type="button"
+                            onClick={() => setIsFlipped(true)}
+                            sx={{ fontWeight: 600 }}
+                        >
+                          注册账号
+                        </MuiLink>
+                      </Typography>
+                  ) : (
+                      <></>
+                  )}
+
                 </Box>
               </FrontCard>
 
-              {/* 注册表单 - 背面 */}
               {/* 注册表单 - 背面 */}
               <BackCard>
                 {/*<SitemarkIcon />*/}

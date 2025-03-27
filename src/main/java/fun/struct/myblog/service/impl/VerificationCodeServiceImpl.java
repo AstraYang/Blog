@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -56,19 +57,9 @@ public  class VerificationCodeServiceImpl implements VerificationCodeService {
     @Override
     public boolean verifyCode(EmailCodeDTO emailCodeDTO) {
         String storedCode = redisTemplate.opsForValue().get(emailCodeDTO.getEmail());
-        if(storedCode != null && storedCode.equals(emailCodeDTO.getCode())){
-            if (emailCodeDTO.getType().equals("reset")){
-                UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
-                updateWrapper.eq("email", emailCodeDTO.getEmail()); // 更新条件
-                updateWrapper.set("password", "111111"); // 更新字段
-                userMapper.update(null, updateWrapper); // 第一个参数可以为 null
-
-            }
-            return true;
-
-        }
-        return false;
+        return storedCode != null && storedCode.equals(emailCodeDTO.getCode());
     }
+
 
 
     /**
@@ -124,7 +115,7 @@ public  class VerificationCodeServiceImpl implements VerificationCodeService {
                 "<div id=\"top\"><table><tbody><tr><td></td></tr></tbody></table></div>" +
                 "<div id=\"content\"><div id=\"content_top\">" +
                 "<strong>尊敬的用户，您好！</strong>" +
-                "<strong>您正在进行<span>" + actionDescription + "</span>操作，请在验证码中输入以下验证码完成操作：</strong>" +
+                "<strong>您正在进行<span>" + actionDescription + "</span>操作，请在验证码中输入以下验证码完成操作(5分钟有效)：</strong>" +
                 "<div id=\"verificationCode\">" +
                 "<button class=\"button\">" + code + "</button>" +
                 "</div></div>" +

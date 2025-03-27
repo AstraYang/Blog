@@ -22,9 +22,12 @@ public class Articles {
     private LocalDateTime createdAt;
     private LocalDateTime updateAt;
     private int author;
-    private boolean is_status;
-    private boolean is_comment;
-    private boolean is_deleted;
+    @TableField("is_status")
+    private boolean status;
+    @TableField("is_comment")
+    private boolean comment;
+    @TableField("is_deleted")
+    private boolean deleted;
 
 
 }

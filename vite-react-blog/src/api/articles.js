@@ -30,6 +30,28 @@ const API_Upload_URL = 'http://localhost:8080/uploads';
     }
 };
 
+    /*
+    *分页模糊查询
+    * @param {number} page 当前页码
+    * @param {number} size 每页记录数
+    *
+    * */
+    export const fetchArticlesByKeyword = async (page, size, keyword) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/public/search/page`, {
+            params: {
+                page,
+                size,
+                keyword,
+            },
+        });
+
+        return response.data;
+    } catch (error){
+        console.error('Failed to fetch articles:', error);
+    }
+    }
+
 // 管理文章列表
 export const fetchArticleManagementList =async (page, size, userFilter, publishFilter) =>{
     try {
@@ -125,6 +147,7 @@ export const submitArticle = async (articleData) => {
 // 修改文章
 export const upDateArticle = async (articleData,articleId) => {
     try {
+        console.log("修改文章:", articleData);
         const response = await axios.post(`${API_BASE_URL}/upDate/${articleId}`, articleData,{
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -136,6 +159,24 @@ export const upDateArticle = async (articleData,articleId) => {
         throw error;
     }
 };
+
+//设置文章发布状态
+export const setArticlePublishStatus = async (articleStatus) => {
+    console.log("设置文章发布状态:", articleStatus);
+    console.log("token:", localStorage.getItem('token'));
+    try {
+        const response = await axios.post(`${API_BASE_URL}/setStatus`, articleStatus, {
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            }
+        );
+        return response.data;
+    } catch (error) {
+        console.error("设置文章发布状态失败:", error.response ? error.response.data : error.message);
+        throw error;
+    }
+}
 
 //删除文章（软删除）
 export const deleteArticlesSoft = async (articleIds, del) => {

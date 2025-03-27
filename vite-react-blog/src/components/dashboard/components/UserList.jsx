@@ -152,7 +152,7 @@ export default function UserList() {
                                 size="small"
                             />
                             <TextField
-                                label="权限"
+                                label="用户组"
                                 value={newUserData.permissions}
                                 onChange={(e) => setNewUserData({ ...newUserData, permissions: e.target.value })}
                                 size="small"
@@ -197,7 +197,7 @@ export default function UserList() {
                                 <TableCell align="center">账号</TableCell>
                                 <TableCell align="center">昵称</TableCell>
                                 <TableCell align="center">电子邮箱</TableCell>
-                                <TableCell align="center">权限</TableCell>
+                                <TableCell align="center">用户组</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
