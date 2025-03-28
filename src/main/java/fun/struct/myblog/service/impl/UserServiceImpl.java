@@ -6,12 +6,16 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import fun.struct.myblog.dto.LoginDto;
 import fun.struct.myblog.dto.UserUpdateDTO;
+import fun.struct.myblog.entity.Articles;
 import fun.struct.myblog.entity.User;
 import fun.struct.myblog.mapper.UserMapper;
 import fun.struct.myblog.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
@@ -131,6 +135,31 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return false;
         }
     }
+
+    @Override
+    public boolean updateUserStatusByIds(List<Integer> ids, boolean newStatus) {
+        if (ids == null || ids.isEmpty()) {
+            throw new IllegalArgumentException("ID 列表不能为空");
+        }
+        List<User> users = userMapper.selectByIds(ids);
+        List<Integer> idsToUpdate = new ArrayList<>();
+
+        for (User user : users) {
+            if (!"ADMIN".equals(user.getAuthority())) {
+                idsToUpdate.add(user.getId());
+            }
+        }
+        if (idsToUpdate.isEmpty()) {
+            // 如果没有可更新的用户，返回 false
+            return false;
+        }
+
+        // 执行批量更新
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("user_id", idsToUpdate);
+        return userMapper.update(null, updateWrapper.set("status", newStatus)) > 0;
+    }
+
 
 
 }

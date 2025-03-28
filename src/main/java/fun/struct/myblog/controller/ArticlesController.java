@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import fun.struct.myblog.common.Result;
 import fun.struct.myblog.common.ResultCode;
 import fun.struct.myblog.dto.ArticleQueryDTO;
-import fun.struct.myblog.dto.ArticlesDelDto;
+import fun.struct.myblog.dto.ArticlesUpdateByIdsDTO;
 import fun.struct.myblog.dto.ArticlesDto;
 import fun.struct.myblog.dto.ArticleStatusDTO;
 import fun.struct.myblog.entity.Articles;
@@ -127,10 +127,10 @@ public class ArticlesController {
 
     // 删除文（软删除)
     @DeleteMapping("/delete/soft")
-    public Result deleteArticles(@RequestBody ArticlesDelDto articlesDelDto) {
-        boolean success = articlesService.updateArticleDelByIds(articlesDelDto.getIds(), articlesDelDto.isDel());
+    public Result deleteArticles(@RequestBody ArticlesUpdateByIdsDTO articlesUpdateByIdsDTO) {
+        boolean success = articlesService.updateArticleDelByIds(articlesUpdateByIdsDTO.getIds(), articlesUpdateByIdsDTO.isDel());
         if (success) {
-            System.out.println("删除成功:"+articlesDelDto.getIds());
+            System.out.println("删除成功:"+ articlesUpdateByIdsDTO.getIds());
             return Result.of(ResultCode.SUCCESS, "删除成功");
         } else {
             return Result.of(ResultCode.FAIL, "删除失败");

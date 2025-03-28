@@ -1,5 +1,8 @@
 import axios from "axios";
 
+export function disableUsers() {
+}
+
 
 const API_BASE_URL = 'http://localhost:8080/admin/user';
 const API_Upload_URL = 'http://localhost:8080/uploads';
@@ -178,6 +181,24 @@ export const getUserList = async () => {
     }
 };
 
+/**
+ * 修改用户状态
+ *
+ */
+export const updateUserStatus = async (userStatus) => {
+    try {
+        console.log('修改用户状态:', userStatus)
+        const response = await axios.post(`${API_BASE_URL}/updateStatus`, userStatus, {
+            withCredentials: true, // 允许携带 Cookie
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('修改用户状态失败:', error.response ?error.response.data : error.message);
+    }
+}
 export const createUser = async (user) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/create`, user, {

@@ -68,7 +68,6 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/admin/user/login").permitAll() // 登录放行
                 .requestMatchers(HttpMethod.POST, "/admin/user/signup").permitAll() // 注册放行
                 .requestMatchers(HttpMethod.POST, "/admin/user/reset-password").permitAll()
-                .requestMatchers(HttpMethod.GET, "/articles/articleList").hasAnyAuthority("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/articles/public/**").permitAll() //文章公共接口
                 .requestMatchers(HttpMethod.GET, "/category/public/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/comments/public/**").permitAll()

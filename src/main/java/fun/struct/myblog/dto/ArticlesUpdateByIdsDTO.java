@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ArticlesDelDto {
+public class ArticlesUpdateByIdsDTO {
     private List<Integer> ids;
     private boolean del;
 }

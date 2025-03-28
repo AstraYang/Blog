@@ -20,7 +20,6 @@ import {
 } from '@mui/material';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import {deleteArticlesSoft, fetchArticleManagementList, setArticlePublishStatus} from "../../../api/articles.js";
-//import { getCurrentUser } from "../../../api/User.js";
 
 const theme = createTheme({
     components: {
@@ -43,6 +42,7 @@ export default function ArticleList() {
     const [selectedIds, setSelectedIds] = useState([]);
     const [filter, setFilter] = useState(0);
     const [user, setUser] = useState(0);
+    const [isAdmin, setIsAdmin] = useState(false);
     const [publishState, setPublishState] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
@@ -66,7 +66,15 @@ export default function ArticleList() {
 
     const fetchUser = async () => {
         const currentUser = localStorage.getItem('userInfo');
-        setUser(JSON.parse(currentUser).id);
+        const userInfo = JSON.parse(currentUser);
+        setUser(userInfo.id);
+        // 存储用户权限信息，用于后续判断
+        setIsAdmin(userInfo.authorityString === 'ADMIN');
+
+        // 如果不是管理员，默认只能查看自己的文章
+        if (userInfo.authorityString !== 'ADMIN') {
+            setFilter(userInfo.id);
+        }
     };
 
     useEffect(() => {
@@ -156,19 +164,23 @@ export default function ArticleList() {
                         删除选中项
                     </Button>
                     <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
-                        <ToggleButtonGroup
-                            value={filter}
-                            exclusive
-                            onChange={handleFilterChange}
-                            sx={{ borderRadius: '4px', boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)', maxHeight: '40px' }}
-                        >
-                            <ToggleButton value={0} sx={{ flex: 1, fontSize: '14px' }}>
-                                所有
-                            </ToggleButton>
-                            <ToggleButton value={user} sx={{ flex: 1, fontSize: '14px' }}>
-                                我的
-                            </ToggleButton>
-                        </ToggleButtonGroup>
+                        {isAdmin ? (
+                            <ToggleButtonGroup
+                                value={filter}
+                                exclusive
+                                onChange={handleFilterChange}
+                                sx={{ borderRadius: '4px', boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)', maxHeight: '40px' }}
+                            >
+                                <ToggleButton value={0} sx={{ flex: 1, fontSize: '14px' }}>
+                                    所有
+                                </ToggleButton>
+                                <ToggleButton value={user} sx={{ flex: 1, fontSize: '14px' }}>
+                                    我的
+                                </ToggleButton>
+                            </ToggleButtonGroup>
+                        ) : (
+                            <></>
+                        )}
                     </Box>
 
                     <Box sx={{ mx: 2 }}>

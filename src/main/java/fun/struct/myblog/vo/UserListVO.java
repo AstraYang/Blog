@@ -10,5 +10,6 @@ public class UserListVO {
     private String email;
     private String avatar;
     private String permissions;
+    private boolean status;
 
 }

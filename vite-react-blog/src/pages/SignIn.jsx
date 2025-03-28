@@ -191,7 +191,7 @@ export default function SignIn(props) {
           message.success("登录成功");
           navigate("/admin");
        }else{
-         message.error("账号/密码错误");
+         message.error(response.data);
        }
       } else {
 

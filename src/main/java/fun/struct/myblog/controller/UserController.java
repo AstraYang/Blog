@@ -1,7 +1,6 @@
 package fun.struct.myblog.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Assert;
 import fun.struct.myblog.common.ResultCode;
 import fun.struct.myblog.dto.*;
@@ -44,6 +43,10 @@ public class UserController {
             return Result.of(ResultCode.FAIL, "用户名或密码错误，请重试！");
 
         }
+        // 密码正确，查看账户状态
+        if (!user.isStatus()) {
+            return Result.of(ResultCode.FAIL, "账号已被禁用，请联系管理员！");
+        }
         // 创建claims，包含用户信息及权限
         HashMap<String, Object> claims = new HashMap<>();
         claims.put("id", user.getId());
@@ -74,6 +77,7 @@ public class UserController {
                     vo.setEmail(user.getEmail());
                     vo.setAvatar(user.getAvatar());
                     vo.setPermissions(user.getAuthority());
+                    vo.setStatus(user.isStatus());
                     return vo;
                 })
                 .collect(Collectors.toList());
@@ -192,5 +196,17 @@ public class UserController {
             return Result.of(ResultCode.FAIL, "修改用户信息失败");
         }
         return Result.of(ResultCode.SUCCESS,"修改用户信息成功");
+    }
+
+    @PostMapping("/updateStatus")
+    public Result userStatusByIds(@RequestBody UserUpdateStatusByIdsDTO userUpdateStatusByIdsDTO) {
+        System.out.println("userUpdateStatusByIdsDTO = " + userUpdateStatusByIdsDTO);
+        boolean success = userService.updateUserStatusByIds(userUpdateStatusByIdsDTO.getIds(), userUpdateStatusByIdsDTO.isNewStatus());
+        if (success) {
+            System.out.println("操作成功:"+userUpdateStatusByIdsDTO.getIds());
+            return Result.of(ResultCode.SUCCESS, "操作成功");
+        } else {
+            return Result.of(ResultCode.FAIL, "操作失败");
+        }
     }
 }
