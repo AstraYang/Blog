@@ -27,6 +27,7 @@ const AppRoutes = () => {
                 {/* 定义子路由 */}
                 <Route path="controlPanel" element={<Dashboard />} />
                 <Route path="markdown" element={<Dashboard />} />
+                <Route path="books" element={<Dashboard />} />
                 <Route path="article/:articleId" element={<Dashboard />}/>
                 <Route path="page" element={<Dashboard />} />
                 <Route path="map" element={<Dashboard />} />

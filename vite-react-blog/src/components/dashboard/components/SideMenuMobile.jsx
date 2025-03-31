@@ -16,22 +16,16 @@ import {useNavigate} from "react-router-dom";
 
 function SideMenuMobile({ open, toggleDrawer, onMenuSelect }) {
   const [user, setUser] = useState(null); // 保存用户信息
-  const [loading, setLoading] = useState(true); // 保存加载状态
-  const [error, setError] = useState(null); // 保存错误信息
   const navigate = useNavigate();
 
 
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        setLoading(true); // 开始加载
         const userInfo = localStorage.getItem('userInfo'); // 调用 API 获取用户信息
         setUser(JSON.parse(userInfo)); // 保存用户信息到状态
-        setLoading(false); // 加载完成
       } catch (err) {
         console.error('获取用户信息失败:', err);
-        setError('Failed to load user info');
-        setLoading(false); // 加载完成
       }
     };
 

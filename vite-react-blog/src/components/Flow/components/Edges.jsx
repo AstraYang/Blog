@@ -3,14 +3,13 @@ import {
     BaseEdge,
     EdgeLabelRenderer,
     getBezierPath,
-    useReactFlow,
 } from '@xyflow/react';
 import { Tag } from 'antd';
 import PropTypes from "prop-types";
 import './CustomEdge.css'; // 引入样式文件
 
 function CustomEdge({ id, sourceX, sourceY, targetX, targetY, data }) {
-    const { setEdges } = useReactFlow();
+    //const { setEdges } = useReactFlow();
     const [edgePath, labelX, labelY] = getBezierPath({
         sourceX,
         sourceY,

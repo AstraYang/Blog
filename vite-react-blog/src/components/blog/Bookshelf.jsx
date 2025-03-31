@@ -1,59 +1,77 @@
-import React, { useState } from 'react';
-import { TextField, Grid, Card, CardContent, CardMedia, Typography, Container } from '@mui/material';
+import { useState } from 'react';
+import { TextField, Container, Typography, Box } from '@mui/material';
 
-// 假设的书籍数据
-const booksData = [
-    { id: 1, title: "电子学", author: "作者1", cover: "https://image.struct.fun/i/2025/03/20/024232.png" },
-    { id: 2, title: "书名2", author: "作者2", cover: "https://image.struct.fun/i/2025/03/20/024232.png" },
-    { id: 3, title: "书名3", author: "作者3", cover: "https://via.placeholder.com/150" },
-    // 可以添加更多书籍数据...
-];
-
-const Bookshelf = () => {
+const SearchPage = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const [filteredBooks, setFilteredBooks] = useState(booksData);
 
-    // 处理搜索逻辑
-    const handleSearch = (event) => {
-        const value = event.target.value;
-        setSearchTerm(value);
-        // 根据输入内容过滤书籍
-        const filtered = booksData.filter(book =>
-            book.title.toLowerCase().includes(value.toLowerCase()) ||
-            book.author.toLowerCase().includes(value.toLowerCase())
-        );
-        setFilteredBooks(filtered);
+    const handleSearchChange = (event) => {
+        setSearchTerm(event.target.value);
     };
 
     return (
-        <Container>
+        <Container
+            sx={{
+                height: '80vh',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                background: 'linear-gradient(135deg, #f5f7fa, #c3cfe2)',
+                position: 'relative',
+                overflow: 'hidden'
+            }}
+        >
+            <Typography variant="h4" sx={{ mb: 2, color: '#333', fontWeight: 'bold' }}>
+                欢迎使用书籍搜索
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, color: '#555' }}>
+                输入书籍名称或作者进行搜索
+            </Typography>
             <TextField
                 label="搜索书籍"
                 variant="outlined"
-                fullWidth
                 value={searchTerm}
-                onChange={handleSearch}
-                margin="normal"
+                onChange={handleSearchChange}
+                sx={{
+                    width: '300px',
+                    borderRadius: '8px',
+                    boxShadow: 2,
+                    '& .MuiOutlinedInput-root': {
+                        '& input': {
+                            padding: '12px 14px',
+                        },
+                    },
+                }}
             />
-            <Grid container spacing={2}>
-                {filteredBooks.map(book => (
-                    <Grid item key={book.id} xs={12} sm={6} md={4}>
-                            <CardMedia
-                                component="img"
-                                height="200"
-                                image={book.cover}
-                                alt={book.title}
-                                style={{ width: '50%', objectFit: 'cover' }} // 设置宽度为100%，保证图片适应卡片
-                            />
-                            <CardContent>
-                                <Typography variant="h6">{book.title}</Typography>
-                                <Typography variant="body2" color="textSecondary">{book.author}</Typography>
-                            </CardContent>
-                    </Grid>
-                ))}
-            </Grid>
+            {/* 可以在这添加装饰图形或图标 */}
+            <Box
+                sx={{
+                    position: 'absolute',
+                    top: '20%',
+                    left: '10%',
+                    width: '100px',
+                    height: '100px',
+                    borderRadius: '50%',
+                    background: 'rgb(179,216,232)',
+                    filter: 'blur(30px)',
+                    zIndex: 0,
+                }}
+            />
+            <Box
+                sx={{
+                    position: 'absolute',
+                    top: '60%',
+                    right: '10%',
+                    width: '150px',
+                    height: '150px',
+                    borderRadius: '50%',
+                    background: 'rgb(206,191,191)',
+                    filter: 'blur(30px)',
+                    zIndex: 0,
+                }}
+            />
         </Container>
     );
 };
 
-export default Bookshelf;
+export default SearchPage;

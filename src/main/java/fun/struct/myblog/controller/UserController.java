@@ -9,10 +9,9 @@ import fun.struct.myblog.service.UserService;
 import fun.struct.myblog.entity.User;
 import fun.struct.myblog.common.Result;
 import fun.struct.myblog.service.VerificationCodeService;
-import fun.struct.myblog.util.JwtUtils; // 使用JwtUtils
+import fun.struct.myblog.util.JwtUtils;
 import fun.struct.myblog.vo.UserListVO;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,10 +27,10 @@ public class UserController {
     private UserService userService;
 
     @Resource
-    private JwtUtils jwtUtils; // 注入JwtUtils
-    @Autowired
+    private JwtUtils jwtUtils;
+    @Resource
     private UserMapper userMapper;
-    @Autowired
+    @Resource
     private VerificationCodeService verificationCodeService;
 
     @PostMapping("/login")

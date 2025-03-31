@@ -4,7 +4,6 @@ import fun.struct.myblog.common.Result;
 import fun.struct.myblog.common.ResultCode;
 import fun.struct.myblog.dto.CommentDTO;
 import fun.struct.myblog.service.CommentsService;
-import fun.struct.myblog.service.impl.CommentsServiceImpl;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.*;
 

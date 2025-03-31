@@ -21,7 +21,7 @@ import java.io.IOException;
 import java.util.Collections;
 
 /**
- * @Description: 自定义token验证过滤器，验证成功后将用户信息放入SecurityContext上下文
+ *  自定义token验证过滤器，验证成功后将用户信息放入SecurityContext上下文
  */
 public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
 

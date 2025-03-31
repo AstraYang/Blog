@@ -66,7 +66,9 @@ public class SecurityConfig {
     public SecurityFilterChain defaultSecurityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                 .requestMatchers(HttpMethod.POST, "/admin/user/login").permitAll() // 登录放行
-                .requestMatchers(HttpMethod.POST, "/admin/user/signup").permitAll() // 注册放行
+                .requestMatchers(HttpMethod.POST, "/wallpaper/**").permitAll() // 注册放行
+                .requestMatchers(HttpMethod.GET, "/wallpaper/**").permitAll()
+                .requestMatchers(HttpMethod.POST, "/admin/user/forget-password").permitAll()
                 .requestMatchers(HttpMethod.POST, "/admin/user/reset-password").permitAll()
                 .requestMatchers(HttpMethod.GET, "/articles/public/**").permitAll() //文章公共接口
                 .requestMatchers(HttpMethod.GET, "/category/public/**").permitAll()

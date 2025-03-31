@@ -16,7 +16,8 @@ import ColorModeIconDropdown from '../../shared-theme/ColorModeIconDropdown.jsx'
 import { useNavigate } from "react-router-dom";
 import {  logout } from '../../api/User.js';
 import Drawer from "@mui/material/Drawer";
-import { getMenuItems, getSiteSettings } from '../../menuStorage'; // 确保从存储中获取网站设置
+import { getMenuItems, getSiteSettings } from '../../menuStorage';
+import PropTypes from "prop-types"; // 确保从存储中获取网站设置
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -257,3 +258,7 @@ export default function AppAppBar({ onSelectMenu }) {
       </AppBar>
   );
 }
+
+AppAppBar.propTypes = {
+  onSelectMenu: PropTypes.func, // 声明 onSelectMenu 应该是一个函数
+};

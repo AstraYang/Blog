@@ -12,11 +12,7 @@ import java.util.Date;
 import java.util.Map;
 
 /**
- * @Description: 生成和解析jwt令牌
- * @Author: 翰戈.summer
- * @Date: 2023/11/16
- * @Param:
- * @Return:
+ * 生成和解析jwt令牌
  */
 @Component
 @RequiredArgsConstructor
@@ -25,7 +21,7 @@ public class JwtUtils {
     private final JwtProperties jwtProperties;
 
     /**
-     * @Description: 生成令牌
+     *  生成令牌
      */
         public String getJwt(Map<String, Object> claims) {
         try {
@@ -52,7 +48,7 @@ public class JwtUtils {
 
 
     /**
-     * @Description: 解析令牌
+     * 解析令牌
      */
     public Claims parseJwt(String jwt) {
 

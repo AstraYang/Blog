@@ -7,6 +7,7 @@ import ColorModeIconDropdown from '../../../shared-theme/ColorModeIconDropdown';
 import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser';
 import Search from './Search.jsx';
 import {useNavigate} from "react-router-dom";
+import PropTypes from "prop-types";
 
 export default function Header({ selectedMenu, onMenuSelect }) {
     const navigate = useNavigate(); // 路由跳转
@@ -39,3 +40,13 @@ export default function Header({ selectedMenu, onMenuSelect }) {
         </Stack>
     );
 }
+
+Header.propTypes = {
+    selectedMenu: PropTypes.string, // 假设 selectedMenu 是字符串类型
+    onMenuSelect: PropTypes.func.isRequired // 必须是函数类型
+};
+
+// 默认值设置
+Header.defaultProps = {
+    selectedMenu: '' // 默认为空字符串
+};

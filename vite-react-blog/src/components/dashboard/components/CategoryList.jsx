@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import {
     Box,
     Button,
@@ -20,6 +19,7 @@ import {
 } from '@mui/material';
 import { fetchCategories, createCategory, deleteCategories } from '../../../api/category.js';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {useEffect, useState} from "react";
 
 const theme = createTheme({
     components: {

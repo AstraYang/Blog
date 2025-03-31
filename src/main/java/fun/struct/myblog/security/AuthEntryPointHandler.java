@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 /**
- * @Description: 自定义用户未登录的处理（未携带token）
+ *  自定义用户未登录的处理（未携带token）
  */
 @Component
 public class AuthEntryPointHandler implements AuthenticationEntryPoint {

@@ -9,10 +9,6 @@ import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 import { useEffect } from "react";
 import { fetchCategories } from "../../../api/category.js";
-import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
-import Stack from "@mui/material/Stack";
-import { IndiaFlag, UsaFlag } from '../internals/components/CustomIcons';
-
 const StyledText = styled('text')(({ theme }) => ({
   textAnchor: 'middle',
   dominantBaseline: 'central',

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import fun.struct.myblog.entity.Comments;
 import fun.struct.myblog.sql.GenericSqlProvider;
-import fun.struct.myblog.vo.ArticleManagementListVO;
 import fun.struct.myblog.vo.CommentManagementListVO;
 import fun.struct.myblog.vo.CommentsVO;
 import org.apache.ibatis.annotations.DeleteProvider;

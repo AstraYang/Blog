@@ -3,13 +3,10 @@ package fun.struct.myblog.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import fun.struct.myblog.common.Result;
 import fun.struct.myblog.common.ResultCode;
-import fun.struct.myblog.dto.ArticlesDto;
 import fun.struct.myblog.dto.MindMapDTO;
 import fun.struct.myblog.entity.MindMap;
-import fun.struct.myblog.mapper.MindMapMapper;
 import fun.struct.myblog.service.MindMapService;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -63,7 +60,10 @@ public class MindMapController {
     @PostMapping("/update/{id}")
     public Result upDateMindMap(@RequestBody MindMapDTO mindMapDTO, @PathVariable("id") Integer id) {
         System.out.println("Map更新的数据："+mindMapDTO);
-        mindMapService.updateMindMap(id,mindMapDTO);
+        int update = mindMapService.updateMindMap(id,mindMapDTO);
+        if (update == 0) {
+            return Result.of(ResultCode.FAIL, "修改Map失败");
+        }
         return Result.of(ResultCode.SUCCESS,"修改Map成功");
     }
 

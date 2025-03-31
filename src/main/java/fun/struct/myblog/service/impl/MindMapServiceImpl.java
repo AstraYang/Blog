@@ -8,7 +8,6 @@ import fun.struct.myblog.entity.MindMap;
 import fun.struct.myblog.mapper.MindMapMapper;
 import fun.struct.myblog.service.MindMapService;
 import jakarta.annotation.Resource;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

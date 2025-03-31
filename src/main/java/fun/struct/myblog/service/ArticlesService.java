@@ -22,5 +22,4 @@ public interface ArticlesService extends IService<Articles> {
     Page<ArticleManagementListVO> getPaginatedArticles(Page<ArticleManagementListVO> page, ArticleQueryDTO queryDTO);
     ArticleDataVo getArticle(Integer id);
     boolean updateArticleStatus(Integer articleId, boolean Status);
-    Page<ArticlesListVo> getArticlesPage(int page, int size, Integer categoryId);
 }

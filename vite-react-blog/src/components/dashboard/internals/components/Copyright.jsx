@@ -1,6 +1,6 @@
-import * as React from 'react';
 import Link from '@mui/material/Link';
 import Typography from '@mui/material/Typography';
+import PropTypes from "prop-types";
 
 export default function Copyright(props) {
   return (
@@ -24,3 +24,10 @@ export default function Copyright(props) {
     </Typography>
   );
 }
+
+Copyright.propTypes = {
+    sx: PropTypes.oneOfType([
+        PropTypes.array, // 允许 sx 是数组
+        PropTypes.object, // 允许 sx 是对象
+    ]),
+};

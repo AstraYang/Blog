@@ -17,7 +17,6 @@ import { styled } from "@mui/material/styles";
 import ForgotPassword from "../components/sigin-in/ForgotPassword.jsx";
 import AppTheme from "../shared-theme/AppTheme.jsx";
 import ColorModeSelect from "../shared-theme/ColorModeSelect.jsx";
-import { SitemarkIcon } from "../components/sigin-in/CustomIcons";
 import { login, register } from "../api/User.js";
 import { useNavigate } from 'react-router-dom';
 import {sendEmail} from "../api/email.js";

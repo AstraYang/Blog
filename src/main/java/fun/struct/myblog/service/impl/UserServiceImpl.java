@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import fun.struct.myblog.dto.LoginDto;
 import fun.struct.myblog.dto.UserUpdateDTO;
-import fun.struct.myblog.entity.Articles;
 import fun.struct.myblog.entity.User;
 import fun.struct.myblog.mapper.UserMapper;
 import fun.struct.myblog.service.UserService;

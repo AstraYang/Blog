@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Box, Typography, TextField, Button, Paper, Grid, IconButton, Divider } from "@mui/material";
+import { Box, Typography, TextField, Button, Grid, IconButton} from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import Picker from "@emoji-mart/react";

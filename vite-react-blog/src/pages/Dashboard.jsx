@@ -12,12 +12,13 @@ import MainGrid from "../components/dashboard/components/MainGrid.jsx";
 import ArticleManagementPage from "../components/dashboard/components/ArticleManagementPage.jsx";
 import MarkdownEditor from "../components/dashboard/components/MarkdownEditor.jsx";
 import TagList from "../components/dashboard/components/TagList.jsx";
-import BlogCreatPage from "./BlogCreatPage.jsx";
+import BlogCreatPage from "../components/dashboard/components/BlogCreatPage.jsx";
 import SettingsPage from "../components/dashboard/components/SettingsPage.jsx";
 import UserList from "../components/dashboard/components/UserList.jsx";
 import MindMapList from "../components/dashboard/components/MindMapList.jsx";
 import CommentList from "../components/dashboard/components/CommentList.jsx";
 import FlowEditor from "../components/Flow/FlowEditor.jsx";
+import BookManagement from "../components/blog/BookManagement.jsx";
 
 const Dashboard = (props) => {
     const location = useLocation();
@@ -58,6 +59,8 @@ const Dashboard = (props) => {
                 return <MainGrid />;
             case 'markdown':
                 return <MarkdownEditor />;
+            case 'books':
+                return <BookManagement />;
             case 'articles':
                 return <ArticleManagementPage />;
             case 'article':

@@ -23,6 +23,7 @@ const mainListItems = [
         children: [
             { text: '独立页面', value: 'page' },
             { text: '知识地图', value: 'map' },
+            { text: '文献', value: 'books'},
             { text: '文章', value: 'articles' },
             { text: '分类', value: 'categories' },
             { text: '标签', value: 'tags' },
@@ -67,6 +68,20 @@ export default function MenuContent({ onMenuSelect }) {
         return true; // 其他角色不做过滤
     });
 
+    const filterChildrenItems = (children) => {
+        if (!children) return [];
+
+        // 如果是 User 角色，屏蔽某些子菜单项
+        if (userRole === 'USER') {
+            return children.filter(child =>
+                child.value !== 'page' &&
+                child.value !== 'categories' &&
+                child.value !== 'tags' &&
+                child.value !== 'comments'
+            );
+        }
+        return children; // 其他角色不做过滤
+    };
     return (
         <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
             <List dense>
@@ -86,7 +101,7 @@ export default function MenuContent({ onMenuSelect }) {
                         {item.children && (
                             <Collapse in={openIndexes[index]} timeout="auto" unmountOnExit>
                                 <List component="div" disablePadding>
-                                    {item.children.map((child, childIndex) => (
+                                    {filterChildrenItems(item.children).map((child, childIndex) => (
                                         <ListItem key={childIndex} disablePadding sx={{ pl: 4 }}>
                                             <ListItemButton
                                                 selected={selectedIndex === `${index}-${childIndex}`}

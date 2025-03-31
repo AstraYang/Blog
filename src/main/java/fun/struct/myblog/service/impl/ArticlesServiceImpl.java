@@ -28,21 +28,15 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesMapper, Articles> i
     private  ArticlesMapper articlesMapper;
     @Override
     public Page<Articles> searchArticlesWithPage(String keyword, int current, int size) {
-        // 方法2：使用分页
+
+
         Page<Articles> page = new Page<>(current, size);
 
-//        // 如果想使用自定义SQL
-//        if (StringUtils.hasText(keyword)) {
-//            return baseMapper.searchArticles(page, keyword);
-//        }
-
-        // 或者使用条件构造器
+        // 使用条件构造器
         LambdaQueryWrapper<Articles> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(Articles::isStatus, 1)
                 .and(wrapper -> wrapper
                         .like(StringUtils.hasText(keyword), Articles::getTitle, keyword)
-//                        .or()
-//                        .like(StringUtils.hasText(keyword), Articles::getContent, keyword)
                         .or()
                         .like(StringUtils.hasText(keyword), Articles::getSummary, keyword)
                         .or()
@@ -65,8 +59,8 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesMapper, Articles> i
        Articles articles = convertToEntity(articlesDto, false);
        articles.setId(id);
         articles.setViews(articlesMapper.selectById(id).getViews());
-        articlesMapper.updateById(articles);
-       return true;
+
+        return articlesMapper.updateById(articles) > 0;
     }
 
     @Override
@@ -124,10 +118,6 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesMapper, Articles> i
         return articlesMapper.update(null, updateWrapper) > 0;
     }
 
-    @Override
-    public Page<ArticlesListVo> getArticlesPage(int page, int size, Integer categoryId) {
-        return null;
-    }
 
     private Articles convertToEntity(ArticlesDto articlesDto, boolean isNew) {
         Articles articles = new Articles();

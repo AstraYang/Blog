@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 /**
- * @Description: 自定义用户权限不足的处理
+ *  自定义用户权限不足的处理
  */
 @Component
 public class AuthAccessDeniedHandler implements AccessDeniedHandler {

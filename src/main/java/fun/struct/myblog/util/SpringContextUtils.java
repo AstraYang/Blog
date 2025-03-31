@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Component;
 
 /**
- * @Description: 用于创建上下文，实现ApplicationContextAware接口
+ *  用于创建上下文，实现ApplicationContextAware接口
  */
 @Component
 public class SpringContextUtils implements ApplicationContextAware {

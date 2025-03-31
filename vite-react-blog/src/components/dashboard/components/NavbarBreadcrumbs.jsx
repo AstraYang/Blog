@@ -22,6 +22,7 @@ const breadcrumbMap = {
   markdown: "撰写文章",
   page: "独立页面",
   map: "知识地图",
+  books: "文献",
   articles: "文章",
   article: "编辑文章",
   categories: "分类",

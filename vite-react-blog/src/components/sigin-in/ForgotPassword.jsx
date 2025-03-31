@@ -11,7 +11,6 @@ import { useState, useEffect } from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
 import { sendResetEmail} from '../../api/email.js';
 import {resetPassword} from "../../api/User.js";
-import {message} from "antd";
 
 function ForgotPassword({ open, handleClose }) {
   const [email, setEmail] = useState('');

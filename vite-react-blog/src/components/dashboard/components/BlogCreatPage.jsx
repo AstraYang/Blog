@@ -1,16 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Box,
     Button,
     Typography,
     MenuItem,
-    Select,
-    FormControl,
-    InputLabel,
     Divider,
     Paper,
 } from '@mui/material';
-import { getMenuItems, setMenuItems } from '../menuStorage';
+import { getMenuItems, setMenuItems } from '../../../menuStorage.js';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 

@@ -1,9 +1,6 @@
 package fun.struct.myblog.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import fun.struct.myblog.dto.EmailCodeDTO;
-import fun.struct.myblog.entity.User;
-import fun.struct.myblog.mapper.UserMapper;
 import fun.struct.myblog.service.VerificationCodeService;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
@@ -12,7 +9,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Random;
@@ -24,8 +20,6 @@ public  class VerificationCodeServiceImpl implements VerificationCodeService {
     @Autowired
     private RedisTemplate<String, String> redisTemplate;
 
-    @Autowired
-    private UserMapper userMapper;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -34,6 +28,7 @@ public  class VerificationCodeServiceImpl implements VerificationCodeService {
     private String from;
 
     private final Random random = new Random();
+
 
     /**
      * 发送邮箱验证码

@@ -11,6 +11,7 @@ import DashboardRoundedIcon from '@mui/icons-material/DashboardRounded';
 import SideMenuMobile from './SideMenuMobile.jsx';
 import MenuButton from './MenuButton.jsx';
 import ColorModeIconDropdown from '../../../shared-theme/ColorModeIconDropdown';
+import PropTypes from "prop-types";
 
 const Toolbar = styled(MuiToolbar)({
   width: '100%',
@@ -103,3 +104,7 @@ export function CustomIcon() {
     </Box>
   );
 }
+
+AppNavbar.propTypes = {
+    onMenuSelect: PropTypes.func.isRequired, // 定义 onMenuSelect 必须是函数类型
+};

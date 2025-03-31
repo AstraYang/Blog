@@ -16,9 +16,6 @@ class MyBlogApplicationTests {
     @Autowired
     private ArticlesService articlesService;
 
-    @Test
-    void contextLoads() {
-    }
 
     @Test
     void testSearchArticlesWithPage() {

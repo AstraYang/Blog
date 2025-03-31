@@ -1,4 +1,3 @@
-import React from "react";
 import PropTypes from "prop-types";
 import { Typography, List, ListItem, ListItemButton, ListItemText, Box } from "@mui/material";
 

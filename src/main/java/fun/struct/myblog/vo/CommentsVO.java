@@ -1,11 +1,8 @@
 package fun.struct.myblog.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import fun.struct.myblog.entity.Comments;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 public class CommentsVO {

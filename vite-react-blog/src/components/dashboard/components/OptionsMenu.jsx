@@ -28,7 +28,6 @@ import { useEffect, useState } from 'react';
 import {message} from "antd";
 import Typography from "@mui/material/Typography";
 import {sendResetEmail} from "../../../api/email.js";
-import {Email} from "@mui/icons-material";
 
 const theme = createTheme({
     components: {

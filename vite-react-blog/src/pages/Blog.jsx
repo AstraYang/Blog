@@ -7,12 +7,13 @@ import Latest from '../components/blog/Latest.jsx';
 import Footer from '../components/blog/Footer.jsx';
 import LinkCardPage from "../components/blog/LinkCardPage.jsx";
 import MindMapList from "../components/blog/MindMapList.jsx";
-import {useLocation, useNavigate, useParams} from 'react-router-dom';
+import { useNavigate, useParams} from 'react-router-dom';
 import ArticleDetail from "../components/blog/ArticleDetail.jsx";
 import Bookshelf from "../components/blog/Bookshelf.jsx";
 import MindMapDetail from "../components/blog/MindMapDetail.jsx";
+import BookDetail from "../components/blog/BookDetail.jsx";
+import WallpaperGallery from "../components/blog/WallpaperGallery.jsx";
 export default function Blog(props) {
-   // const location = useLocation(); // 获取当前 URL
     const navigate = useNavigate();
     const { id } = useParams();
     const {articleId} = useParams();
@@ -49,7 +50,9 @@ export default function Blog(props) {
                 {selectedMenu === '知识地图' && !id && <MindMapList />}
                 {selectedMenu === '知识地图' && id && <MindMapDetail id={id} />}
                 {selectedMenu === '导航' && <LinkCardPage />}
+                {selectedMenu === '图片' && <WallpaperGallery />}
                 {selectedMenu === '资料' && <Bookshelf />}
+                {selectedMenu === '关于' && <BookDetail />}
 
             </Container>
             <Footer />

@@ -1,7 +1,6 @@
 package fun.struct.myblog.security;
 
 import fun.struct.myblog.entity.User;
-import fun.struct.myblog.mapper.UserMapper;
 import fun.struct.myblog.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,9 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 /**
- * @Description: 用户登录
- * @Author: 翰戈.summer
- * @Date: 2023/11/16
+ *  用户登录
  */
 @Service
 @RequiredArgsConstructor

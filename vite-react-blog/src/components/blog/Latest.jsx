@@ -4,12 +4,10 @@ import {
     Grid,
     Typography,
     Pagination,
-    IconButton,
     Chip,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
-import RssFeedRoundedIcon from '@mui/icons-material/RssFeedRounded';
 import { useNavigate } from 'react-router-dom';
 import { fetchArticles } from '../../api/articles';
 import { fetchCategories } from '../../api/category';

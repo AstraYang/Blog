@@ -4,16 +4,16 @@ import fun.struct.myblog.common.Result;
 import fun.struct.myblog.common.ResultCode;
 import fun.struct.myblog.dto.EmailCodeDTO;
 import fun.struct.myblog.service.VerificationCodeService;
+import jakarta.annotation.Resource;
 import jakarta.mail.MessagingException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("email")
 public class MailController {
 
-    @Autowired
-    private VerificationCodeService verificationCodeService;
+    @Resource
+    private  VerificationCodeService verificationCodeService;
 
     // 发送注册验证码
     @GetMapping("/send-code")

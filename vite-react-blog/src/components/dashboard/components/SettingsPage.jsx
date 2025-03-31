@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
     Box,
     Typography,
@@ -10,7 +10,8 @@ import {
     FormControlLabel,
 } from '@mui/material';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getLinkItems, getSiteSettings, setLinkItems, setSiteSettings } from '../../../menuStorage'; // 导入新存储方法
+import { getLinkItems, getSiteSettings, setLinkItems, setSiteSettings } from '../../../menuStorage';
+import {message} from "antd"; // 导入新存储方法
 
 const theme = createTheme({
     components: {
@@ -65,9 +66,9 @@ export default function SettingsPage() {
         try {
             const parsedLink = JSON.parse(link); // 尝试解析链接数据
             setLinkItems(parsedLink); // 保存链接数据
-            alert('设置已保存！');
+            message.success('设置已保存！');
         } catch (error) {
-            alert('链接设置格式错误，请检查 JSON 格式！'); // 错误提示
+            message.success('链接设置格式错误，请检查 JSON 格式！', error); // 错误提示
         }
     };
 
