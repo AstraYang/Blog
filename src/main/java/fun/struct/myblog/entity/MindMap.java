@@ -16,6 +16,7 @@ public class MindMap {
     private String title;
     private String summary;
     private String data;
+    private Integer author;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

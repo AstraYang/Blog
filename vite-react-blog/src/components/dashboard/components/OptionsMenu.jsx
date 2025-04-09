@@ -113,7 +113,7 @@ export default function OptionsMenu() {
             navigate('/');
         } catch (error) {
             console.error('退出登录失败:', error);
-            alert('退出登录失败，请重试！');
+            message.error('退出登录失败，请重试！');
         }
     };
 
@@ -489,14 +489,6 @@ export default function OptionsMenu() {
                         </Button>
                     </DialogActions>
                 </Dialog>
-
-                <MenuButton
-                    aria-label="Open menu"
-                    onClick={handleClick}
-                    sx={{ borderColor: 'transparent' }}
-                >
-                    <MoreVertRoundedIcon />
-                </MenuButton>
 
 
             </React.Fragment>

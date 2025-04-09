@@ -8,7 +8,7 @@ const API_BASE_URL = 'http://localhost:8080/category';
 export const fetchCategories = async () => {
     try {
         const response = await axios.get(`${API_BASE_URL}/public/list`,{
-
+            withCredentials: true
         });
         console.log("API获取分类成功:", response.data);
         return response.data.data;
@@ -33,6 +33,7 @@ export const createCategory = async (categoryName) => {
                 'Content-Type': 'application/x-www-form-urlencoded', // 设置请求头为表单格式
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
+            withCredentials: true
         });
         return response.data;
     } catch (error) {
@@ -49,6 +50,7 @@ export const deleteCategories = async (categoryIds) => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
+            withCredentials: true
         });
         console.log('删除成功:', response.data);
     } catch (error) {

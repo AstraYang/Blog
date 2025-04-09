@@ -14,11 +14,11 @@ import {
     ListItemText,
     ListItemSecondaryAction,
     Snackbar,
-    Alert, Pagination,
+    Alert, Pagination, ListItemButton,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import {deleteBook, getBookList, saveBook} from "../../api/books.js";
+import {deleteBook, getBookList, saveBook} from "../../../api/books.js";
 import {message} from "antd";
 
 const theme = createTheme({
@@ -137,14 +137,8 @@ export default function BookManagement() {
 
     return (
         <ThemeProvider theme={theme}>
-            <Container maxWidth="lg" sx={{ py: 4 }}>
-                <Typography variant="h5" component="h1" gutterBottom>
-                    添加书籍
-                </Typography>
+            <Container maxWidth="lg" sx={{ py: 7 }}>
                 <Paper elevation={3} sx={{ p: { xs: 2, md: 4 }, borderRadius: 2 }}>
-                    {/*<Typography variant="h4" component="h1" gutterBottom>*/}
-                    {/*    添加书籍*/}
-                    {/*</Typography>*/}
                     <Grid container spacing={4}>
                         <Grid item xs={12} md={6}>
                             <TextField
@@ -219,21 +213,35 @@ export default function BookManagement() {
                                 ) : (
                                     <List>
                                         {books.map((book, index) => (
-                                            <ListItem key={index} button>
-                                                <ListItemText
-                                                    primary={book.title}
-                                                    secondary={`作者: ${book.author} | 分类: ${book.categories.join(', ')} | 下载: `}
-                                                >
-                                                    <a href={book.downloadUrl} target="_blank" rel="noreferrer">点击下载</a>
-                                                </ListItemText>
-                                                <ListItemSecondaryAction>
-                                                    <IconButton edge="end" aria-label="delete" onClick={() => handleDeleteBook(book.id)}>
-                                                        <DeleteIcon />
-                                                    </IconButton>
-                                                </ListItemSecondaryAction>
+                                            <ListItem key={index} >
+                                                <ListItemButton>
+                                                    <ListItemText
+                                                        primary={book.title}
+                                                        secondary={
+                                                            <>
+                                                                作者: {book.author} | 分类: {book.categories.join(', ')} |
+                                                                <a href={book.downloadUrl} target="_blank" rel="noreferrer" style={{ marginLeft: '8px', textDecoration: 'none', color: 'blue' }}>
+                                                                    点击下载
+                                                                </a>
+                                                            </>
+                                                        }
+                                                    />
+                                                    <ListItemSecondaryAction>
+                                                        <IconButton
+                                                            edge="end"
+                                                            aria-label="delete"
+                                                            onClick={() => handleDeleteBook(book.id)}
+                                                            sx={{ marginLeft: '10px' }}
+                                                        >
+                                                            <DeleteIcon />
+                                                        </IconButton>
+                                                    </ListItemSecondaryAction>
+                                                </ListItemButton>
                                             </ListItem>
                                         ))}
                                     </List>
+
+
                                 )}
                             </Box>
                             <Pagination

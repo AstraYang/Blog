@@ -28,6 +28,25 @@ public class MindMapController {
         return Result.of(ResultCode.SUCCESS,mindMapPage);
     }
 
+    @GetMapping("/admin/list")
+    public Result getMindMapManagementList(@RequestParam int page,
+                                           @RequestParam int size,
+                                           Integer uId){
+        Page<MindMap> mindMapPage =mindMapService.getPaginatedMindMapsP(uId, page, size);
+
+        return Result.of(ResultCode.SUCCESS,mindMapPage);
+    }
+
+    @GetMapping("/public/search/page")
+    public Result searchMindMapWithPage(@RequestParam String keyword,
+                                        @RequestParam(defaultValue = "1") int page,
+                                        @RequestParam(defaultValue = "10") int size,
+                                        @RequestParam(required = false) Integer uId){
+        Page<MindMap> mindMapPage = mindMapService.searchMindMapPage(keyword, page, size, uId);
+
+        return Result.of(ResultCode.SUCCESS,mindMapPage);
+    }
+
     @GetMapping("/public/getMindMapById/{id}")
     public Result getMindMapById(@PathVariable("id") Integer id){
         MindMap mindMap = mindMapService.getById(id);
@@ -39,10 +58,10 @@ public class MindMapController {
         MindMap mindMap = new MindMap();
         mindMap.setTitle(mindMapDTO.getTitle());
         mindMap.setSummary(mindMapDTO.getSummary());
-        System.out.println("Map的数据："+mindMapDTO);
 
         // 设置数据，如果没有提供则使用默认值
         mindMap.setData((!Objects.equals(mindMapDTO.getData(), null) ? mindMapDTO.getData() : mindMapJson));
+        mindMap.setAuthor(mindMapDTO.getAuthor());
         mindMap.setCreatedAt(LocalDateTime.now());
 
         // 保存思维导图

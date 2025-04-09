@@ -34,7 +34,7 @@ public class UserController {
     private VerificationCodeService verificationCodeService;
 
     @PostMapping("/login")
-    public Result login(@RequestBody LoginDto loginDto) {
+    public Result login(@RequestBody LoginDTO loginDto) {
         System.out.println("登录信息:" + loginDto);
         User user = userService.login(loginDto);
         System.out.println("user = " + user);
@@ -207,5 +207,12 @@ public class UserController {
         } else {
             return Result.of(ResultCode.FAIL, "操作失败");
         }
+    }
+
+    //统计用户数
+    @GetMapping("/count")
+    public Result count() {
+        long count = userService.count();
+        return Result.of(ResultCode.SUCCESS, count);
     }
 }

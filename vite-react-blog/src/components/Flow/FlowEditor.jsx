@@ -129,6 +129,7 @@ const FlowEditor = () => {
                 tagColor: 'volcano',
             }
         };
+        console.log('New Edge:', newEdge);
         setEdges((eds) => addEdge(newEdge, eds));
     }, [setEdges]);
     const addNode = (values) => {

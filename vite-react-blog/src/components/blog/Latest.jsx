@@ -11,7 +11,7 @@ import NavigateNextRoundedIcon from '@mui/icons-material/NavigateNextRounded';
 import { useNavigate } from 'react-router-dom';
 import { fetchArticles } from '../../api/articles';
 import { fetchCategories } from '../../api/category';
-import { getSiteSettings } from '../../menuStorage'; // 导入获取设置的函数
+import {fetchSettings} from '../../api/menuStorage.js'; // 导入获取设置的函数
 import { Search } from "./Search.jsx"
 
 // 使得文本在超过两行时会显示省略号
@@ -129,9 +129,14 @@ export default function Latest() {
 
     // 新增 useEffect 来获取网站设置
     useEffect(() => {
-        const { siteName, siteDescription } = getSiteSettings(); // 从本地存储获取网站设置
-        setSiteName(siteName);
-        setSiteDescription(siteDescription);
+        const loadSettings = async () => {
+            const fetchedSettings = await fetchSettings();
+            if (fetchedSettings){
+                setSiteName(fetchedSettings.siteName);
+                setSiteDescription(fetchedSettings.siteDescription);
+            }
+        };
+        loadSettings();
     }, []);
 
     return (

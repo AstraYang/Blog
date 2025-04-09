@@ -8,5 +8,6 @@ public class MindMapDTO {
     private String title;
     private String summary;
     private String data;
+    private Integer author;
 
 }

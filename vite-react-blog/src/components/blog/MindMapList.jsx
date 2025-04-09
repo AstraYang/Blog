@@ -94,7 +94,7 @@ const MindMapPreview = ({ mindMap }) => {
                     zoomOnScroll={false}
                     panOnScroll={true}
                     panOnDrag={true}
-                    interactive={true}
+                   // interactive={true}
                 >
                     <Background />
                 </ReactFlow>
@@ -179,7 +179,7 @@ const MindMapList = () => {
                                             {mindMap.summary || '无描述'}
                                         </StyledTypography>
                                         <Typography variant="caption" color="text.secondary">
-                                            更新时间：{new Date(mindMap.updatedAt).toLocaleString()}
+                                            更新时间: {mindMap.updatedAt ===null ? new Date(mindMap.createdAt).toLocaleString() :new Date(mindMap.updatedAt).toLocaleString()}
                                         </Typography>
                                     </CardContent>
                                 </Card>

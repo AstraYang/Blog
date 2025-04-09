@@ -64,6 +64,18 @@ public class CommentsController {
     }
 
     /*
+    * 获取评论总数
+    * 接收参数:无;
+    * 请求方法:GET;
+    * 返回结果:成功或失败,count;
+    * URL:/comments/count;
+    * */
+    @GetMapping("/count")
+    public Result count(){
+        return Result.of(ResultCode.SUCCESS, commentsService.count());
+    }
+
+    /*
     * 根据评论id获取回复
     * 接收参数:parentId, page, size;
     * 请求方法:GET;

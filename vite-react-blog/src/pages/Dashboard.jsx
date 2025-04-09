@@ -15,10 +15,10 @@ import TagList from "../components/dashboard/components/TagList.jsx";
 import BlogCreatPage from "../components/dashboard/components/BlogCreatPage.jsx";
 import SettingsPage from "../components/dashboard/components/SettingsPage.jsx";
 import UserList from "../components/dashboard/components/UserList.jsx";
-import MindMapList from "../components/dashboard/components/MindMapList.jsx";
+import MindMapManagementList from "../components/dashboard/components/MindMapManagementList.jsx";
 import CommentList from "../components/dashboard/components/CommentList.jsx";
 import FlowEditor from "../components/Flow/FlowEditor.jsx";
-import BookManagement from "../components/blog/BookManagement.jsx";
+import BookManagement from "../components/dashboard/components/BookManagement.jsx";
 
 const Dashboard = (props) => {
     const location = useLocation();
@@ -74,7 +74,7 @@ const Dashboard = (props) => {
             case 'page':
                 return <BlogCreatPage/>;
             case 'map':
-                return <MindMapList />;
+                return <MindMapManagementList />;
             case 'mindMap':
                 return <FlowEditor id={id} />;
             case 'userList':

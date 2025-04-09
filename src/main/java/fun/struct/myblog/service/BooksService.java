@@ -13,4 +13,5 @@ public interface BooksService extends IService<Books> {
 
     boolean saveBook(UploadBookDTO uploadBookDTO);
     Page<Books> getBooksListByUserId(int page, int size, Integer uId);
+    Page<Books> searchBooksWithPage(String keyword, int current, int size);
 }

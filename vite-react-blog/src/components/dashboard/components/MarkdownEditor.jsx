@@ -15,24 +15,23 @@ import {
     Paper,
     Divider,
 } from "@mui/material";
-import MDEditor from "@uiw/react-md-editor"; // Markdown 编辑器
-import { useNavigate, useParams } from "react-router-dom"; // 路由跳转
-import { fetchCategories } from "../../../api/category.js"; // 分类 API
+import MDEditor from "@uiw/react-md-editor";
+import { useNavigate, useParams } from "react-router-dom";
+import { fetchCategories } from "../../../api/category.js";
 import {uploadCoverImage, submitArticle, fetchArticleById, upDateArticle} from "../../../api/articles.js"; // 文章 API
 import { fetchTags } from "../../../api/tags.js";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import {message} from "antd";
-//import { getCurrentUser } from "../../../api/User.js"; // 用户 API
 
 const theme = createTheme({
     components: {
         MuiInputLabel: {
             styleOverrides: {
                 root: {
-                    top: "2px", // 调整初始位置
+                    top: "2px",
                 },
                 shrink: {
-                    top: "-5px", // 调整缩小后的位置
+                    top: "-5px",
                 },
             },
         },
@@ -165,7 +164,7 @@ export default function MarkdownEditor() {
 
     return (
         <ThemeProvider theme={theme}>
-            <Container maxWidth="xl" sx={{ mt: 4 }}>
+            <Container maxWidth="lg" sx={{ py: 7 }}>
                 <Grid container spacing={4}>
                     {/* 左侧内容区 */}
                     <Grid item xs={12} md={8}>

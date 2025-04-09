@@ -247,7 +247,7 @@ const WallpaperGallery = () => {
                 boxShadow: '0 2px 12px rgba(0,0,0,0.1)',
                 p: 1,
                 backgroundColor: '#fff',
-                height: '490px', // 固定高度
+                //height: '500px', // 固定高度
                 overflow: 'hidden',
                 display: 'flex',
                 flexDirection: 'column'

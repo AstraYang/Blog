@@ -5,7 +5,7 @@ import fun.struct.myblog.common.Result;
 import fun.struct.myblog.common.ResultCode;
 import fun.struct.myblog.dto.ArticleQueryDTO;
 import fun.struct.myblog.dto.ArticlesUpdateByIdsDTO;
-import fun.struct.myblog.dto.ArticlesDto;
+import fun.struct.myblog.dto.ArticlesDTO;
 import fun.struct.myblog.dto.ArticleStatusDTO;
 import fun.struct.myblog.entity.Articles;
 import fun.struct.myblog.mapper.ArticlesMapper;
@@ -59,9 +59,10 @@ public class ArticlesController {
     public Result searchArticlesWithPage(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) Integer uId) {
 
-        Page<Articles> articlesP = articlesService.searchArticlesWithPage(keyword, page, size);
+        Page<ArticleManagementListVO> articlesP = articlesService.searchArticlesWithPage(keyword, page, size, uId);
         System.out.println(articlesP);
         return Result.of(ResultCode.SUCCESS,articlesP);
     }
@@ -95,7 +96,7 @@ public class ArticlesController {
 
     // 添加文章
     @PostMapping("/add")
-    public Result addArticle(@RequestBody ArticlesDto articlesDto) {
+    public Result addArticle(@RequestBody ArticlesDTO articlesDto) {
         Integer articleId =  articlesService.addArticle(articlesDto);
         articlesTagsService.addArticleTags(articleId, articlesDto.getTags());
         return Result.of(ResultCode.SUCCESS,"添加文章成功");
@@ -104,7 +105,7 @@ public class ArticlesController {
 
     // 修改文章数据
     @PostMapping("/upDate/{articleId}")
-    public Result upDateArticle(@RequestBody ArticlesDto articlesDto,@PathVariable("articleId") Integer articleId) {
+    public Result upDateArticle(@RequestBody ArticlesDTO articlesDto, @PathVariable("articleId") Integer articleId) {
         System.out.println("更新的数据："+articlesDto);
         articlesTagsService.updateArticleTags(articleId, articlesDto.getTags());
         boolean success = articlesService.updateArticle(articleId,articlesDto);

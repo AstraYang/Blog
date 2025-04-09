@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { Box, Typography, TextField, Button, Grid, IconButton} from "@mui/material";
+import {Box, Typography, TextField, Button, Grid, IconButton, Pagination} from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import Picker from "@emoji-mart/react";
@@ -33,20 +33,36 @@ const CommentSection = () => {
     const [email, setEmail] = useState("");
     const [website, setWebsite] = useState("");
     const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+    const [renovate, setRenovate] = useState(false);
     const [expandedReplies, setExpandedReplies] = useState({});
     const [replyingTo, setReplyingTo] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const commentPerPage = 4;
+
 
     useEffect(() => {
-        const loadComments = async () => {
+        const loadComments = async (page) => {
             try {
-                const response = await fetchCommentsById(articleId, 1, 10);
+                const response = await fetchCommentsById(articleId, page, commentPerPage);
                 setComments(response.data.records);
+                setTotalPages(response.data.pages);
+
             } catch (error) {
                 console.error('评论加载错误:', error);
             }
         };
-        loadComments();
-    }, []);
+        loadComments(currentPage);
+
+        const userInfoString = localStorage.getItem('userInfo');
+        if (userInfoString) {
+            const userInfoData = JSON.parse(userInfoString);
+            if (userInfoData) {
+                setUsername(userInfoData.nickName || ""); // 设置昵称
+                setEmail(userInfoData.email || ""); // 设置邮箱
+            }
+        }
+    }, [currentPage, renovate]);
 
     const handleCommentSubmit = async () => {
         if (newComment.trim() && username.trim() && email.trim()) {
@@ -63,11 +79,13 @@ const CommentSection = () => {
                 const response = await submitComment(newCommentObj);
                 setComments((prevComments) => [...prevComments, response.data]);
                 resetInput();
+                setRenovate(!renovate);
             } catch (error) {
                 console.error('提交评论失败:', error);
             }
         }
     };
+
 
     const handleReplySubmit = (replyObj) => {
         const parentComment = comments.find(comment => comment.id === replyObj.parentId);
@@ -129,6 +147,10 @@ const CommentSection = () => {
                     setReplyingTo={setReplyingTo}
                 />
             ));
+    };
+
+    const handlePageChange = (event, value) => {
+        setCurrentPage(value);
     };
 
     return (
@@ -225,6 +247,14 @@ const CommentSection = () => {
                         <Typography color="textSecondary">暂无评论</Typography>
                     )}
                 </Box>
+                <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    variant="outlined"
+                    shape="rounded"
+                    sx={{ display: 'flex', justifyContent: 'right', mb: 2 }}
+                />
             </Box>
         </ThemeProvider>
     );

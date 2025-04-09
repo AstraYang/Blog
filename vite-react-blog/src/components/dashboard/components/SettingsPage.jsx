@@ -10,8 +10,13 @@ import {
     FormControlLabel,
 } from '@mui/material';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { getLinkItems, getSiteSettings, setLinkItems, setSiteSettings } from '../../../menuStorage';
-import {message} from "antd"; // 导入新存储方法
+import {
+    fetchSettings,
+    getSiteSettings,
+    saveSettings,
+    setSiteSettings
+} from '../../../api/menuStorage.js';
+import { message } from "antd"; // 导入新存储方法
 
 const theme = createTheme({
     components: {
@@ -32,44 +37,58 @@ const theme = createTheme({
 export default function SettingsPage() {
     const [siteName, setSiteName] = useState('');
     const [siteDescription, setSiteDescription] = useState('');
-    const [link, setLink] = useState('');
-    const [allowRegistration, setAllowRegistration] = useState(false); // 改为布尔值
-    const [favicon, setFavicon] = useState(''); // 新增状态用于存储 Favicon URL
-    const [logo, setLogo] = useState(''); // 新增状态用于存储 LOGO URL
-    const [siteStartDate, setSiteStartDate] = useState(''); // 新增状态用于存储站点运行时间
+    const [link, setLink] = useState(JSON.stringify([])); // 初始状态为 JSON 字符串
+    const [formattedLink, setFormattedLink] = useState(''); // 新增状态用于存储格式化后的链接
+    const [allowRegistration, setAllowRegistration] = useState(false);
+    const [favicon, setFavicon] = useState('');
+    const [logo, setLogo] = useState('');
+    const [siteStartDate, setSiteStartDate] = useState('');
 
-    // 从 localStorage 加载数据
     useEffect(() => {
-        const settings = getSiteSettings(); // 获取网站设置
-        const linkItems = getLinkItems(); // 获取链接数据
+        fetchSettings();
+        const settings = getSiteSettings();
         setSiteName(settings.siteName);
         setSiteDescription(settings.siteDescription);
-        setLink(JSON.stringify(linkItems, null, 2)); // 转换为 JSON 字符串并格式化
-        setAllowRegistration(settings.allowRegistration || false); // 加载注册设置
-        setFavicon(settings.favicon || ''); // 加载 Favicon URL
-        setLogo(settings.logo || ''); // 加载 LOGO URL
-        setSiteStartDate(settings.siteStartDate || ''); // 加载站点运行时间
+        setLink(settings.linkItems);
+        setFormattedLink(formatJson(settings.linkItems)); // 格式化链接
+        setAllowRegistration(settings.allowRegistration || false);
+        setFavicon(settings.favicon || '');
+        setLogo(settings.logo || '');
+        setSiteStartDate(settings.siteStartDate || '');
     }, []);
 
-    // 保存数据到 localStorage
+    const formatJson = (jsonString) => {
+        try {
+            const jsonObject = JSON.parse(jsonString);
+            return JSON.stringify(jsonObject, null, 2); // 使用2个空格缩进
+        } catch (error) {
+            return jsonString; // 如果解析失败，返回原始字符串
+        }
+    };
+
     const handleSave = () => {
+        let parsedLink;
+        try {
+            parsedLink = JSON.parse(link); // 尝试将 link 解析为对象
+        } catch (error) {
+            message.error('链接设置格式错误，请检查 JSON 格式！');
+            return;
+        }
+
         const settings = {
+            id: 1,
             siteName,
             siteDescription,
-            allowRegistration, // 保存是否允许注册的状态
-            favicon, // 保存 Favicon URL
-            logo, // 保存 LOGO URL
-            siteStartDate, // 保存站点运行时间
+            allowRegistration,
+            favicon,
+            logo,
+            siteStartDate,
+            linkItems: JSON.stringify(parsedLink), // 确保 linkItems 是合法的 JSON 字符串
         };
-        setSiteSettings(settings); // 保存网站设置
 
-        try {
-            const parsedLink = JSON.parse(link); // 尝试解析链接数据
-            setLinkItems(parsedLink); // 保存链接数据
-            message.success('设置已保存！');
-        } catch (error) {
-            message.success('链接设置格式错误，请检查 JSON 格式！', error); // 错误提示
-        }
+        setSiteSettings(settings);
+        saveSettings(settings);
+        message.success('设置已保存！');
     };
 
     return (
@@ -182,8 +201,11 @@ export default function SettingsPage() {
                         margin="normal"
                         multiline
                         rows={6}
-                        value={link}
-                        onChange={(e) => setLink(e.target.value)} // 更新状态
+                        value={formattedLink} // 显示格式化后的链接
+                        onChange={(e) => {
+                            setLink(e.target.value);
+                            setFormattedLink(formatJson(e.target.value)); // 更新格式化后的链接
+                        }} // 更新状态
                     />
                     <Typography variant="caption" color="textSecondary">
                         介绍：用于填写导航链接 (请使用有效的 JSON 格式),注意：需要先添加导航页面，该项才会生效

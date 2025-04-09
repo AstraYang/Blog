@@ -17,9 +17,10 @@ import {
     Button,
     Pagination,
     useMediaQuery,
+    TextField,
 } from '@mui/material';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import {deleteArticlesSoft, fetchArticleManagementList, setArticlePublishStatus} from "../../../api/articles.js";
+import { deleteArticlesSoft, fetchArticleManagementList, setArticlePublishStatus, fetchArticlesByKeyword } from "../../../api/articles.js"; // 确保导入 fetchArticlesByKeyword
 
 const theme = createTheme({
     components: {
@@ -44,27 +45,52 @@ export default function ArticleList() {
     const [user, setUser] = useState(0);
     const [isAdmin, setIsAdmin] = useState(false);
     const [publishState, setPublishState] = useState(true);
+    const [searchTerm, setSearchTerm] = useState(''); // 添加搜索状态
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const articlesPerPage = 7;
 
     const isMobile = useMediaQuery(theme.breakpoints.down('sm')); // 检测是否为手机端
 
-    const loadArticles = async (page) => {
+    useEffect(() => {
+        fetchUser();
+    }, []);
+
+    useEffect(() => {
+        loadArticles(currentPage, filter);
+    }, [currentPage, filter, publishState, searchTerm]);
+
+    const handleSelect = (id) => {
+        setSelectedIds((prev) =>
+            prev.includes(id) ? prev.filter((selectedId) => selectedId !== id) : [...prev, id]
+        );
+    };
+    const loadArticles = async (page, filter) => {
         try {
-            const result = await fetchArticleManagementList(page, articlesPerPage, filter, publishState);
-            if (result.code === 200) {
-                setData(result.data.records);
-                setTotalPages(result.data.pages);
+            if (searchTerm) {
+                const result = await fetchArticlesByKeyword(page, articlesPerPage, searchTerm, user);
+                if (result.code === 200) {
+                    setData(result.data.records);
+                    setTotalPages(result.data.pages);
+                    console.log(result);
+                } else {
+                    console.error('获取文章失败', result.message);
+                }
             } else {
-                console.error('获取文章失败', result.message);
+                const result = await fetchArticleManagementList(page, articlesPerPage, filter, publishState);
+                if (result.code === 200) {
+                    setData(result.data.records);
+                    setTotalPages(result.data.pages);
+                } else {
+                    console.error('获取文章失败', result.message);
+                }
             }
         } catch (error) {
             console.error('请求出错', error);
         }
     };
 
-    const fetchUser = async () => {
+    const fetchUser =  async () => {
         const currentUser = localStorage.getItem('userInfo');
         const userInfo = JSON.parse(currentUser);
         setUser(userInfo.id);
@@ -73,20 +99,13 @@ export default function ArticleList() {
 
         // 如果不是管理员，默认只能查看自己的文章
         if (userInfo.authorityString !== 'ADMIN') {
-            setFilter(userInfo.id);
+            const newFilter = userInfo.id; // 将新值存储在变量中
+            setFilter(newFilter);
+            await loadArticles(currentPage, newFilter); // 在设置 filter 后加载文章
+
         }
     };
 
-    useEffect(() => {
-        fetchUser();
-        loadArticles(currentPage);
-    }, [currentPage, filter, publishState]);
-
-    const handleSelect = (id) => {
-        setSelectedIds((prev) =>
-            prev.includes(id) ? prev.filter((selectedId) => selectedId !== id) : [...prev, id]
-        );
-    };
 
     const isSelected = (id) => selectedIds.includes(id);
 
@@ -114,13 +133,11 @@ export default function ArticleList() {
     };
 
     const togglePublishStatus = async (id, status) => {
-        console.log('togglePublishStatus', id, !status)
         const articleStatus = {
-            articleId:id,
+            articleId: id,
             status: !status,
-        }
+        };
         const setStatus = await setArticlePublishStatus(articleStatus);
-        console.log('setArticlePublishStatus', setStatus)
         if (setStatus.code !== 200) {
             console.error('设置文章发布状态失败', setStatus.message);
         }
@@ -148,9 +165,25 @@ export default function ArticleList() {
                     mt: 4,
                 }}
             >
-                <Typography variant="h5" gutterBottom sx={{ mt: 7 }}>
-                    文章管理
-                </Typography>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end' }}>
+                    <Typography variant="h5" gutterBottom sx={{ mt: 7 }}>
+                        文章管理
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <TextField
+                            variant="outlined"
+                            size="small"
+                            placeholder="搜索文章..."
+                            value={searchTerm}
+                            onChange={(e) => {
+                                setSearchTerm(e.target.value);
+                                setCurrentPage(1); // 重置为第一页
+                            }}
+                            sx={{ mx: 2, width: '250px' }}
+                        />
+                    </Box>
+                </Box>
+
                 <Divider sx={{ my: 1.5 }} />
 
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, alignItems: 'center' }}>
@@ -163,6 +196,7 @@ export default function ArticleList() {
                     >
                         删除选中项
                     </Button>
+
                     <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'flex-end' }}>
                         {isAdmin ? (
                             <ToggleButtonGroup

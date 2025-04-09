@@ -2,27 +2,25 @@ import { useEffect, useState } from "react";
 import { Box, Card, CardContent, CardHeader, CircularProgress, Divider, Typography } from "@mui/material";
 import { useParams } from "react-router-dom";
 import { marked } from "marked";
-import hljs from "highlight.js"; // 引入 highlight.js
-import "highlight.js/styles/github-dark.css"; // 引入代码高亮样式
+import { markedHighlight } from "marked-highlight";
+import hljs from "highlight.js";
+import "highlight.js/styles/github-dark.css";
 import CommentSection from "./CommentSection.jsx";
-import { getArticleDetail } from "../../api/articles.js"; // 引入 API 请求方法
+import { getArticleDetail } from "../../api/articles.js";
+import TableOfContents from "./TableOfContents.jsx";
 
-// 配置 marked 使用 highlight.js 进行代码高亮
-marked.setOptions({
-    headerIds: true,
-    headerPrefix: "header-",
-    highlight: (code, language) => {
-        const validLanguage = hljs.getLanguage(language) ? language : "plaintext";
-        return hljs.highlight(code, { language: validLanguage, ignoreIllegals: true }).value;
-    },
-    sanitize: false, // 确保 Markdown 中的 HTML 被正确渲染
-    smartypants: false,
-    breaks: true,
-});
+marked.use(markedHighlight({
+    langPrefix: 'hljs language-',
+    highlight(code, lang) {
+        const language = hljs.getLanguage(lang) ? lang : 'shell';
+        return hljs.highlight(code, { language }).value;
+    }
+}));
 
 const ArticleDetail = () => {
-    const { articleId } = useParams(); // 从路由中获取文章 ID
+    const { articleId } = useParams();
     const [article, setArticle] = useState({ content: "" });
+    const [htmlContent, setHtmlContent] = useState("");
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -31,6 +29,19 @@ const ArticleDetail = () => {
             try {
                 const fetchedArticle = await getArticleDetail(articleId);
                 if (fetchedArticle) {
+                    let localCounter = 1;
+                    const customMarked = marked
+                        .use({
+                            renderer: {
+                                heading({ text, depth }) {
+                                    const id = `heading-${localCounter++}`;
+                                    return `<h${depth} id="${id}">${text}</h${depth}>`;
+                                }
+                            }
+                        });
+
+                    const parsedHtml = customMarked(fetchedArticle.content);
+                    setHtmlContent(parsedHtml);
                     setArticle({
                         id: fetchedArticle.id,
                         title: fetchedArticle.title,
@@ -48,55 +59,14 @@ const ArticleDetail = () => {
                 setLoading(false);
             }
         };
-
         fetchArticle();
         console.log("文章ID：", articleId);
     }, [articleId]);
 
-    // 为每个代码块增加一键复制逻辑
     useEffect(() => {
         if (article.content) {
-            const codeBlocks = document.querySelectorAll("pre code");
-            codeBlocks.forEach((block) => {
-                // 移除已有的高亮样式
-                block.classList.remove("hljs");
-
-                // 确保代码块的内容不会被错误地解析为 HTML 标签
-                const originalCode = block.innerText;
-
-                // 转义 < 和 >，确保不会被解析为 HTML 标签
-                block.innerHTML = originalCode
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;");
-
-                // 使用 highlight.js 重新高亮代码块
-                hljs.highlightElement(block);
-
-                // 为代码块添加按钮容器
-                const preElement = block.parentNode; // 找到 <pre> 元素
-                if (!preElement.querySelector(".copy-button")) {
-                    const copyButton = document.createElement("button");
-                    copyButton.innerText = "复制";
-                    copyButton.className = "copy-button";
-                    copyButton.style.cssText =
-                        "position: absolute; top: 8px; right: 8px; background: #616161; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; z-index: 10;";
-                    copyButton.addEventListener("click", () => {
-                        navigator.clipboard.writeText(block.innerText).then(
-                            () => {
-                                copyButton.innerText = "已复制";
-                                setTimeout(() => {
-                                    copyButton.innerText = "复制";
-                                }, 2000);
-                            },
-                            (err) => {
-                                console.error("复制失败：", err);
-                            }
-                        );
-                    });
-                    preElement.style.position = "relative"; // 确保按钮位置正确
-                    preElement.appendChild(copyButton);
-                }
-            });
+            const htmlContent = marked(article.content);
+            console.log(htmlContent);
         }
     }, [article.content]);
 
@@ -138,9 +108,10 @@ const ArticleDetail = () => {
             />
             <Divider />
             <CardContent>
+                <TableOfContents content={htmlContent} />
                 {/* 文章内容（Markdown 格式渲染） */}
                 <Box
-                    dangerouslySetInnerHTML={{ __html: marked(article.content) }}
+                    dangerouslySetInnerHTML={{ __html: htmlContent }}
                     sx={{
                         "& h1": { fontSize: "1.5rem", fontWeight: "bold" },
                         "& h2": { fontSize: "1.25rem", fontWeight: "bold" },
@@ -195,9 +166,7 @@ const ArticleDetail = () => {
                         },
                     }}
                 />
-
                 <Divider sx={{ my: 4 }} />
-
                 {/* 评论区 */}
                 {article.allowComments === true ? (
                     <CommentSection articleId={articleId} />

@@ -5,14 +5,15 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import fun.struct.myblog.dto.ArticleQueryDTO;
-import fun.struct.myblog.dto.ArticlesDto;
+import fun.struct.myblog.dto.ArticlesDTO;
 import fun.struct.myblog.entity.Articles;
+import fun.struct.myblog.entity.User;
 import fun.struct.myblog.mapper.ArticlesMapper;
+import fun.struct.myblog.mapper.UserMapper;
 import fun.struct.myblog.service.ArticlesService;
 import fun.struct.myblog.vo.ArticleDataVo;
 import fun.struct.myblog.vo.ArticleManagementListVO;
 import fun.struct.myblog.vo.ArticleVO;
-import fun.struct.myblog.vo.ArticlesListVo;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -26,36 +27,48 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesMapper, Articles> i
 
     @Resource
     private  ArticlesMapper articlesMapper;
+
+    @Resource
+    private UserMapper userMapper;
     @Override
-    public Page<Articles> searchArticlesWithPage(String keyword, int current, int size) {
+    public Page<ArticleManagementListVO> searchArticlesWithPage(String keyword, int current, int size, Integer uId) {
+        Page<ArticleManagementListVO> page = new Page<>(current, size);
 
 
-        Page<Articles> page = new Page<>(current, size);
-
-        // 使用条件构造器
+        // 创建查询条件
         LambdaQueryWrapper<Articles> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Articles::isStatus, 1)
-                .and(wrapper -> wrapper
-                        .like(StringUtils.hasText(keyword), Articles::getTitle, keyword)
-                        .or()
-                        .like(StringUtils.hasText(keyword), Articles::getSummary, keyword)
-                        .or()
-                        .like(StringUtils.hasText(keyword), Articles::getAuthor, keyword)
+        queryWrapper.eq(Articles::isStatus, 1); // 只查询状态为 1 的文章
+        queryWrapper.eq(Articles::isDeleted, 0);
+        if (StringUtils.hasText(keyword)) {
+            queryWrapper.and(wrapper -> wrapper
+                    .like(Articles::getTitle, keyword)
+                    .or()
+                    .like(Articles::getSummary, keyword));
+        }
 
-                )
-                .orderByDesc(Articles::getCreatedAt); // 按创建时间降序排序
+        // 校验用户权限
+        if (uId != null) {
+            User user = userMapper.selectById(uId);
+            if (user != null) {
+                if (!"ADMIN".equalsIgnoreCase(user.getAuthority())) {
+                    queryWrapper.eq(Articles::getAuthor, uId);
+                }
+            }
+        }
 
-        return page(page, queryWrapper);
+        // 执行查询并返回结果
+        return articlesMapper.selectArticlesWithUserInfo(page, queryWrapper);
     }
+
     @Override
-    public int addArticle(ArticlesDto articlesDto) {
+    public int addArticle(ArticlesDTO articlesDto) {
         Articles articles = convertToEntity(articlesDto, true);
         articlesMapper.insert(articles);
       return articles.getId();
     }
 
     @Override
-    public boolean updateArticle(Integer id, ArticlesDto articlesDto) {
+    public boolean updateArticle(Integer id, ArticlesDTO articlesDto) {
        Articles articles = convertToEntity(articlesDto, false);
        articles.setId(id);
         articles.setViews(articlesMapper.selectById(id).getViews());
@@ -119,7 +132,7 @@ public class ArticlesServiceImpl extends ServiceImpl<ArticlesMapper, Articles> i
     }
 
 
-    private Articles convertToEntity(ArticlesDto articlesDto, boolean isNew) {
+    private Articles convertToEntity(ArticlesDTO articlesDto, boolean isNew) {
         Articles articles = new Articles();
 
         // 通用字段

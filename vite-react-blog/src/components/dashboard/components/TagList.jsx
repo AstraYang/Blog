@@ -19,6 +19,7 @@ import {
 } from '@mui/material';
 import { fetchTags, createTag, deleteTags } from '../../../api/tags.js'; // 假设你有相关的 API 函数
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {message} from "antd";
 
 // 创建主题
 const theme = createTheme({
@@ -70,7 +71,7 @@ export default function TagList() {
 
     const handleAdd = async () => {
         if (!newItemName.trim()) {
-            alert('标签名称不能为空');
+            message.error('标签名称不能为空');
             return;
         }
         try {
@@ -88,7 +89,7 @@ export default function TagList() {
             await deleteTags(selectedIds); // 调用后端 API 删除标签
             await loadTags(); // 重新加载标签列表
         } catch (error) {
-            alert('删除失败');
+            message.error('删除失败');
             console.error('Failed to delete tags:', error);
         }
     };

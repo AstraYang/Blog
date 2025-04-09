@@ -15,11 +15,10 @@ public class UserDetailsEntity implements UserDetails {
 
     private String username;
     private String password;
-    private String authority; // 只存储一个权限
-
+    private String authority;
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // 返回一个只有一个权限的 Collection
+
         return Collections.singletonList(() -> authority);
     }
 

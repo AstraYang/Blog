@@ -7,7 +7,7 @@ import {
     Divider,
     Paper,
 } from '@mui/material';
-import { getMenuItems, setMenuItems } from '../../../menuStorage.js';
+import { fetchMenuItemData, updateMenuItem } from '../../../api/menu.js';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import TextField from "@mui/material/TextField";
 
@@ -38,37 +38,92 @@ const theme = createTheme({
 });
 
 export default function BlogCreatPage() {
-    const defaultMenuItems = { '首页': '首页', '知识地图': '知识地图' };
-    const [menuItems, setMenuItemsState] = useState(() => {
-        const existingItems = getMenuItems();
-        return { ...defaultMenuItems, ...existingItems }; // 合并默认项和存储项
-    });
-    const [availableOptions, setAvailableOptions] = useState(['导航', '图片', '资料', '关于']);
+    const defaultMenuItems = {
+        '首页': { id: 1, status: false, deleted: false },
+        '知识地图': { id: 2, status: false, deleted: false }
+    };
+    const [menuItems, setMenuItemsState] = useState({});
+    const [availableOptions, setAvailableOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState('');
-    const [selectedItems, setSelectedItems] = useState([]); // 用于保存选中的菜单项
+    const [selectedItems, setSelectedItems] = useState([]);
+
+    // 获取菜单项数据
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await fetchMenuItemData();
+                console.log("获取菜单项成功:", response);
+                const items = {};
+
+                response.data.forEach(item => {
+                    items[item.menuItem] = {
+                        id: item.id,
+                        status: item.status,
+                        deleted: item.deleted
+                    };
+                });
+
+                setMenuItemsState({ ...defaultMenuItems, ...items });
+
+                const addableOptions = response.data.filter(item => item.status && item.deleted).map(item => item.menuItem);
+                setAvailableOptions(addableOptions);
+            } catch (error) {
+                console.error("Error fetching menu items:", error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
     useEffect(() => {
-        setMenuItems(menuItems);
+        // 根据已添加的项更新可用选项
+        const currentAddedItems = Object.keys(menuItems).filter(item => !menuItems[item].deleted);
+        setAvailableOptions(prevOptions => prevOptions.filter(option => !currentAddedItems.includes(option)));
     }, [menuItems]);
 
-    const handleAddMenuItem = () => {
-        if (selectedOption && !(selectedOption in menuItems)) {
-            const updatedMenuItems = { ...menuItems, [selectedOption]: selectedOption };
+    const handleAddMenuItem = async () => {
+        if (selectedOption && availableOptions.includes(selectedOption)) {
+            const updatedMenuItems = { ...menuItems };
+            const selectedItem = updatedMenuItems[selectedOption];
+
+            updatedMenuItems[selectedOption].deleted = false; // 将选中项的deleted改为false
             setMenuItemsState(updatedMenuItems);
-            setAvailableOptions(availableOptions.filter(option => option !== selectedOption));
             setSelectedOption('');
+
+            // 调用API更新菜单项，使用ID进行更新
+            try {
+                console.log("更新菜单项:", { ids: [selectedItem.id], deleted: false });
+                await updateMenuItem({ ids: [selectedItem.id], deleted: false });
+            } catch (error) {
+                console.error("Error updating menu item:", error);
+            }
         }
     };
 
-    const handleDeleteSelectedItems = () => {
+    const handleDeleteSelectedItems = async () => {
         const updatedMenuItems = { ...menuItems };
+        const idsToDelete = [];
+
         selectedItems.forEach(item => {
-            if (!(item in defaultMenuItems)) {
-                delete updatedMenuItems[item];
+            if (item in updatedMenuItems) {
+                console.log("删除菜单项:", item);
+                updatedMenuItems[item].deleted = true; // 将选中项的deleted改为true
+                idsToDelete.push(updatedMenuItems[item].id); // 使用ID
             }
         });
+
         setMenuItemsState(updatedMenuItems);
         setSelectedItems([]); // 清空选中项
+
+        // 调用更新菜单项的API
+        if (idsToDelete.length > 0) {
+            try {
+                console.log("更新菜单项:", { ids: idsToDelete, deleted: true });
+                await updateMenuItem({ ids: idsToDelete, deleted: true });
+            } catch (error) {
+                console.error("Error updating menu items:", error);
+            }
+        }
     };
 
     const handleSelectItem = (item) => {
@@ -92,8 +147,7 @@ export default function BlogCreatPage() {
                     width: { xs: '100%', sm: '80%', md: '70%' },
                     maxWidth: '1200px',
                     mx: 'auto',
-                    mt: 4,
-                    padding: 2,
+                    py: 7,
                 }}
             >
                 <Typography variant="h5" gutterBottom>
@@ -112,11 +166,10 @@ export default function BlogCreatPage() {
                             mt: 1,
                             minWidth: 120,
                             '& .MuiSelect-select': {
-                                color: 'text.primary', // 文本颜色
-                                backgroundColor: 'background.paper', // 背景色
+                                color: 'text.primary',
+                                backgroundColor: 'background.paper',
                             },
                         }}
-
                     >
                         {availableOptions.map((option, index) => (
                             <MenuItem key={index} value={option}>
@@ -134,15 +187,15 @@ export default function BlogCreatPage() {
                     <Button
                         variant="outlined"
                         onClick={handleDeleteSelectedItems}
-                        disabled={selectedItems.length === 0} // 如果没有选中项，则禁用删除按钮
+                        disabled={selectedItems.length === 0}
                         sx={{
-                            marginLeft: 2, // 添加左边距以分离按钮
-                            color: selectedItems.length > 0 ? 'white' : 'text.primary', // 文本颜色
-                            backgroundColor: selectedItems.length > 0 ? 'error.main' : 'transparent', // 背景色
-                            borderColor: selectedItems.length > 0 ? 'error.main' : 'text.primary', // 边框颜色
+                            marginLeft: 2,
+                            color: selectedItems.length > 0 ? 'white' : 'text.primary',
+                            backgroundColor: selectedItems.length > 0 ? 'error.main' : 'transparent',
+                            borderColor: selectedItems.length > 0 ? 'error.main' : 'text.primary',
                             '&:hover': {
-                                backgroundColor: selectedItems.length > 0 ? 'error.dark' : 'transparent', // 悬停时背景色
-                                borderColor: selectedItems.length > 0 ? 'error.dark' : 'text.primary', // 悬停时边框颜色
+                                backgroundColor: selectedItems.length > 0 ? 'error.dark' : 'transparent',
+                                borderColor: selectedItems.length > 0 ? 'error.dark' : 'text.primary',
                             },
                         }}
                     >
@@ -153,22 +206,22 @@ export default function BlogCreatPage() {
                 {/* 菜单项列表 */}
                 <Paper sx={{ padding: 2, borderRadius: 2, boxShadow: '0px 4px 8px rgba(0, 0, 0, 0.1)' }}>
                     <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                        {Object.entries(menuItems).map(([item]) => (
+                        {Object.entries(menuItems).filter(([_, { deleted }]) => !deleted).map(([item, _]) => (
                             <Box
                                 key={item}
                                 onClick={() => handleSelectItem(item)}
                                 sx={{
                                     padding: 1,
                                     margin: 0.5,
-                                    border: 'none', // 去除边框
+                                    border: 'none',
                                     borderRadius: '4px',
-                                    backgroundColor: defaultMenuItems[item] ? '#4a4f4f' : '#0f9a00', // 默认项为灰色，其他项为绿色
-                                    color: defaultMenuItems[item] ? '#faf9f9' : 'black', // 默认项继承颜色，其他项为黑色
+                                    backgroundColor: '#60bd5a', // 显示的项背景色
+                                    color: 'black',
                                     display: 'flex',
                                     alignItems: 'center',
-                                    cursor: defaultMenuItems[item] ? 'not-allowed' : 'pointer', // 禁用光标
-                                    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)', // 添加阴影
-                                    ...(selectedItems.includes(item) && { border: '2px solid  cyan' }), // 选中项的边框颜色更改为天青色
+                                    cursor: 'pointer',
+                                    boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.2)',
+                                    ...(selectedItems.includes(item) && { border: '1px solid cyan' }),
                                 }}
                             >
                                 <Typography sx={{ flexGrow: 1 }}>{item}</Typography>

@@ -1,15 +1,18 @@
 package fun.struct.myblog.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import fun.struct.myblog.dto.UploadBookDTO;
+import fun.struct.myblog.entity.Articles;
 import fun.struct.myblog.entity.Books;
 import fun.struct.myblog.entity.User;
 import fun.struct.myblog.mapper.BooksMapper;
 import fun.struct.myblog.mapper.UserMapper;
 import fun.struct.myblog.service.BooksService;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 
@@ -21,6 +24,26 @@ public class BooksServiceImpl extends ServiceImpl<BooksMapper, Books> implements
     public BooksServiceImpl(UserMapper userMapper, BooksMapper booksMapper) {
         this.userMapper = userMapper;
         this.booksMapper = booksMapper;
+    }
+
+    @Override
+    public Page<Books> searchBooksWithPage(String keyword, int current, int size) {
+        Page<Books> page = new Page<>(current, size);
+
+        // 使用条件构造器
+        LambdaQueryWrapper<Books> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Books::isDeleted, 0)
+                .and(wrapper -> wrapper
+                        .like(StringUtils.hasText(keyword), Books::getTitle, keyword)
+                        .or()
+                        .like(StringUtils.hasText(keyword), Books::getCategories, keyword)
+                        .or()
+                        .like(StringUtils.hasText(keyword), Books::getAuthor, keyword)
+
+                )
+                .orderByDesc(Books::getCreatedAt); // 按创建时间降序排序
+
+        return page(page, queryWrapper);
     }
 
     @Override
@@ -57,6 +80,7 @@ public class BooksServiceImpl extends ServiceImpl<BooksMapper, Books> implements
 
         return new Page<>(); // 如果用户不存在，返回空分页
     }
+
 
 
 

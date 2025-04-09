@@ -12,6 +12,8 @@ import SideMenuMobile from './SideMenuMobile.jsx';
 import MenuButton from './MenuButton.jsx';
 import ColorModeIconDropdown from '../../../shared-theme/ColorModeIconDropdown';
 import PropTypes from "prop-types";
+import OpenInBrowserIcon from "@mui/icons-material/OpenInBrowser";
+import {useNavigate} from "react-router-dom";
 
 const Toolbar = styled(MuiToolbar)({
   width: '100%',
@@ -31,8 +33,9 @@ const Toolbar = styled(MuiToolbar)({
 
 export default function AppNavbar({onMenuSelect}) {
   const [open, setOpen] = React.useState(false);
+  const navigate = useNavigate(); // 路由跳转
 
-  const toggleDrawer = (newOpen) => () => {
+    const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
 
@@ -66,10 +69,13 @@ export default function AppNavbar({onMenuSelect}) {
           >
             <CustomIcon />
             <Typography variant="h4" component="h1" sx={{ color: 'text.primary' }}>
-              Dashboard
+              后台管理
             </Typography>
           </Stack>
           <ColorModeIconDropdown />
+            <MenuButton onClick={() => navigate("/")}>
+                <OpenInBrowserIcon />
+            </MenuButton>
           <MenuButton aria-label="menu" onClick={toggleDrawer(true)}>
             <MenuRoundedIcon />
           </MenuButton>

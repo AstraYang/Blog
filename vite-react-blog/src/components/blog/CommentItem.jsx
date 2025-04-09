@@ -1,4 +1,4 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import PropTypes from "prop-types";
 import { Box, Typography, TextField, Button, Paper, Grid, IconButton, Divider, Avatar } from "@mui/material";
 import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
@@ -13,6 +13,19 @@ const CommentItem = ({ comment, onReply, expandedReplies, toggleReplies, renderC
     const [replyEmail, setReplyEmail] = useState("");
     const [replyWebsite, setReplyWebsite] = useState("");
     const [showReplyEmojiPicker, setShowReplyEmojiPicker] = useState(false);
+
+    useEffect(() => {
+        // 获取用户信息并填充到昵称和邮箱
+        const userInfoString = localStorage.getItem('userInfo');
+        if (userInfoString) {
+            const userInfoData = JSON.parse(userInfoString);
+            if (userInfoData) {
+                setReplyUsername(userInfoData.nickName || ""); // 设置回复昵称
+                setReplyEmail(userInfoData.email || ""); // 设置回复邮箱
+            }
+        }
+    }, []); // 在组件挂载时执行
+
 
     const handleReplySubmit = (commentId, parentId) => {
         if (newComment.trim() && replyUsername.trim() && replyEmail.trim()) {
@@ -73,7 +86,7 @@ const CommentItem = ({ comment, onReply, expandedReplies, toggleReplies, renderC
                     <Typography variant="body1">{comment.content}</Typography>
                 </Box>
                 <Typography variant="caption" color="textSecondary" sx={{ display: 'block', marginTop: 1 }}>
-                    {comment.createdAt}
+                    {new Date(comment.createdAt).toLocaleString()}
                     <Button
                         size="small"
                         onClick={() => handleReplyClick(comment.id)}
@@ -173,7 +186,7 @@ const CommentItem = ({ comment, onReply, expandedReplies, toggleReplies, renderC
 
                 {expandedReplies[comment.id] && (
                     <Box sx={{
-                        marginLeft: { xs: 0, sm: 4 }, // 手机端下不缩进，PC 端下缩进
+                        marginLeft: { xs: 0, sm: 4 },
                     }}>
                         {expandedReplies[`${comment.id}_replies`]?.map(reply => (
                             <CommentItem

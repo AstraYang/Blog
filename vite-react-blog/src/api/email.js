@@ -10,6 +10,7 @@ export const sendEmail = async (email) => {
             params:{
                 email
             },
+            withCredentials: true
         });
         return response.data;
     } catch (error) {
@@ -24,6 +25,7 @@ export const sendResetEmail = async (email) => {
         params:{
             email
         },
+        withCredentials: true
     });
         console.log("发送邮件成功");
         console.log(response.data);

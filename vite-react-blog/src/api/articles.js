@@ -18,6 +18,7 @@ const API_Upload_URL = 'http://localhost:8080/uploads';
                 size,
                 categoryId,
             },
+            withCredentials: true
             // headers: {
             //     'Authorization': `Bearer ${localStorage.getItem('token')}`
             // }
@@ -36,13 +37,14 @@ const API_Upload_URL = 'http://localhost:8080/uploads';
     * @param {number} size 每页记录数
     *
     * */
-    export const fetchArticlesByKeyword = async (page, size, keyword) => {
+    export const fetchArticlesByKeyword = async (page, size, keyword,uId) => {
     try {
         const response = await axios.get(`${API_BASE_URL}/public/search/page`, {
             params: {
                 page,
                 size,
                 keyword,
+                uId
             },
         });
 
@@ -50,8 +52,7 @@ const API_Upload_URL = 'http://localhost:8080/uploads';
     } catch (error){
         console.error('Failed to fetch articles:', error);
     }
-    }
-
+};
 // 管理文章列表
 export const fetchArticleManagementList =async (page, size, userFilter, publishFilter) =>{
     try {
@@ -64,7 +65,8 @@ export const fetchArticleManagementList =async (page, size, userFilter, publishF
             },
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            },
+            withCredentials: true
         });
         console.log("API请求文章列表：", response.data);
         return response.data;
@@ -77,7 +79,9 @@ export const fetchArticleManagementList =async (page, size, userFilter, publishF
 export const getArticleDetail = async (articleId) => {
     try {
         // 发送 GET 请求到后端 API
-        const response = await axios.get(`${API_BASE_URL}/public/${articleId}`);
+        const response = await axios.get(`${API_BASE_URL}/public/${articleId}`,{
+            withCredentials: true
+        });
 
         // 检查返回的数据结构
         if (response.data.code === 200) {
@@ -98,7 +102,8 @@ export const fetchArticleById = async (articleId) => {
         const response = await axios.get(`${API_BASE_URL}/fetch/${articleId}`,{
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            },
+            withCredentials: true
         });
         return response.data.data; // 返回文章数据
     } catch (error) {
@@ -121,6 +126,7 @@ export const uploadCoverImage = async (coverImage) => {
                 "Content-Type": "multipart/form-data",
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
+            withCredentials: true
         });
         return response.data.data; // 返回图片路径
     } catch (error) {
@@ -135,7 +141,8 @@ export const submitArticle = async (articleData) => {
         const response = await axios.post(`${API_BASE_URL}/add`, articleData,{
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            },
+            withCredentials: true
         });
         return response.data; // 返回提交成功的响应
     } catch (error) {
@@ -151,7 +158,8 @@ export const upDateArticle = async (articleData,articleId) => {
         const response = await axios.post(`${API_BASE_URL}/upDate/${articleId}`, articleData,{
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            },
+            withCredentials: true
         });
         return response.data; // 返回提交成功的响应
     } catch (error) {
@@ -168,7 +176,8 @@ export const setArticlePublishStatus = async (articleStatus) => {
         const response = await axios.post(`${API_BASE_URL}/setStatus`, articleStatus, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
+                },
+                withCredentials: true
             }
         );
         return response.data;
@@ -191,6 +200,7 @@ export const deleteArticlesSoft = async (articleIds, del) => {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
 
             },
+            withCredentials: true
         });
         console.log('删除成功:', response.data);
     } catch (error) {

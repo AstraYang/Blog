@@ -5,8 +5,8 @@ import IconButton from '@mui/material/IconButton';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import FacebookIcon from '@mui/icons-material/GitHub';
-import {getSiteSettings} from "../../menuStorage.js";
+import GitHubIcon from '@mui/icons-material/GitHub'; // 注意这里是 GitHubIcon
+import { fetchSettings } from "../../api/menuStorage.js";
 
 function Copyright() {
     return (
@@ -15,8 +15,7 @@ function Copyright() {
             <Link color="text.secondary" href="https://blog.struct.fun/">
                 AstraYang
             </Link>
-            &nbsp;
-            {new Date().getFullYear()}
+            &nbsp;{new Date().getFullYear()}
         </Typography>
     );
 }
@@ -24,32 +23,38 @@ function Copyright() {
 // 添加站点运行时长组件
 function SiteRuntime() {
     const [runtime, setRuntime] = React.useState('');
-    const { siteStartDate } = getSiteSettings();
-
     React.useEffect(() => {
-        // 设置网站创建日期，根据您的实际创建日期进行修改
-        const startDate = new Date(siteStartDate); // 示例日期，请替换为您的网站实际创建日期
+        const loadSettings = async () => {
+            const fetchedSettings = await fetchSettings();
 
-        // 计算并显示运行时间的函数
-        const calculateRuntime = () => {
-            const currentDate = new Date();
-            const timeDiff = currentDate - startDate;
+            // 确保在获取到设置后再执行下面的逻辑
+            if (fetchedSettings && fetchedSettings.siteStartDate) {
+                const startDate = new Date(fetchedSettings.siteStartDate); // 使用从设置中获取的创建日期
 
-            // 计算天数、小时、分钟和秒数
-            const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+                // 计算并显示运行时间的函数
+                const calculateRuntime = () => {
+                    const currentDate = new Date();
+                    const timeDiff = currentDate - startDate;
 
-            setRuntime(`${days} 天 ${hours} 时 ${minutes} 分 ${seconds} 秒`);
+                    // 计算天数、小时、分钟和秒数
+                    const days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+                    const hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((timeDiff % (1000 * 60)) / 1000);
+
+                    setRuntime(`${days} 天 ${hours} 时 ${minutes} 分 ${seconds} 秒`);
+                };
+
+                // 初始运行和每秒更新
+                calculateRuntime();
+                const timer = setInterval(calculateRuntime, 1000);
+
+                // 组件卸载时清除计时器
+                return () => clearInterval(timer);
+            }
         };
 
-        // 初始运行和每秒更新
-        calculateRuntime();
-        const timer = setInterval(calculateRuntime, 1000);
-
-        // 组件卸载时清除计时器
-        return () => clearInterval(timer);
+        loadSettings();
     }, []);
 
     return (
@@ -62,7 +67,6 @@ function SiteRuntime() {
 export default function Footer() {
     return (
         <React.Fragment>
-            {/*<Divider />*/}
             <Container
                 sx={{
                     display: 'flex',
@@ -81,7 +85,6 @@ export default function Footer() {
                         justifyContent: 'space-between',
                     }}
                 >
-
                 </Box>
                 <Box
                     sx={{
@@ -117,7 +120,7 @@ export default function Footer() {
                             aria-label="GitHub"
                             sx={{ alignSelf: 'center' }}
                         >
-                            <FacebookIcon />
+                            <GitHubIcon />
                         </IconButton>
                     </Stack>
                 </Box>

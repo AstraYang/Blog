@@ -77,6 +77,10 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.GET, "/map/public/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/email/**").permitAll()
                 .requestMatchers(HttpMethod.POST, "/email/**").permitAll()
+                .requestMatchers(HttpMethod.GET, "/books/public/**").permitAll()
+                .requestMatchers(HttpMethod.GET,"/settings/**").permitAll()
+                .requestMatchers(HttpMethod.GET,"/menu-items/**").permitAll()
+
 
                 .anyRequest().authenticated()
         );

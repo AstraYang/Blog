@@ -6,16 +6,32 @@ import {
     Grid,
 } from '@mui/material';
 import KeyboardDoubleArrowRightIcon from '@mui/icons-material/KeyboardDoubleArrowRight';
-import { getLinkItems } from '../../menuStorage'; // 导入获取链接数据的方法
+import { getSiteSettings} from '../../api/menuStorage.js';
 
 export default function LinkCardPage() {
-    const [data, setData] = useState({}); // 组件状态保存链接数据
+    const [data, setData] = useState({});
 
     useEffect(() => {
-        const linkData = getLinkItems(); // 从localStorage获取链接数据
-        console.log('获取链接数据:', linkData)
-        setData(linkData);
+        try {
+            const linkData = JSON.parse(getSiteSettings().linkItems);
+            console.log('获取链接数据:', linkData);
+            if (linkData && typeof linkData === 'object') {
+                const validatedData = Object.keys(linkData).reduce((acc, category) => {
+                    acc[category] = Array.isArray(linkData[category]) ? linkData[category] : [];
+                    return acc;
+                }, {});
+
+                setData(validatedData);
+            } else {
+                console.error('获取的数据不是有效的对象:', linkData);
+                setData({});
+            }
+        } catch (error) {
+            console.error('解析链接数据时出错:', error);
+            setData({});
+        }
     }, []);
+
 
     return (
         <Box

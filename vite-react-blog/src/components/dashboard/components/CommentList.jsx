@@ -22,7 +22,7 @@ import {
     DialogContentText,
     DialogTitle,
 } from '@mui/material';
-import { deleteComments, fetchComments } from '../../../api/comments.js'; // 请确保这些 API 正确
+import { deleteComments, fetchComments } from '../../../api/comments.js';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
 const theme = createTheme();

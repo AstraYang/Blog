@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class ArticleManagementListVO {
     private Integer id;
     private String title;
+    private String summary;
     private String authorName;
     private String categoryName;
     private LocalDateTime createdAt;

@@ -26,7 +26,6 @@ public class UserLoginDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("用户未找到");
         }
 
-        // 使用用户的单个权限创建 UserDetailsEntity
         return new UserDetailsEntity(user.getUserName(), user.getPassword(), user.getAuthority());
     }
 }

@@ -10,7 +10,8 @@ export const fetchTags = async () => {
         const response = await axios.get(`${API_BASE_URL}/list`,{
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            },
+            withCredentials: true
         });
         return response.data.data;
     } catch (error) {
@@ -29,6 +30,7 @@ export const createTag = async (tagName) => {
                 'Content-Type': 'application/x-www-form-urlencoded', // 设置请求头为表单格式
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
+            withCredentials: true
         });
         return response.data;
     } catch (error) {
@@ -45,6 +47,7 @@ export const deleteTags = async (categoryIds) => {
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
+            withCredentials: true
         });
         console.log('删除成功:', response.data);
     } catch (error) {

@@ -11,13 +11,14 @@ import MenuItem from '@mui/material/MenuItem';
 import Container from '@mui/material/Container';
 import Divider from '@mui/material/Divider';
 import MenuIcon from '@mui/icons-material/Menu';
-import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import ColorModeIconDropdown from '../../shared-theme/ColorModeIconDropdown.jsx';
 import { useNavigate } from "react-router-dom";
-import {  logout } from '../../api/User.js';
+import { logout } from '../../api/User.js';
 import Drawer from "@mui/material/Drawer";
-import { getMenuItems, getSiteSettings } from '../../menuStorage';
-import PropTypes from "prop-types"; // 确保从存储中获取网站设置
+import {fetchSettings, getSiteSettings, setSiteSettings} from '../../api/menuStorage.js';
+import PropTypes from "prop-types";
+import { fetchMenuItemData } from "../../api/menu.js";
+import { useEffect, useState } from "react";
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: 'flex',
@@ -55,7 +56,23 @@ export default function AppAppBar({ onSelectMenu }) {
   const [user, setUser] = React.useState(null);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [selectedMenu, setSelectedMenu] = React.useState('首页'); // 选中状态
-  const [siteSettings, setSiteSettings] = React.useState({}); // 新增状态用于存储网站设置
+  const [settings, setSettings] = useState(getSiteSettings()); // 初始化状态
+  const [menuItems, setMenuItems] = React.useState([]); // 更新为数组
+
+  useEffect(() => {
+    const loadSettings = async () => {
+      const fetchedSettings = await fetchSettings();
+      if (fetchedSettings) {
+        setSiteSettings(fetchedSettings);
+        setSettings(fetchedSettings);
+      }
+    };
+
+    loadSettings();
+    fetchUserInfo();
+    fetchMenuItems();
+  }, []);
+
 
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
@@ -86,23 +103,26 @@ export default function AppAppBar({ onSelectMenu }) {
     onSelectMenu(menu);
   };
 
-  React.useEffect(() => {
-    async function fetchUserInfo() {
-      try {
-        const userInfo = localStorage.getItem('userInfo');
-        setUser(JSON.parse(userInfo));
-      } catch (error) {
-        console.error('未登录或获取用户信息失败', error);
-      }
+  const fetchMenuItems = async () => {
+    try {
+      const items = await fetchMenuItemData();
+      const filteredMenuItems = items.data.filter(item => !item.deleted);
+
+      const result = filteredMenuItems.map(item => item.menuItem);
+      setMenuItems(result);
+    } catch (error) {
+      console.error('获取菜单项失败', error);
     }
-    fetchUserInfo();
+  };
 
-    // 加载网站设置
-    const settings = getSiteSettings();
-    setSiteSettings(settings);
-  }, []);
-
-  const menuItems = getMenuItems();
+  const fetchUserInfo = async () => {
+    try {
+      const userInfo = localStorage.getItem('userInfo');
+      setUser(JSON.parse(userInfo));
+    } catch (error) {
+      console.error('未登录或获取用户信息失败', error);
+    }
+  };
 
   return (
       <AppBar
@@ -122,10 +142,10 @@ export default function AppAppBar({ onSelectMenu }) {
                 onClick={() => navigate('/')}
             >
               {/* 显示网站 Logo */}
-              {siteSettings.logo && (
+              {settings.logo && (
                   <Box
                       component="img"
-                      src={siteSettings.logo}
+                      src={settings.logo}
                       alt="Logo"
                       sx={{
                         height: 40, // 根据需要调整高度
@@ -135,7 +155,7 @@ export default function AppAppBar({ onSelectMenu }) {
               )}
               {/* 导航按钮 */}
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-                {Object.keys(menuItems).map((menu) => (
+                {menuItems.map((menu) => (
                     <MenuButton
                         key={menu}
                         variant="text"
@@ -203,9 +223,9 @@ export default function AppAppBar({ onSelectMenu }) {
                   <Box
                       sx={{
                         display: 'flex',
-                        justifyContent: 'space-between', // 使子元素分别对齐到左右
-                        alignItems: 'center', // 垂直居中
-                        width: '100%', // 确保父容器占满宽度
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        width: '100%',
                       }}
                   >
                     {/* 左侧用户信息 */}
@@ -216,34 +236,49 @@ export default function AppAppBar({ onSelectMenu }) {
                             <MenuItem disabled>{user.nickName}</MenuItem>
                           </>
                       ) : (
-                          <MenuItem disabled>未登录</MenuItem> // 提示用户未登录
+                          <MenuItem disabled>未登录</MenuItem>
                       )}
                     </Box>
 
                     {/* 右侧关闭按钮 */}
-                    <Box>
-                      <IconButton onClick={toggleDrawer(false)}>
-                        <CloseRoundedIcon />
-                      </IconButton>
-                    </Box>
+                    {user ? (
+                        <>
+                          <Box>
+                            <MenuItem>
+                              <Button color="primary" variant="text" onClick={() => navigate('/admin')}>
+                                管理
+                              </Button>
+                            </MenuItem>
+                          </Box>
+                        </>
+                    ) : (<></>)}
+
                   </Box>
 
-
-                  {Object.keys(menuItems).map((menu) => (
-                      <MenuItem key={menu} onClick={() => handleMenuClick(menu)}>
+                  {menuItems.map((menu) => (
+                      <MenuItem
+                          key={menu}
+                          variant="text"
+                          color="info"
+                          size="small"
+                          selected={selectedMenu === menu}
+                          onClick={() => {
+                            handleMenuClick(menu); // 更新选中状态
+                            toggleDrawer(false)(); // 关闭抽屉
+                          }}
+                      >
                         {menu}
                       </MenuItem>
                   ))}
                   <Divider sx={{ my: 3 }} />
 
-
                   {user ? (
-                          <MenuItem>
-                            <Button color="primary" variant="outlined" fullWidth onClick={handleLogout}>
-                            Logout
-                            </Button>
-                          </MenuItem>
-                  ):(
+                      <MenuItem>
+                        <Button color="primary" variant="outlined" fullWidth onClick={handleLogout}>
+                          Logout
+                        </Button>
+                      </MenuItem>
+                  ) : (
                       <MenuItem>
                         <Button color="primary" variant="contained" fullWidth onClick={handleSigin}>
                           Sign in

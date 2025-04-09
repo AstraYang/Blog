@@ -4,7 +4,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class ArticlesDto {
+public class ArticlesDTO {
     private String title;
     private Integer categoryId;
     private List<Integer> tags;

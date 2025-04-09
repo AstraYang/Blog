@@ -9,6 +9,8 @@ import java.util.List;
 
 public interface MindMapService extends IService<MindMap> {
     Page<MindMap> getPaginatedMindMaps(int page, int size);
+    Page<MindMap> getPaginatedMindMapsP( Integer uId, int page, int size);
+    Page<MindMap> searchMindMapPage(String keyword, int current, int size, Integer uId);
     int updateMindMap(Integer id, MindMapDTO mindMapDTO);
     boolean deleteMindMapByIds(List<Integer> ids);
 

@@ -82,29 +82,29 @@ export default function ChartUserByCountry() {
           sx={{ display: 'flex', flexDirection: 'column', gap: '8px', flexGrow: 1 }}
       >
         <CardContent>
-          <Typography component="h2" variant="subtitle2">
-            分类数据
+          <Typography component="h3" variant="subtitle2">
+            文章数
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <PieChart
                 colors={colors}
                 margin={{
-                  left: 80,
-                  right: 80,
-                  top: 80,
-                  bottom: 80,
+                  left: 20,
+                  right: 20,
+                  top: 20,
+                  bottom: 20,
                 }}
                 series={[
                   {
                     data,
-                    innerRadius: 75,
-                    outerRadius: 100,
+                    innerRadius: 55,
+                    outerRadius: 75,
                     paddingAngle: 0,
                     highlightScope: { faded: 'global', highlighted: 'item' },
                   },
                 ]}
-                height={260}
-                width={260}
+                height={150}
+                width={150}
                 slotProps={{
                   legend: { hidden: true },
                 }}

@@ -6,13 +6,12 @@ import Drawer, { drawerClasses } from '@mui/material/Drawer';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import LogoutRoundedIcon from '@mui/icons-material/LogoutRounded';
-import NotificationsRoundedIcon from '@mui/icons-material/NotificationsRounded';
 import MenuButton from './MenuButton.jsx';
 import MenuContent from './MenuContent.jsx';
-import CardAlert from './CardAlert.jsx';
 import { useEffect, useState } from "react";
 import { logout} from "../../../api/User.js";
 import {useNavigate} from "react-router-dom";
+import OptionsMenu from "./OptionsMenu.jsx";
 
 function SideMenuMobile({ open, toggleDrawer, onMenuSelect }) {
   const [user, setUser] = useState(null); // 保存用户信息
@@ -22,7 +21,7 @@ function SideMenuMobile({ open, toggleDrawer, onMenuSelect }) {
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
-        const userInfo = localStorage.getItem('userInfo'); // 调用 API 获取用户信息
+        const userInfo = localStorage.getItem('userInfo');
         setUser(JSON.parse(userInfo)); // 保存用户信息到状态
       } catch (err) {
         console.error('获取用户信息失败:', err);
@@ -30,7 +29,7 @@ function SideMenuMobile({ open, toggleDrawer, onMenuSelect }) {
     };
 
     fetchUserInfo();
-  }, []); // 仅在组件挂载时执行一次
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -77,8 +76,8 @@ function SideMenuMobile({ open, toggleDrawer, onMenuSelect }) {
                 {user?.nickName}
               </Typography>
             </Stack>
-            <MenuButton showBadge>
-              <NotificationsRoundedIcon />
+            <MenuButton>
+              <OptionsMenu />
             </MenuButton>
           </Stack>
           <Divider />
@@ -86,7 +85,6 @@ function SideMenuMobile({ open, toggleDrawer, onMenuSelect }) {
             <MenuContent onMenuSelect={onMenuSelect} />
             <Divider />
           </Stack>
-          <CardAlert />
           <Stack sx={{ p: 2 }}>
             <Button variant="outlined" fullWidth startIcon={<LogoutRoundedIcon />}  onClick={handleLogout}>
               Logout

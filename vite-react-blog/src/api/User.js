@@ -137,6 +137,7 @@ export const uploadUserImage = async (userImage) => {
                 "Content-Type": "multipart/form-data",
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
             },
+            withCredentials: true
         });
         return response.data.data;
     } catch (error) {
@@ -198,7 +199,8 @@ export const updateUserStatus = async (userStatus) => {
     } catch (error) {
         console.error('修改用户状态失败:', error.response ?error.response.data : error.message);
     }
-}
+};
+
 export const createUser = async (user) => {
     try {
         const response = await axios.post(`${API_BASE_URL}/create`, user, {
@@ -212,7 +214,23 @@ export const createUser = async (user) => {
         console.error('创建用户失败:', error.response ? error.response.data : error.message);
         throw error; // 抛出错误
     }
-}
+};
+
+//获取用户数量
+export const getUserCount = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/count`, {
+            withCredentials: true, // 允许携带 Cookie
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            }
+        });
+        return response.data;
+    } catch (error) {
+        console.error('获取用户数量失败:', error.response ? error.response.data : error.message);
+        throw error; // 抛出错误
+    }
+};
 
 
 // 删除用户
@@ -230,7 +248,7 @@ export const deleteUsers = async (userIds) => {
         console.error('删除用户失败:', error.response ? error.response.data : error.message);
         throw error; // 抛出错误
     }
-}
+};
 
 // 退出登录函数（直接删除 Token）
 export const logout = () => {

@@ -20,6 +20,7 @@ import {
 import { fetchCategories, createCategory, deleteCategories } from '../../../api/category.js';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import {useEffect, useState} from "react";
+import {message} from "antd";
 
 const theme = createTheme({
     components: {
@@ -73,7 +74,7 @@ export default function CategoryList() {
     // 添加新项
     const handleAdd = async () => {
         if (!newItemName.trim()) {
-            alert('分类名称不能为空');
+            message.error('分类名称不能为空');
             return;
         }
         try {
@@ -92,7 +93,7 @@ export default function CategoryList() {
             await deleteCategories(selectedIds); // 调用后端 API 删除分类
             await loadCategories(); // 重新加载分类列表
         } catch (error) {
-            alert('删除失败，只允许删除空分类');
+            message.error('删除失败，只允许删除空分类');
             console.error('Failed to delete category：', error);
         }
     };
@@ -149,7 +150,6 @@ export default function CategoryList() {
                     )}
                 </Box>
 
-                {/* 列表显示 */}
                 {isMobile ? (
                     <Grid container spacing={2}>
                         {data.map((row) => (

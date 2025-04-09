@@ -4,7 +4,7 @@ package fun.struct.myblog.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import fun.struct.myblog.dto.LoginDto;
+import fun.struct.myblog.dto.LoginDTO;
 import fun.struct.myblog.dto.UserUpdateDTO;
 import fun.struct.myblog.entity.User;
 import fun.struct.myblog.mapper.UserMapper;
@@ -22,7 +22,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private UserMapper userMapper;
     @Override
-    public User login(LoginDto loginDto) {
+    public User login(LoginDTO loginDto) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("user_name", loginDto.getUsername());
 

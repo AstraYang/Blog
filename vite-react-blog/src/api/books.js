@@ -11,7 +11,8 @@ export const saveBook = async (bookData) => {
         const response = await axios.post(`${API_BASE_URL}/add`, bookData,{
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            },
+            withCredentials: true
         });
         console.log("提交成功:", response.data);
         return response.data; // 返回提交成功的响应
@@ -34,7 +35,8 @@ export const getBookList = async (page, size, uId) => {
             },
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            },
+            withCredentials: true
         });
         return response.data; // 返回获取到的文献列表
     } catch (error) {
@@ -43,12 +45,46 @@ export const getBookList = async (page, size, uId) => {
     }
 };
 
+export const fetchBooksByKeyword = async (page, size, keyword) => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/public/search/page`, {
+            params: {
+                page,
+                size,
+                keyword,
+            },
+            withCredentials: true
+        });
+
+        return response.data;
+    } catch (error){
+        console.error('Failed to fetch articles:', error);
+    }
+};
+
+//获取书籍总数
+export const getBookCount = async () => {
+    try {
+        const response = await axios.get(`${API_BASE_URL}/count`,{
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem('token')}`
+            },
+            withCredentials: true
+        });
+        console.log("获取书籍总数成功:", response.data);
+        return response.data; // 返回获取到的文献列表
+    } catch (error) {
+        console.error("获取文献列表失败:", error.response ? error.response.data : error.message);
+    }
+}
+
 export const deleteBook = async (bId) => {
     try {
         const response = await axios.delete(`${API_BASE_URL}/deleteBook/${bId}`,{
             headers: {
                 'Authorization': `Bearer ${localStorage.getItem('token')}`
-            }
+            },
+            withCredentials: true
         });
         console.log("删除成功:", response.data);
         return response.data; // 返回删除成功的响应

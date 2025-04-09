@@ -17,8 +17,9 @@ import {
     DialogTitle, Checkbox,
 } from '@mui/material';
 import { Link, useNavigate } from 'react-router-dom';
-import { fetchMindMaps, createMindMap, deleteMindMaps } from '../../../api/MindMap';
+import {fetchMindMapManagementList, createMindMap, deleteMindMaps, fetchMindMapByKeyword} from '../../../api/MindMap';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {message} from "antd";
 
 const theme = createTheme({
     components: {
@@ -36,9 +37,11 @@ const theme = createTheme({
     },
 });
 
-export default function MindMapList() {
+export default function MindMapManagementList() {
+    const [userId, setUserId] = useState(null);
     const [mindMaps, setMindMaps] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState(''); // 添加搜索状态
     const [newMindMapTitle, setNewMindMapTitle] = useState('');
     const [selectedIds, setSelectedIds] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
@@ -56,15 +59,27 @@ export default function MindMapList() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetchMindMapsData();
-    }, [currentPage]);
+        const userInfo = localStorage.getItem('userInfo');
+        const parsedUserInfo = JSON.parse(userInfo);
+        if (parsedUserInfo) {
+            const uId = parsedUserInfo.id;
+            setUserId(uId);
+            fetchMindMapsData(uId);
+        }
+    }, [currentPage, searchTerm]);
 
-    const fetchMindMapsData = async () => {
+    const fetchMindMapsData = async (uId) => {
         setLoading(true);
         try {
-            const data = await fetchMindMaps(currentPage, pageSize);
-            setMindMaps(data.data.records);
-            setTotal(data.data.pages || 0);
+            if (searchTerm){
+                const data = await fetchMindMapByKeyword(currentPage, pageSize, searchTerm, uId);
+                setMindMaps(data.data.records);
+                setTotal(data.data.pages || 0);
+            }  else {
+                const data = await fetchMindMapManagementList(uId, currentPage, pageSize);
+                setMindMaps(data.data.records);
+                setTotal(data.data.pages || 0);
+            }
         } catch (error) {
             console.error('Error fetching mind maps:', error);
             setTotal(0);
@@ -75,15 +90,21 @@ export default function MindMapList() {
 
     const handleAddMindMap = async () => {
         if (!newMindMapTitle.trim()) {
-            alert('思维导图标题不能为空');
+            message.error('思维导图标题不能为空');
             return;
         }
 
         try {
-            const response = await createMindMap({ title: newMindMapTitle });
-            setNewMindMapTitle('');
-            setNewMindMapId(response.data);
-            setOpenCreateDialog(true);
+            const userInfo = localStorage.getItem('userInfo');
+            const parsedUserInfo = JSON.parse(userInfo);
+            if (parsedUserInfo) {
+                const userId = parsedUserInfo.id;
+                const response = await createMindMap({title: newMindMapTitle, author: userId});
+                setNewMindMapTitle('');
+                setNewMindMapId(response.data);
+                setOpenCreateDialog(true);
+                message.success('添加成功');
+            }
         } catch (error) {
             console.error('Failed to create mind map:', error);
         }
@@ -94,7 +115,7 @@ export default function MindMapList() {
         if (confirm) {
             navigate(`/admin/mindMap/${newMindMapId}`);
         }
-        fetchMindMapsData();
+        fetchMindMapsData(userId);
     };
 
     const handleDeleteMindMaps = () => {
@@ -108,9 +129,10 @@ export default function MindMapList() {
         try {
             await deleteMindMaps(confirmDeleteIds);
             setSelectedIds([]);
-            fetchMindMapsData();
+            fetchMindMapsData(userId);
+            message.success('删除成功');
         } catch (error) {
-            alert('删除失败');
+            message.error('删除失败');
             console.error('Failed to delete mind maps:', error);
         } finally {
             setOpenDeleteDialog(false);
@@ -139,20 +161,37 @@ export default function MindMapList() {
                     mt: 4,
                 }}
             >
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end' }}>
                 <Typography variant="h5" gutterBottom sx={{ mt: 7 }}>
-                    思维导图管理
+                    知识地图管理
                 </Typography>
+
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <TextField
+                        variant="outlined"
+                        size="small"
+                        placeholder="搜索导图..."
+                        value={searchTerm}
+                        onChange={(e) => {
+                            setSearchTerm(e.target.value);
+                            setCurrentPage(1); // 重置为第一页
+                        }}
+                        sx={{ mx: 2, width: '200px' }}
+                    />
+                </Box>
+                </Box>
                 <Divider sx={{ my: 1.5 }} />
 
                 <Box sx={{ display: 'flex', gap: 2, mb: 2, alignItems: 'center' }}>
                     <TextField
-                        label="思维导图标题"
+                        label="知识地图标题"
                         value={newMindMapTitle}
                         onChange={(e) => setNewMindMapTitle(e.target.value)}
                         size="small"
+                        sx={{ width: '150px' }}
                     />
                     <Button variant="contained" color="primary" onClick={handleAddMindMap}>
-                        添加思维导图
+                        添加知识地图
                     </Button>
                     <Button
                         variant="contained"
@@ -169,10 +208,10 @@ export default function MindMapList() {
                 ) : mindMaps.length === 0 ? (
                     <Typography variant="body1">暂无数据</Typography>
                 ) : (
-                    <Box sx={{ display: { xs: 'block', md: 'grid' }, gridTemplateColumns: { md: 'repeat(2, 1fr)' }, gap: 2 }}>
+                    <Box sx={{ display: { xs: 'block', md: 'grid'}, gridTemplateColumns: { md: 'repeat(1, 1fr)' }, gap: 1 }}>
                         {mindMaps.map((mindMap) => (
-                            <Card key={mindMap.id} sx={{ border: isSelected(mindMap.id) ? '2px solid #3f51b5' : '1px solid #ccc', borderRadius: 2 }}>
-                                <CardContent>
+                            <Card key={mindMap.id} sx={{ border: isSelected(mindMap.id) ? '2px solid #3f51b5' : '1px solid #ccc', borderRadius: 1, my:1 }}>
+                                <CardContent sx={{padding:0.5}}>
                                     <Typography variant="h6">
                                         <Link to={`/admin/mindMap/${mindMap.id}`} style={{ textDecoration: 'none', color: '#027cb5' }}>
                                             {mindMap.title}
@@ -180,7 +219,7 @@ export default function MindMapList() {
                                     </Typography>
                                     <Typography variant="body2">{mindMap.summary}</Typography>
                                     <Typography variant="caption" color="textSecondary">
-                                        更新时间: {new Date(mindMap.updatedAt).toLocaleString()}
+                                        更新时间: {mindMap.updatedAt ===null ? new Date(mindMap.createdAt).toLocaleString() :new Date(mindMap.updatedAt).toLocaleString()}
                                     </Typography>
                                 </CardContent>
                                 <CardActions>
@@ -201,16 +240,16 @@ export default function MindMapList() {
                         onChange={handlePageChange}
                         variant="outlined"
                         shape="rounded"
-                        sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}
+                        sx={{ display: 'flex', justifyContent: 'end', mb: 2 }}
                     />
                 </Box>
 
                 {/* 添加弹窗 */}
                 <Dialog open={openCreateDialog} onClose={() => handleDialogClose(false)}>
-                    <DialogTitle>思维导图创建成功</DialogTitle>
+                    <DialogTitle>知识地图创建成功</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            思维导图创建成功，您是否要跳转到编辑页面？
+                            知识地图创建成功，您是否要跳转到编辑页面？
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -228,7 +267,7 @@ export default function MindMapList() {
                     <DialogTitle>确认删除</DialogTitle>
                     <DialogContent>
                         <DialogContentText>
-                            您确定要删除选中的思维导图吗？
+                            您确定要删除选中的知识地图吗？
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>

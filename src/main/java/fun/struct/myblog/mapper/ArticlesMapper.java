@@ -1,5 +1,6 @@
 package fun.struct.myblog.mapper;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import fun.struct.myblog.entity.Articles;
@@ -56,6 +57,18 @@ public interface ArticlesMapper extends BaseMapper<Articles> {
     FROM articles WHERE articles_id = ${id}
     """)
     ArticleDataVo selectArticleData(@Param("id") Integer id);
+
+    @Select("""
+    SELECT a.articles_id AS id, a.title, u.nick_name AS authorName,
+           a.summary, c.category_name, a.created_at, a.is_status AS status,
+           a.is_comment AS comment, a.is_deleted AS deleted
+    FROM articles a
+    LEFT JOIN user u ON a.author = u.user_id
+    LEFT JOIN category c ON a.category_id = c.category_id
+    ${ew.customSqlSegment}
+    ORDER BY a.created_at DESC
+""")
+    Page<ArticleManagementListVO> selectArticlesWithUserInfo(Page<ArticleManagementListVO> page, @Param("ew") Wrapper<Articles> queryWrapper);
 
     @DeleteProvider(type = GenericSqlProvider.class, method = "deleteByIds")
     int deleteCategoriesByIds(@Param("tableName") String tableName,

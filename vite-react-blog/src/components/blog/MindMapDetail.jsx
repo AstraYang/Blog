@@ -59,8 +59,17 @@ const MindMapDetail = () => {
                 setDetails(mindMapData.summary);
 
                 const { nodes: loadedNodes, edges: loadedEdges } = JSON.parse(mindMapData.data);
-                setNodes(loadedNodes);
-                setEdges(loadedEdges);
+
+                // 确保节点和边的 id 唯一
+                const uniqueNodes = loadedNodes.filter((node, index, self) =>
+                    index === self.findIndex((n) => n.id === node.id)
+                );
+                const uniqueEdges = loadedEdges.filter((edge, index, self) =>
+                    index === self.findIndex((e) => e.id === edge.id)
+                );
+
+                setNodes(uniqueNodes);
+                setEdges(uniqueEdges);
             } catch (error) {
                 console.error('Failed to fetch MindMap data:', error);
             }
